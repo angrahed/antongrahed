@@ -31,15 +31,15 @@ const latestNotes = allNotes.sort(collectionDateSort).slice(0, MAX_NOTES);
 	<section>
 		<h1 class="title mb-12">Welcome!</h1>
 
- <div class="mb-6 flex justify-center">
-      <Image
-        src={headshot}
-        alt="Portrait of Anton Grahed"
-        width={160}
-        height={160}
-        class="rounded-full ring-2 ring-accent/30 shadow-md"
-      />
-    </div>
+<Image
+  src={headshot}
+  alt="Portrait of Anton Grahed"
+  width={600}          /* generate a large source for retina */
+  height={600}
+  loading="eager"
+  decoding="async"
+  class="mb-6 w-[260px] h-auto"
+/>
 
 		<p class="mb-4">
 			Hi, I’m Anton Grahed! I work as a Research Analyst for the Office of the Chief Economist (OCE) at the European Bank for Reconstruction and Development. Passionate about development economics, economic growth, dataviz, and stamps.  
