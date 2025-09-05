@@ -7,6 +7,9 @@ import { getAllPosts } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
 import { collectionDateSort } from "@/utils/date";
 
+import { Image } from "astro:assets";
+import headshot from "@/assets/anton.jpg";
+
 // Posts
 const MAX_POSTS = 10;
 const allPosts = await getAllPosts();
@@ -27,6 +30,17 @@ const latestNotes = allNotes.sort(collectionDateSort).slice(0, MAX_NOTES);
 <PageLayout meta={{ title: "Home" }}>
 	<section>
 		<h1 class="title mb-12">Welcome!</h1>
+
+ <div class="mb-6 flex justify-center">
+      <Image
+        src={headshot}
+        alt="Portrait of Anton Grahed"
+        width={160}
+        height={160}
+        class="rounded-full ring-2 ring-accent/30 shadow-md"
+      />
+    </div>
+
 		<p class="mb-4">
 			Hi, I’m Anton Grahed! I work as a Research Analyst for the Office of the Chief Economist (OCE) at the European Bank for Reconstruction and Development. Passionate about development economics, economic growth, dataviz, and stamps.  
 		</p>
