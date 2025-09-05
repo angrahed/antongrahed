@@ -27,7 +27,7 @@ export const siteConfig: SiteConfig = {
 	*/
 	title: "Anton Grahed",
 	// ! Please remember to replace the following site property with your own domain, used in astro.config.ts
-	url: "antongrahed-github-io.vercel.app",
+	url: "antongrahed.com",
 };
 
 // Used to generate links in both the Header & Footer.
