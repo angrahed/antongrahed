@@ -1,0 +1,54 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+const filmModules = import.meta.glob<{ default: ImageMetadata }>(
+	"../assets/film/*.{jpg,jpeg,png,gif,webp,avif}",
+	{ eager: true }
+);
+
+const galleryImages = Object.entries(filmModules)
+	.sort(([a], [b]) => a.localeCompare(b))
+	.map(([path, mod]) => {
+		const filename = path.split("/").pop() ?? "Film photo";
+		const readableName = filename
+			.replace(/\.[^/.]+$/, "")
+			.replace(/[-_]+/g, " ")
+			.replace(/\b\w/g, (ch) => ch.toUpperCase());
+
+		return {
+			src: mod.default,
+			alt: readableName,
+		};
+	});
+---
+
+<PageLayout meta={{ title: "Film Photography" }}>
+	<section>
+		<h1 class="title mb-6">Film Photography</h1>
+		<p class="mb-8 text-gray-600 dark:text-gray-400">
+			A growing gallery of scans from my 35mm and 120 rolls. Add new images to
+			<code class="rounded bg-gray-100 px-1 py-0.5 text-sm text-gray-700 dark:bg-gray-800 dark:text-gray-300">src/assets/film</code>
+			and they will appear here automatically.
+		</p>
+		{galleryImages.length === 0 ? (
+			<p class="italic text-gray-600 dark:text-gray-400">No film photos yet—drop scans into src/assets/film to populate the gallery.</p>
+		) : (
+			<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+				{galleryImages.map(({ src, alt }) => (
+					<figure class="space-y-3">
+						<Image
+							src={src}
+							alt={alt}
+							class="w-full rounded-lg shadow-md"
+							loading="lazy"
+							decoding="async"
+						/>
+						<figcaption class="text-sm text-gray-600 dark:text-gray-400">{alt}</figcaption>
+					</figure>
+				))}
+			</div>
+		)}
+	</section>
+</PageLayout>
