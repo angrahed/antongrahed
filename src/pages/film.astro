@@ -1,7 +1,7 @@
 ---
-import PageLayout from "@/layouts/Base.astro";
 import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
+import PageLayout from "@/layouts/Base.astro";
 
 const filmModules = import.meta.glob<{ default: ImageMetadata }>(
 	"../assets/film/*.{jpg,jpeg,png,gif,webp,avif}",
@@ -27,28 +27,110 @@ const galleryImages = Object.entries(filmModules)
 <PageLayout meta={{ title: "Film Photography" }}>
 	<section>
 		<h1 class="title mb-6">Film Photography</h1>
-		<p class="mb-8 text-gray-600 dark:text-gray-400">
-			A growing gallery of scans from my 35mm and 120 rolls. Add new images to
-			<code class="rounded bg-gray-100 px-1 py-0.5 text-sm text-gray-700 dark:bg-gray-800 dark:text-gray-300">src/assets/film</code>
-			and they will appear here automatically.
-		</p>
+		<p class="mb-8 text-gray-600 dark:text-gray-400">A growing gallery of scans from my 35mm and 120 rolls—check back often for new additions.</p>
 		{galleryImages.length === 0 ? (
-			<p class="italic text-gray-600 dark:text-gray-400">No film photos yet—drop scans into src/assets/film to populate the gallery.</p>
+			<p class="italic text-gray-600 dark:text-gray-400">No film photos yet—fresh scans are on their way.</p>
 		) : (
 			<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
 				{galleryImages.map(({ src, alt }) => (
-					<figure class="space-y-3">
+					<button
+						type="button"
+						class="group space-y-3 text-left focus:outline-none focus-visible:ring-4 focus-visible:ring-accent/40"
+						data-film-trigger
+						data-film-src={src.src}
+						data-film-alt={alt}
+					>
 						<Image
 							src={src}
 							alt={alt}
-							class="w-full rounded-lg shadow-md"
+							class="w-full transform rounded-lg shadow-md transition duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-xl"
 							loading="lazy"
 							decoding="async"
 						/>
-						<figcaption class="text-sm text-gray-600 dark:text-gray-400">{alt}</figcaption>
-					</figure>
+					</button>
 				))}
 			</div>
 		)}
 	</section>
+	<div
+		id="film-lightbox"
+		class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm transition-opacity duration-200"
+		aria-hidden="true"
+	>
+		<button
+			type="button"
+			class="absolute right-6 top-6 rounded-full bg-white/90 p-2 text-gray-900 shadow-lg transition hover:bg-white"
+			data-film-close
+			aria-label="Close enlarged photo"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 6l12 12M18 6L6 18" />
+			</svg>
+		</button>
+		<img
+			class="max-h-[90vh] max-w-[92vw] rounded-lg shadow-2xl transition-transform duration-200 ease-out"
+			data-film-active
+			alt=""
+		/>
+	</div>
 </PageLayout>
+
+<script>
+	const lightbox = document.getElementById("film-lightbox");
+	if (lightbox) {
+		const activeImg = lightbox.querySelector("[data-film-active]");
+		const closeBtn = lightbox.querySelector("[data-film-close]");
+		const triggers = document.querySelectorAll("[data-film-trigger]");
+		let lastFocused = null;
+
+		const open = (src, alt, trigger) => {
+			if (!activeImg) return;
+			lastFocused = trigger;
+			activeImg.setAttribute("src", src);
+			activeImg.setAttribute("alt", alt);
+			lightbox.classList.remove("hidden");
+			lightbox.setAttribute("aria-hidden", "false");
+			document.body.style.overflow = "hidden";
+			window.setTimeout(() => closeBtn?.focus(), 0);
+		};
+
+		const close = () => {
+			if (!activeImg) return;
+			activeImg.removeAttribute("src");
+			activeImg.setAttribute("alt", "");
+			lightbox.classList.add("hidden");
+			lightbox.setAttribute("aria-hidden", "true");
+			document.body.style.overflow = "";
+			lastFocused?.focus();
+		};
+
+		triggers.forEach((trigger) => {
+			trigger.addEventListener("click", () => {
+				const src = trigger.dataset.filmSrc;
+				const alt = trigger.dataset.filmAlt ?? "";
+				if (src) open(src, alt, trigger);
+			});
+
+			trigger.addEventListener("keydown", (event) => {
+				if (event.key === "Enter" || event.key === " ") {
+					event.preventDefault();
+					trigger.click();
+				}
+			});
+		});
+
+		closeBtn?.addEventListener("click", close);
+
+		lightbox.addEventListener("click", (event) => {
+			if (event.target === lightbox) {
+				close();
+			}
+		});
+
+		window.addEventListener("keydown", (event) => {
+			if (event.key === "Escape" && lightbox.getAttribute("aria-hidden") === "false") {
+				close();
+			}
+		});
+	}
+</script>
