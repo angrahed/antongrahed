@@ -1,13 +1,100 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
+
+const projects = [
+	{
+		title: "Scandinavian Statistical Office Portal",
+		description:
+			"A Shiny app using the pxweb package facilitating easy download and visualisation of data from Scandinavian statistical offices.",
+			url: "/projects/scandinavian-statistical-office-portal",
+		slug: "scandinavian-statistical-office-portal",
+		passwordProtected: true,
+	},
+];
+
+const projectPasswords: Record<string, string> = {
+	"scandinavian-statistical-office-portal":
+		import.meta.env.PUBLIC_SCANDI_PORTAL_PASSWORD ?? "scandi-preview",
+};
 ---
 
 <PageLayout meta={{ title: "Projects" }}>
-	<section class="space-y-6">
-		<h1 class="title">Projects</h1>
-		<p class="text-gray-600 dark:text-gray-400">
-			A curated selection of the research projects and data explorations I’ve worked on. New highlights will be
-			added soon—stay tuned.
-		</p>
+	<section class="space-y-8">
+		<div class="space-y-6">
+			<h1 class="title">Projects</h1>
+			<p class="text-gray-600 dark:text-gray-400">
+				A curated selection of the research projects and data explorations I’ve worked on. New highlights will
+				be added soon—stay tuned.
+			</p>
+		</div>
+
+		<div class="grid gap-6 md:grid-cols-2">
+			{projects.map((project) => (
+				<article
+					class="group relative h-full rounded-none rounded-tr-3xl rounded-bl-3xl border border-slate-200 bg-white p-6 shadow-sm transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900"
+				>
+					<button
+						type="button"
+						class="flex h-full w-full flex-col items-start text-left"
+						data-project-id={project.slug}
+						data-project-url={project.url}
+						data-password-protected={project.passwordProtected}
+						data-project-password={project.passwordProtected ? projectPasswords[project.slug] : ""}
+					>
+						<span class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+							{project.title}
+						</span>
+						<span class="mt-3 text-sm italic text-slate-600 transition-colors duration-200 group-hover:text-slate-800 dark:text-slate-300 dark:group-hover:text-slate-100">
+							{project.description}
+						</span>
+						<span class="mt-6 inline-flex items-center text-sm font-medium text-blue-600 transition-colors duration-200 group-hover:text-blue-500 dark:text-blue-400 dark:group-hover:text-blue-300">
+							{project.passwordProtected ? "Enter password to view" : "View project"}
+							<svg
+								class="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M10.293 3.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L13.586 10H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 010-1.414z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</span>
+					</button>
+				</article>
+			))}
+		</div>
 	</section>
+
+	<script is:inline>
+		document.querySelectorAll("[data-project-id]").forEach((button) => {
+			const expectedPassword = button.dataset.projectPassword;
+
+			button.addEventListener("click", () => {
+				const projectId = button.dataset.projectId;
+				const projectUrl = button.dataset.projectUrl;
+				const isProtected = button.dataset.passwordProtected === "true";
+
+				if (isProtected) {
+					const attempt = window.prompt("Enter password to access this project:");
+
+					if (attempt === null) {
+						return;
+					}
+
+					if (attempt === expectedPassword) {
+						if (projectUrl) {
+							window.location.href = projectUrl;
+						}
+					} else {
+						window.alert("Incorrect password. Please try again later.");
+					}
+				} else if (projectUrl) {
+					window.location.href = projectUrl;
+				}
+			});
+		});
+	</script>
 </PageLayout>
