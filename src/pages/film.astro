@@ -27,7 +27,7 @@ const galleryImages = Object.entries(filmModules)
 <PageLayout meta={{ title: "Film Photography" }}>
 	<section>
 		<h1 class="title mb-6">Film Photography</h1>
-		<p class="mb-8 text-gray-600 dark:text-gray-400">A growing gallery of scans from my 35mm and 120 rolls—check back often for new additions.</p>
+		<p class="mb-8 text-gray-600 dark:text-gray-400">A selection of my pictures from near and far. Mostly using Nikon F5 and Nikon FA.</p>
 		{galleryImages.length === 0 ? (
 			<p class="italic text-gray-600 dark:text-gray-400">No film photos yet—fresh scans are on their way.</p>
 		) : (
@@ -89,6 +89,7 @@ const galleryImages = Object.entries(filmModules)
 			activeImg.setAttribute("src", src);
 			activeImg.setAttribute("alt", alt);
 			lightbox.classList.remove("hidden");
+			lightbox.classList.add("flex");
 			lightbox.setAttribute("aria-hidden", "false");
 			document.body.style.overflow = "hidden";
 			window.setTimeout(() => closeBtn?.focus(), 0);
@@ -98,6 +99,7 @@ const galleryImages = Object.entries(filmModules)
 			if (!activeImg) return;
 			activeImg.removeAttribute("src");
 			activeImg.setAttribute("alt", "");
+			lightbox.classList.remove("flex");
 			lightbox.classList.add("hidden");
 			lightbox.setAttribute("aria-hidden", "true");
 			document.body.style.overflow = "";

@@ -10,15 +10,17 @@ import headshot from "@/assets/anton.jpg";
 	<section>
 		<h1 class="title mb-12">Welcome!</h1>
 
-<Image
-  src={headshot}
-  alt="Portrait of Anton Grahed"
-  width={600}          /* generate a large source for retina */
-  height={600}
-  loading="eager"
-  decoding="async"
-  class="mb-6 w-[260px] h-auto"
-/>
+<div class="mb-8 max-w-sm">
+	<Image
+		src={headshot}
+		alt="Portrait of Anton Grahed"
+		width={600}
+		height={600}
+		loading="eager"
+		decoding="async"
+		class="h-auto w-full rounded-lg shadow-md transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-xl"
+	/>
+</div>
 
 		<p class="mb-4">
 			Hi, I’m Anton Grahed! I work as a Research Analyst for the Office of the Chief Economist (OCE) at the European Bank for Reconstruction and Development. Passionate about development economics, economic growth, dataviz, and stamps.  
