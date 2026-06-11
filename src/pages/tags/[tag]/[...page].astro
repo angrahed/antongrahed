@@ -52,28 +52,42 @@ const paginationProps = {
 ---
 
 <PageLayout meta={meta}>
-	<nav class="mb-8" aria-label="Breadcrumbs">
-		<ul class="flex items-center">
-			<li class="flex items-center">
-				<a class="text-accent" href="/tags/">Tags</a>
-				<Icon aria-hidden="true" name="mdi:chevron-right" class="mx-1.5" />
-			</li>
-			<li aria-current="page" class=""><span aria-hidden="true">#</span>{tag}</li>
-		</ul>
-	</nav>
-	<h1 class="title capitalize">{tagMeta?.data.title ?? `Posts about ${tag}`}</h1>
-	<div class="prose prose-sm prose-cactus mb-16 max-w-none">
-		{tagMeta?.data.description && <p>{tagMeta.data.description}</p>}
-		{TagContent && <TagContent />}
-	</div>
-	<ul class="space-y-4">
-		{
-			page.data.map((p) => (
-				<li class="gap-1 sm:grid-cols-[auto_1fr] grid">
-					<PostPreview as="h2" post={p} />
-				</li>
-			))
-		}
-	</ul>
-	<Pagination {...paginationProps} />
+	<section class="border-border border-b">
+		<div class="shell py-16 md:py-24">
+			<nav aria-label="Breadcrumbs" class="reveal">
+				<ul class="eyebrow flex items-center">
+					<li class="flex items-center">
+						<a class="hover:text-link transition-colors duration-100" href="/tags/">Tags</a>
+						<Icon aria-hidden="true" name="mdi:chevron-right" class="mx-1.5 h-4 w-4" />
+					</li>
+					<li aria-current="page"><span aria-hidden="true">#</span>{tag}</li>
+				</ul>
+			</nav>
+			<h1 class="title reveal mt-4 capitalize [animation-delay:80ms]">
+				{tagMeta?.data.title ?? `Posts about ${tag}`}
+			</h1>
+			{
+				(tagMeta?.data.description || TagContent) && (
+					<div class="prose reveal mt-6 max-w-[40rem] [animation-delay:160ms]">
+						{tagMeta?.data.description && <p>{tagMeta.data.description}</p>}
+						{TagContent && <TagContent />}
+					</div>
+				)
+			}
+		</div>
+	</section>
+	<section>
+		<div class="shell py-16 md:py-24">
+			<ul class="max-w-[42rem]">
+				{
+					page.data.map((p) => (
+						<li class="border-border grid gap-1 border-t py-4 sm:grid-cols-[auto_1fr]">
+							<PostPreview as="h2" post={p} />
+						</li>
+					))
+				}
+			</ul>
+			<Pagination {...paginationProps} />
+		</div>
+	</section>
 </PageLayout>

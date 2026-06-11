@@ -2,7 +2,17 @@
 import { WEBMENTION_PINGBACK, WEBMENTION_URL } from "astro:env/client";
 import { siteConfig } from "@/site.config";
 import type { SiteMeta } from "@/types";
+import "@fontsource/ibm-plex-sans/300.css";
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/400-italic.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-serif/400.css";
+import "@fontsource/ibm-plex-serif/400-italic.css";
 import "@/styles/global.css";
+import plexSans300 from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-300-normal.woff2?url";
+import plexSans400 from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url";
 
 type Props = SiteMeta;
 
@@ -17,6 +27,10 @@ const socialImageURL = new URL(ogImage ? ogImage : "/social-card.png", Astro.url
 <meta charset="utf-8" />
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 <title>{siteTitle}</title>
+
+{/* Preload the above-the-fold IBM Plex cuts (display 300 + body 400) */}
+<link as="font" crossorigin href={plexSans300} rel="preload" type="font/woff2" />
+<link as="font" crossorigin href={plexSans400} rel="preload" type="font/woff2" />
 
 {/* Icons */}
 <link href="/icon.svg" rel="icon" type="image/svg+xml" />
@@ -71,7 +85,6 @@ const socialImageURL = new URL(ogImage ? ogImage : "/social-card.png", Astro.url
 
 {/* RSS auto-discovery */}
 <link href="/rss.xml" title="Blog" rel="alternate" type="application/rss+xml" />
-<link href="/notes/rss.xml" title="Notes" rel="alternate" type="application/rss+xml" />
 
 {/* Webmentions */}
 {

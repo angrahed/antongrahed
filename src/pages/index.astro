@@ -1,30 +1,105 @@
 ---
-import SocialList from "@/components/SocialList.astro";
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import headshot from "@/assets/anton.jpg";
 import PageLayout from "@/layouts/Base.astro";
 
-import { Image } from "astro:assets";
-import headshot from "@/assets/anton.jpg";
+const tiles = [
+	{
+		description: "Career, education, and the interests in between.",
+		href: "/about/",
+		num: "01",
+		title: "About",
+	},
+	{
+		description: "Research tools and data explorations.",
+		href: "/projects/",
+		num: "02",
+		title: "Projects",
+	},
+	{
+		description: "A rolling selection from my negatives.",
+		href: "/film/",
+		num: "03",
+		title: "Film",
+	},
+	{
+		description: "Very small graphic design, 1840–present.",
+		href: "/stamps/",
+		num: "04",
+		title: "Stamps",
+	},
+];
 ---
 
 <PageLayout meta={{ title: "Home" }}>
-	<section>
-		<h1 class="title mb-12">Welcome!</h1>
+	<section class="py-16 md:py-24">
+		<div class="shell grid items-start gap-x-8 gap-y-12 lg:grid-cols-12">
+			<div class="lg:col-span-7">
+				<p class="eyebrow reveal">Research Analyst · EBRD — Office of the Chief Economist</p>
+				<h1 class="display-1 reveal mt-6 [animation-delay:80ms]">
+					Why some economies <strong class="font-semibold">grow</strong> — and why others
+					<strong class="font-semibold">stall</strong><span class="text-accent">.</span>
+				</h1>
+				<p class="lead reveal text-text-secondary mt-8 max-w-[36rem] [animation-delay:160ms]">
+					I'm Anton Grahed — an economist at the European Bank for Reconstruction and Development,
+					working on development, growth, and economic history. Off the clock: film photography and
+					stamps.
+				</p>
+				<div class="reveal mt-12 flex flex-wrap gap-px [animation-delay:240ms]">
+					<a class="btn-primary min-w-44" href="/about/">
+						About me
+						<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
+					</a>
+					<a class="btn-ghost" href="/projects/">
+						View projects
+						<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
+					</a>
+				</div>
+			</div>
+			<div class="reveal lg:col-span-5 [animation-delay:320ms]">
+				<Image
+					alt="Portrait of Anton Grahed"
+					class="aspect-square h-auto w-full object-cover"
+					decoding="async"
+					loading="eager"
+					src={headshot}
+					width={800}
+					height={800}
+				/>
+				<p class="eyebrow mt-3">Portrait · 35mm</p>
+			</div>
+		</div>
+	</section>
 
-<div class="mb-8 max-w-sm">
-	<Image
-		src={headshot}
-		alt="Portrait of Anton Grahed"
-		width={600}
-		height={600}
-		loading="eager"
-		decoding="async"
-		class="h-auto w-full rounded-lg shadow-md transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-xl"
-	/>
-</div>
-
-		<p class="mb-4">
-			Hi, I’m Anton Grahed! I work as a Research Analyst for the Office of the Chief Economist (OCE) at the European Bank for Reconstruction and Development. Passionate about development economics, economic growth, dataviz, and stamps.  
-		</p>
-		<SocialList />
+	<section class="border-border bg-surface border-t">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow">01 — Index</p>
+			<h2 class="heading-3 mt-4">Explore.</h2>
+			<div class="bg-border mt-10 grid gap-px sm:grid-cols-2 lg:grid-cols-4">
+				{
+					tiles.map((tile) => (
+						<a
+							class="group bg-global-bg hover:bg-surface-hover ease-productive flex min-h-52 flex-col justify-between p-6 transition-colors duration-100"
+							href={tile.href}
+						>
+							<div>
+								<p class="text-text-secondary font-mono text-xs">{tile.num}</p>
+								<p class="mt-3 text-xl">{tile.title}</p>
+							</div>
+							<div class="mt-8 flex items-end justify-between gap-4">
+								<p class="text-text-secondary text-sm">{tile.description}</p>
+								<Icon
+									aria-hidden="true"
+									class="ease-productive group-hover:text-link h-5 w-5 shrink-0 transition-all duration-100 group-hover:translate-x-1"
+									focusable="false"
+									name="mdi:arrow-right"
+								/>
+							</div>
+						</a>
+					))
+				}
+			</div>
+		</div>
 	</section>
 </PageLayout>

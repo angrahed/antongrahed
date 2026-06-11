@@ -27,12 +27,19 @@ const readingTime: string = remarkPluginFrontmatter.readingTime;
 		title,
 	}}
 >
-	<article class="grow break-words" data-pagefind-body>
-		<div id="blog-hero" class="mb-12"><Masthead content={post} readingTime={readingTime} /></div>
-		<div class="flex flex-col gap-10 lg:flex-row lg:items-start">
+	<article class="break-words" data-pagefind-body>
+		<div class="border-border border-b" id="blog-hero">
+			<div class="shell py-16 md:py-24">
+				<Masthead content={post} readingTime={readingTime} />
+			</div>
+		</div>
+		<div class="shell grid gap-x-8 gap-y-10 py-16 md:py-24 lg:grid-cols-12">
 			{!!headings.length && <TOC headings={headings} />}
 			<div
-				class="prose prose-sm prose-headings:font-semibold prose-headings:text-accent-2 prose-headings:before:absolute prose-headings:before:-ms-4 prose-headings:before:text-gray-600 prose-headings:hover:before:text-accent sm:prose-headings:before:content-['#'] sm:prose-th:before:content-none"
+				class:list={[
+					"prose min-w-0 max-w-[42rem] lg:col-span-8",
+					!!headings.length && "lg:col-start-5",
+				]}
 			>
 				<slot />
 				<WebMentions />
@@ -40,18 +47,18 @@ const readingTime: string = remarkPluginFrontmatter.readingTime;
 		</div>
 	</article>
 	<button
-		class="hover:border-link fixed end-4 bottom-8 z-90 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all transition-discrete duration-300 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:h-12 sm:w-12 dark:bg-zinc-700"
+		class="border-border bg-global-bg hover:bg-surface ease-productive fixed end-4 bottom-8 z-90 flex h-12 w-12 translate-y-28 cursor-pointer items-center justify-center border opacity-0 transition-all duration-300 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8"
 		data-show="false"
 		id="to-top-btn"
 	>
 		<span class="sr-only">Back to top</span>
 		<svg
 			aria-hidden="true"
-			class="h-6 w-6"
+			class="h-5 w-5"
 			fill="none"
 			focusable="false"
 			stroke="currentColor"
-			stroke-width="2"
+			stroke-width="1.5"
 			viewBox="0 0 24 24"
 			xmlns="http://www.w3.org/2000/svg"
 		>

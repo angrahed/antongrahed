@@ -1,42 +1,32 @@
 ---
-import { Icon } from "astro-icon/components";
-
-/** 
-	Uses https://www.astroicon.dev/getting-started/
-	Find icons via guide: https://www.astroicon.dev/guides/customization/#open-source-icon-sets
-	Only installed pack is: @iconify-json/mdi
+/**
+	Social links rendered as IBM-style mono arrow links.
 */
 const socialLinks: {
 	friendlyName: string;
 	isWebmention?: boolean;
 	link: string;
-	name: string;
 }[] = [
 	{
-		friendlyName: "Github",
+		friendlyName: "GitHub",
 		link: "https://github.com/angrahed",
-		name: "mdi:github",
 	},
 ];
 ---
 
-<div class="flex flex-wrap items-end gap-x-2">
-	<p>Find me on</p>
-	<ul class="flex flex-1 items-center gap-x-2 sm:flex-initial">
-		{
-			socialLinks.map(({ friendlyName, isWebmention, link, name }) => (
-				<li class="flex">
-					<a
-						class="hover:text-link inline-block"
-						href={link}
-						rel={`noreferrer ${isWebmention ? "me authn" : ""}`}
-						target="_blank"
-					>
-						<Icon aria-hidden="true" class="h-8 w-8" focusable="false" name={name} />
-						<span class="sr-only">{friendlyName}</span>
-					</a>
-				</li>
-			))
-		}
-	</ul>
-</div>
+<ul class="flex flex-wrap items-center gap-x-6">
+	{
+		socialLinks.map(({ friendlyName, isWebmention, link }) => (
+			<li class="flex">
+				<a
+					class="eyebrow ease-productive hover:text-link transition-colors duration-100"
+					href={link}
+					rel={`noreferrer ${isWebmention ? "me authn" : ""}`}
+					target="_blank"
+				>
+					{friendlyName}&nbsp;↗
+				</a>
+			</li>
+		))
+	}
+</ul>

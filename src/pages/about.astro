@@ -1,20 +1,143 @@
 ---
+import { Icon } from "astro-icon/components";
 import PageLayout from "@/layouts/Base.astro";
 
 const meta = {
-	description: "I'm a starter theme for Astro.build",
+	description:
+		"Anton Grahed — economist at the EBRD. Background, education, and research interests.",
 	title: "About",
 };
+
+const sections = [
+	{ id: "work", num: "01", title: "Work" },
+	{ id: "education", num: "02", title: "Education" },
+	{ id: "interests", num: "03", title: "Interests" },
+	{ id: "elsewhere", num: "04", title: "Elsewhere" },
+];
+
+const facts = [
+	{ label: "Office of the Chief Economist", value: "EBRD" },
+	{ label: "BSc + MSc Economics", value: "LSE" },
+];
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-12">About</h1>
-	<div class="prose prose-sm prose-cactus max-w-none">
-		<p>
-			Hi! My name is Anton Grahed. I currently work as a Research Analyst in the Office of the Chief Economist (OCE) at the European Bank for Reconstruction and Development (EBRD). I have a BSc and an MSc in Economics from the London School of Economics (LSE). 
-		</p>
-		<p>
-			I have broad interests across economics, but I’m especially drawn to twentieth-century economic history, the causes and conditions for growth, international economics, migration, the Nordic model, and how communism shaped Eastern Europe’s later development.
-		</p>
-	</div>
+	<section class="border-border border-b">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow reveal">Anton Grahed</p>
+			<h1 class="title reveal mt-4 [animation-delay:80ms]">About</h1>
+			<p class="lead reveal text-text-secondary mt-6 max-w-[40rem] [animation-delay:160ms]">
+				Research Analyst in the Office of the Chief Economist at the European Bank for
+				Reconstruction and Development. BSc and MSc in Economics from the London School of
+				Economics.
+			</p>
+		</div>
+	</section>
+
+	<section>
+		<div class="shell grid gap-x-8 gap-y-12 py-16 md:py-24 lg:grid-cols-12">
+			<nav aria-label="Section index" class="lg:col-span-4">
+				<ul class="lg:sticky lg:top-24">
+					{
+						sections.map((section) => (
+							<li class="border-border border-t">
+								<a
+									class="ease-productive text-text-secondary hover:text-link flex items-baseline gap-4 py-3 font-mono text-xs tracking-[0.1em] uppercase transition-colors duration-100"
+									href={`#${section.id}`}
+								>
+									<span>{section.num}</span>
+									{section.title}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+			<div class="max-w-[42rem] space-y-14 lg:col-span-8">
+				<div>
+					<p class="eyebrow">Abstract</p>
+					<div class="prose prose-cactus mt-4 max-w-none">
+						<p>
+							Hi! My name is Anton Grahed. I currently work as a Research Analyst in the Office of
+							the Chief Economist (OCE) at the European Bank for Reconstruction and Development
+							(EBRD). I have a BSc and an MSc in Economics from the London School of Economics
+							(LSE).
+						</p>
+					</div>
+				</div>
+				<div id="work">
+					<p class="eyebrow">01 — Work</p>
+					<div class="prose prose-cactus mt-4 max-w-none">
+						<p>
+							As a Research Analyst in the Office of the Chief Economist, I support the Bank's
+							applied research on development economics and economic growth, with a particular
+							focus on the data work and visualisation that underpin it.
+						</p>
+					</div>
+				</div>
+				<div id="education">
+					<p class="eyebrow">02 — Education</p>
+					<div class="prose prose-cactus mt-4 max-w-none">
+						<p>
+							I hold a BSc and an MSc in Economics from the London School of Economics and
+							Political Science.
+						</p>
+					</div>
+				</div>
+				<div id="interests">
+					<p class="eyebrow">03 — Interests</p>
+					<div class="prose prose-cactus mt-4 max-w-none">
+						<p>
+							I have broad interests across economics, but I'm especially drawn to
+							twentieth-century economic history, the causes and conditions for growth,
+							international economics, migration, the Nordic model, and how communism shaped
+							Eastern Europe's later development.
+						</p>
+					</div>
+				</div>
+				<div id="elsewhere">
+					<p class="eyebrow">04 — Elsewhere</p>
+					<div class="prose prose-cactus mt-4 max-w-none">
+						<p>
+							Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
+							Olympus Mju II, and collect stamps. Both are documented on this site, under
+							<a href="/film/">Film</a> and <a href="/stamps/">Stamps</a>.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="border-border bg-surface border-t">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow">02 — At a glance</p>
+			<div class="bg-border mt-10 grid max-w-2xl gap-px sm:grid-cols-2">
+				{
+					facts.map((fact) => (
+						<div class="bg-global-bg flex min-h-36 flex-col justify-between p-6">
+							<p class="text-[2rem] leading-tight font-light">{fact.value}</p>
+							<p class="eyebrow mt-6">{fact.label}</p>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<section class="border-border border-t">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow">03 — Contact</p>
+			<h2 class="heading-3 mt-4">Get in touch.</h2>
+			<div class="mt-10 flex flex-wrap gap-px">
+				<a class="btn-primary min-w-44" href="mailto:an.grahed@gmail.com">
+					Email me
+					<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
+				</a>
+				<a class="btn-ghost" href="https://github.com/angrahed" rel="noreferrer" target="_blank">
+					GitHub&nbsp;↗
+				</a>
+			</div>
+		</div>
+	</section>
 </PageLayout>

@@ -7,19 +7,22 @@ interface Props {
 }
 
 const { nextUrl, prevUrl } = Astro.props;
+
+const paginatorLink =
+	"ease-productive hover:text-link inline-flex items-center gap-2 py-2 font-mono text-xs uppercase tracking-[0.1em] transition-colors duration-100";
 ---
 
 {
 	(prevUrl || nextUrl) && (
-		<nav class="mt-8 flex items-center gap-x-4">
+		<nav class="border-border mt-8 flex items-center gap-x-4 border-t pt-4">
 			{prevUrl && (
-				<a class="hover:text-accent me-auto py-2" href={prevUrl.url}>
+				<a class={`${paginatorLink} me-auto`} href={prevUrl.url}>
 					{prevUrl.srLabel && <span class="sr-only">{prevUrl.srLabel}</span>}
 					{prevUrl.text ? prevUrl.text : "Previous"}
 				</a>
 			)}
 			{nextUrl && (
-				<a class="hover:text-accent ms-auto py-2" href={nextUrl.url}>
+				<a class={`${paginatorLink} ms-auto`} href={nextUrl.url}>
 					{nextUrl.srLabel && <span class="sr-only">{nextUrl.srLabel}</span>}
 					{nextUrl.text ? nextUrl.text : "Next"}
 				</a>

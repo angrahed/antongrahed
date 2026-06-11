@@ -1,14 +1,16 @@
 ---
+import { Icon } from "astro-icon/components";
 import PageLayout from "@/layouts/Base.astro";
 
 const projects = [
 	{
-		title: "Scandinavian Statistical Office Portal",
 		description:
 			"A Shiny app using the pxweb package facilitating easy download and visualisation of data from Scandinavian statistical offices.",
-			url: "/projects/scandinavian-statistical-office-portal",
-		slug: "scandinavian-statistical-office-portal",
 		passwordProtected: true,
+		slug: "scandinavian-statistical-office-portal",
+		tech: "Shiny · R · pxweb",
+		title: "Scandinavian Statistical Office Portal",
+		url: "/projects/scandinavian-statistical-office-portal",
 	},
 ];
 
@@ -19,82 +21,187 @@ const projectPasswords: Record<string, string> = {
 ---
 
 <PageLayout meta={{ title: "Projects" }}>
-	<section class="space-y-8">
-		<div class="space-y-6">
-			<h1 class="title">Projects</h1>
-			<p class="text-gray-600 dark:text-gray-400">
-				A curated selection of the research projects and data explorations I’ve worked on. New highlights will
-				be added soon—stay tuned.
+	<section class="border-border border-b">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow reveal">Projects</p>
+			<h1 class="title reveal mt-4 [animation-delay:80ms]">Selected work</h1>
+			<p class="lead reveal text-text-secondary mt-6 max-w-[40rem] [animation-delay:160ms]">
+				Research tools and data explorations, mostly built in R. More on the way.
 			</p>
-		</div>
-
-		<div class="grid gap-6 md:grid-cols-2">
-			{projects.map((project) => (
-				<article
-					class="group relative h-full rounded-none rounded-tr-3xl rounded-bl-3xl border border-slate-200 bg-white p-6 shadow-sm transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900"
-				>
-					<button
-						type="button"
-						class="flex h-full w-full flex-col items-start text-left"
-						data-project-id={project.slug}
-						data-project-url={project.url}
-						data-password-protected={project.passwordProtected}
-						data-project-password={project.passwordProtected ? projectPasswords[project.slug] : ""}
-					>
-						<span class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-							{project.title}
-						</span>
-						<span class="mt-3 text-sm italic text-slate-600 transition-colors duration-200 group-hover:text-slate-800 dark:text-slate-300 dark:group-hover:text-slate-100">
-							{project.description}
-						</span>
-						<span class="mt-6 inline-flex items-center text-sm font-medium text-blue-600 transition-colors duration-200 group-hover:text-blue-500 dark:text-blue-400 dark:group-hover:text-blue-300">
-							{project.passwordProtected ? "Enter password to view" : "View project"}
-							<svg
-								class="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M10.293 3.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L13.586 10H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 010-1.414z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</span>
-					</button>
-				</article>
-			))}
 		</div>
 	</section>
 
+	<section class="bg-surface">
+		<div class="shell py-16 md:py-24">
+			<div class="bg-border grid gap-px md:grid-cols-2">
+				{
+					projects.map((project) => (
+						<article class="bg-global-bg hover:bg-surface-hover ease-productive group flex transition-colors duration-100">
+							<button
+								class="flex min-h-64 w-full cursor-pointer flex-col items-start p-6 text-left"
+								data-password-protected={project.passwordProtected}
+								data-project-id={project.slug}
+								data-project-password={
+									project.passwordProtected ? projectPasswords[project.slug] : ""
+								}
+								data-project-title={project.title}
+								data-project-url={project.url}
+								type="button"
+							>
+								<span class="eyebrow">{project.tech}</span>
+								<span class="mt-3 text-xl">{project.title}</span>
+								<span class="text-text-secondary mt-3 text-sm">{project.description}</span>
+								<span class="mt-auto flex w-full items-end justify-between gap-4 pt-8">
+									{project.passwordProtected ? (
+										<>
+											<span class="eyebrow flex items-center gap-2">
+												<Icon
+													aria-hidden="true"
+													class="h-4 w-4"
+													focusable="false"
+													name="mdi:lock-outline"
+												/>
+												Restricted access
+											</span>
+											<Icon
+												aria-hidden="true"
+												class="text-text-secondary h-5 w-5 shrink-0"
+												focusable="false"
+												name="mdi:lock-outline"
+											/>
+										</>
+									) : (
+										<>
+											<span class="eyebrow">View project</span>
+											<Icon
+												aria-hidden="true"
+												class="ease-productive group-hover:text-link h-5 w-5 shrink-0 transition-all duration-100 group-hover:translate-x-1"
+												focusable="false"
+												name="mdi:arrow-right"
+											/>
+										</>
+									)}
+								</span>
+							</button>
+						</article>
+					))
+				}
+				<div class="bg-surface text-text-secondary flex min-h-64 items-center justify-center p-6 text-sm">
+					More projects in the pipeline.
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<dialog
+		aria-labelledby="project-password-title"
+		class="bg-global-bg text-global-text border-border m-auto w-[calc(100%-2rem)] max-w-md border p-0 backdrop:bg-[#161616]/50"
+		id="project-password-dialog"
+	>
+		<form data-password-form novalidate>
+			<div class="flex items-start justify-between gap-4 p-4">
+				<div>
+					<p class="eyebrow" data-dialog-project></p>
+					<h2 class="mt-2 text-base font-semibold" id="project-password-title">
+						This project is password protected
+					</h2>
+				</div>
+				<button
+					aria-label="Close"
+					class="ease-productive hover:bg-surface -mt-2 -mr-2 flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center transition-colors duration-100"
+					data-dialog-close
+					type="button"
+				>
+					<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:close" />
+				</button>
+			</div>
+			<div class="p-4 pt-2 pb-8">
+				<label class="eyebrow block" for="project-password-input">Password</label>
+				<input
+					autocomplete="off"
+					class="bg-surface border-border-strong placeholder:text-text-secondary mt-2 h-12 w-full border-0 border-b px-4 text-sm focus:outline-2 focus:outline-offset-[-2px] focus:outline-[#0f62fe]"
+					id="project-password-input"
+					name="password"
+					type="password"
+				/>
+				<p class="text-error mt-2 hidden font-mono text-xs" data-password-error role="alert">
+					Incorrect password. Try again.
+				</p>
+			</div>
+			<div class="border-border bg-border grid grid-cols-2 gap-px border-t">
+				<button
+					class="bg-surface hover:bg-surface-hover ease-productive flex h-12 cursor-pointer items-center px-4 text-sm transition-colors duration-100"
+					data-dialog-close
+					type="button"
+				>
+					Cancel
+				</button>
+				<button
+					class="ease-productive flex h-12 cursor-pointer items-center justify-between gap-4 bg-[#0f62fe] px-4 text-sm text-white transition-colors duration-100 hover:bg-[#0043ce]"
+					type="submit"
+				>
+					Continue
+					<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
+				</button>
+			</div>
+		</form>
+	</dialog>
+
 	<script is:inline>
-		document.querySelectorAll("[data-project-id]").forEach((button) => {
-			const expectedPassword = button.dataset.projectPassword;
+		(() => {
+			const dialog = document.getElementById("project-password-dialog");
+			if (!dialog) return;
+			const form = dialog.querySelector("[data-password-form]");
+			const input = dialog.querySelector("#project-password-input");
+			const errorEl = dialog.querySelector("[data-password-error]");
+			const projectLabel = dialog.querySelector("[data-dialog-project]");
 
-			button.addEventListener("click", () => {
-				const projectId = button.dataset.projectId;
-				const projectUrl = button.dataset.projectUrl;
-				const isProtected = button.dataset.passwordProtected === "true";
+			let activeUrl = "";
+			let activePassword = "";
 
-				if (isProtected) {
-					const attempt = window.prompt("Enter password to access this project:");
+			const resetState = () => {
+				input.value = "";
+				errorEl.classList.add("hidden");
+				input.classList.remove("border-error");
+			};
 
-					if (attempt === null) {
+			document.querySelectorAll("[data-project-id]").forEach((button) => {
+				button.addEventListener("click", () => {
+					const projectUrl = button.dataset.projectUrl;
+					const isProtected = button.dataset.passwordProtected === "true";
+
+					if (!isProtected) {
+						if (projectUrl) window.location.href = projectUrl;
 						return;
 					}
 
-					if (attempt === expectedPassword) {
-						if (projectUrl) {
-							window.location.href = projectUrl;
-						}
-					} else {
-						window.alert("Incorrect password. Please try again later.");
-					}
-				} else if (projectUrl) {
-					window.location.href = projectUrl;
+					activeUrl = projectUrl ?? "";
+					activePassword = button.dataset.projectPassword ?? "";
+					projectLabel.textContent = button.dataset.projectTitle ?? "";
+					resetState();
+					dialog.showModal();
+					input.focus();
+				});
+			});
+
+			form.addEventListener("submit", (event) => {
+				event.preventDefault();
+				if (input.value === activePassword) {
+					if (activeUrl) window.location.href = activeUrl;
+				} else {
+					errorEl.classList.remove("hidden");
+					input.classList.add("border-error");
+					input.focus();
 				}
 			});
-		});
+
+			dialog.querySelectorAll("[data-dialog-close]").forEach((button) => {
+				button.addEventListener("click", () => dialog.close());
+			});
+
+			dialog.addEventListener("click", (event) => {
+				if (event.target === dialog) dialog.close();
+			});
+		})();
 	</script>
 </PageLayout>

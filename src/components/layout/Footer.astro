@@ -2,26 +2,62 @@
 import { menuLinks, siteConfig } from "@/site.config";
 
 const year = new Date().getFullYear();
+
+const footerLink =
+	"ease-productive text-sm text-[#f4f4f4] transition-colors duration-100 hover:text-[#78a9ff]";
 ---
 
-<footer
-	class="mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top font-semibold text-gray-600 sm:flex-row sm:justify-between sm:text-xs dark:text-gray-400"
->
-	<div class="me-0 sm:me-4">
-		&copy; {siteConfig.author}
-		{year}.<span class="inline-block">&nbsp;🚀&nbsp;{siteConfig.title}</span>
+<footer class="bg-inverse-bg text-inverse-text mt-auto w-full dark:border-t dark:border-[#393939]">
+	<div class="shell py-12 md:py-16">
+		<div class="grid gap-x-8 gap-y-10 lg:grid-cols-12">
+			<div class="lg:col-span-4">
+				<p class="text-xl">
+					{siteConfig.title}<span class="font-semibold text-[#78a9ff]">.</span>
+				</p>
+				<p class="mt-2 text-sm text-[#c6c6c6]">
+					Research Analyst, Office of the Chief Economist — EBRD.
+				</p>
+			</div>
+			<nav aria-labelledby="footer_links" class="lg:col-span-3 lg:col-start-6">
+				<p class="font-mono text-xs tracking-[0.1em] text-[#8d8d8d] uppercase" id="footer_links">
+					Site
+				</p>
+				<ul class="mt-4 space-y-2">
+					{
+						menuLinks.map((link) => (
+							<li>
+								<a class={footerLink} href={link.path}>
+									{link.title}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+			<div class="lg:col-span-4 lg:col-start-9">
+				<p class="font-mono text-xs tracking-[0.1em] text-[#8d8d8d] uppercase">Elsewhere</p>
+				<ul class="mt-4 space-y-2">
+					<li>
+						<a class={footerLink} href="https://github.com/angrahed" rel="noreferrer" target="_blank"
+							>GitHub&nbsp;↗</a
+						>
+					</li>
+					<li>
+						<a class={footerLink} href="mailto:an.grahed@gmail.com">Email&nbsp;↗</a>
+					</li>
+				</ul>
+				<p class="mt-8 font-mono text-xs text-[#8d8d8d]">Built with Astro. Set in IBM Plex.</p>
+			</div>
+		</div>
+		<div
+			class="mt-12 flex flex-col gap-y-2 border-t border-[#393939] pt-4 font-mono text-xs text-[#8d8d8d] sm:flex-row sm:items-center sm:justify-between"
+		>
+			<p>© {year} {siteConfig.title}</p>
+			<a
+				class="ease-productive transition-colors duration-100 hover:text-[#78a9ff]"
+				href="#top"
+				>Back to top ↑</a
+			>
+		</div>
 	</div>
-	<nav
-		aria-labelledby="footer_links"
-		class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500"
-	>
-		<p id="footer_links" class="sr-only">More on this site</p>
-		{
-			menuLinks.map((link) => (
-				<a class="hover:text-global-text px-4 py-2 hover:underline sm:py-0" href={link.path}>
-					{link.title}
-				</a>
-			))
-		}
-	</nav>
 </footer>

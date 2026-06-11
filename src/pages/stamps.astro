@@ -1,10 +1,57 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
+
+const slots = Array.from({ length: 8 }, (_, index) => ({
+	filled: index === 0,
+	label: index === 0 ? "No. 001 — Soon" : `No. ${String(index + 1).padStart(3, "0")}`,
+}));
 ---
 
 <PageLayout meta={{ title: "Stamps" }}>
-	<section class="space-y-6">
-		<h1 class="title">Stamps</h1>
-		<p class="text-gray-600 dark:text-gray-400">Selected favorite stamps from my collection.</p>
+	<section class="border-border border-b">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow reveal">Philately</p>
+			<h1 class="title reveal mt-4 [animation-delay:80ms]">The collection</h1>
+			<p class="lead reveal text-text-secondary mt-6 max-w-[40rem] [animation-delay:160ms]">
+				Selected favourites from my stamp collection — engraving, typography, and very small
+				graphic design.
+			</p>
+		</div>
+	</section>
+
+	<section>
+		<div class="shell py-16 md:py-24">
+			<div class="bg-border grid max-w-4xl grid-cols-2 gap-px sm:grid-cols-4">
+				{
+					slots.map((slot) => (
+						<div
+							class:list={[
+								"relative flex aspect-[3/4] flex-col justify-end p-3",
+								slot.filled ? "bg-[#0f62fe] text-white" : "bg-surface",
+							]}
+						>
+							<span
+								class:list={[
+									"pointer-events-none absolute inset-[6px] border-2 border-dashed",
+									slot.filled ? "border-white/40" : "border-border",
+								]}
+							/>
+							<span
+								class:list={[
+									"font-mono text-xs tracking-[0.1em] uppercase",
+									slot.filled ? "text-white" : "text-text-secondary",
+								]}
+							>
+								{slot.label}
+							</span>
+						</div>
+					))
+				}
+			</div>
+			<p class="text-text-secondary mt-8 text-sm">
+				Cataloguing in progress — the first plates go up later this year. Meanwhile, see the
+				<a class="cactus-link" href="/film/">film gallery</a>.
+			</p>
+		</div>
 	</section>
 </PageLayout>

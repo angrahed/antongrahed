@@ -1,13 +1,41 @@
 ---
+import { Icon } from "astro-icon/components";
 import PageLayout from "@/layouts/Base.astro";
 
 const meta = {
-	description: "Oops! It looks like this page is lost in space!",
-	title: "Oops! You found a missing page!",
+	description: "Page not found.",
+	title: "404 — Page not found",
 };
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-12">404 | Oops something went wrong</h1>
-	<p class="mb-8">Please use the navigation to find your way back</p>
+	<section class="flex min-h-[70vh] flex-col justify-center">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow reveal">Error 404</p>
+			<div class="reveal mt-8 h-1 w-24 bg-[#0f62fe] [animation-delay:80ms]"></div>
+			<h1
+				class="text-accent-2 reveal mt-4 text-[clamp(6rem,18vw,11rem)] leading-none font-light tracking-[-0.02em] [animation-delay:80ms]"
+			>
+				404<span class="text-accent">.</span>
+			</h1>
+			<p class="lead reveal text-text-secondary mt-6 max-w-[36rem] [animation-delay:160ms]">
+				This page doesn't exist — or it's filed under the wrong tab.
+			</p>
+			<div class="reveal mt-12 flex flex-wrap gap-px [animation-delay:240ms]">
+				<a class="btn-primary min-w-44" href="/">
+					Go home
+					<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
+				</a>
+				<button class="btn-ghost cursor-pointer" data-search-trigger type="button">
+					Search the site
+				</button>
+			</div>
+		</div>
+	</section>
 </PageLayout>
+
+<script is:inline>
+	document.querySelector("[data-search-trigger]")?.addEventListener("click", () => {
+		document.querySelector("button[data-open-modal]")?.click();
+	});
+</script>

@@ -12,23 +12,32 @@ const meta = {
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-6">Tags</h1>
-	<ul class="space-y-4">
-		{
-			allTags.map(([tag, val]) => (
-				<li class="flex items-center gap-x-2">
-					<a
-						class="cactus-link inline-block"
-						href={`/tags/${tag}/`}
-						title={`View posts with the tag: ${tag}`}
-					>
-						&#35;{tag}
-					</a>
-					<span class="inline-block">
-						- {val} Post{val > 1 && "s"}
-					</span>
-				</li>
-			))
-		}
-	</ul>
+	<section class="border-border border-b">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow reveal">Writing</p>
+			<h1 class="title reveal mt-4 [animation-delay:80ms]">Tags</h1>
+		</div>
+	</section>
+	<section>
+		<div class="shell py-16 md:py-24">
+			<ul class="max-w-[42rem]">
+				{
+					allTags.map(([tag, val]) => (
+						<li class="border-border flex items-baseline gap-x-3 border-t py-3">
+							<a
+								class="cactus-link font-mono text-sm"
+								href={`/tags/${tag}/`}
+								title={`View posts with the tag: ${tag}`}
+							>
+								&#35;{tag}
+							</a>
+							<span class="text-text-secondary font-mono text-xs tracking-[0.1em] uppercase">
+								{val} Post{val > 1 && "s"}
+							</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</section>
 </PageLayout>

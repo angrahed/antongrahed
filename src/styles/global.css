@@ -6,14 +6,35 @@
 /* use a selector-based strategy for dark mode */
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* you could refactor below to use light-dark(), depending on your target audience */
+/*
+	IBM Carbon-derived design tokens.
+	Light = Carbon White theme, dark = Carbon Gray 100 — values swapped in
+	the [data-theme="dark"] block below, so utilities derived from these
+	names (bg-global-bg, text-accent, …) work in both themes.
+*/
 @theme {
-	--color-global-bg: oklch(98.48% 0 0);
-	--color-global-text: oklch(26.99% 0.0096 235.05);
-	--color-link: oklch(55.44% 0.0431 185.69);
-	--color-accent: oklch(55.27% 0.195 19.06);
-	--color-accent-2: oklch(18.15% 0 0);
-	--color-quote: oklch(55.27% 0.195 19.06);
+	--color-global-bg: #ffffff;
+	--color-global-text: #161616;
+	--color-link: #0f62fe;
+	--color-accent: #0f62fe;
+	--color-accent-2: #161616;
+	--color-quote: #0f62fe;
+	--color-surface: #f4f4f4;
+	--color-surface-hover: #e8e8e8;
+	--color-border: #e0e0e0;
+	--color-border-strong: #8d8d8d;
+	--color-text-secondary: #525252;
+	--color-inverse-bg: #161616;
+	--color-inverse-text: #f4f4f4;
+	--color-error: #da1e28;
+
+	--font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-serif: "IBM Plex Serif", Georgia, serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+	/* Carbon motion tokens */
+	--ease-productive: cubic-bezier(0.2, 0, 0.38, 0.9);
+	--ease-expressive: cubic-bezier(0, 0, 0.3, 1);
 }
 
 @layer base {
@@ -28,17 +49,34 @@
 
 		&[data-theme="dark"] {
 			color-scheme: dark;
-			--color-global-bg: oklch(23.64% 0.0045 248);
-			--color-global-text: oklch(83.54% 0 264);
-			--color-link: oklch(70.44% 0.1133 349);
-			--color-accent: oklch(70.91% 0.1415 163.7);
-			--color-accent-2: oklch(94.66% 0 0);
-			--color-quote: oklch(94.8% 0.106 136.49);
+			--color-global-bg: #161616;
+			--color-global-text: #f4f4f4;
+			--color-link: #78a9ff;
+			--color-accent: #78a9ff;
+			--color-accent-2: #f4f4f4;
+			--color-quote: #78a9ff;
+			--color-surface: #262626;
+			--color-surface-hover: #333333;
+			--color-border: #393939;
+			--color-border-strong: #6f6f6f;
+			--color-text-secondary: #c6c6c6;
+			--color-error: #fa4d56;
 		}
 	}
 
 	:target {
 		scroll-margin-block: 5ex;
+	}
+
+	/* Carbon focus treatment: 2px inset blue outline on everything interactive */
+	:focus-visible {
+		outline: 2px solid var(--color-link);
+		outline-offset: -2px;
+	}
+
+	::selection {
+		background-color: var(--color-link);
+		color: #ffffff;
 	}
 
 	@view-transition {
@@ -56,29 +94,99 @@
 	[data-astro-image="constrained"] {
 		max-width: 100%;
 	}
+
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
 }
 
 @layer components {
 	@import "./components/admonition.css";
 	@import "./components/github-card.css";
 
-	.cactus-link {
-		@apply hover:decoration-link underline underline-offset-2 hover:decoration-2;
+	/* Carbon max-grid wrapper: every band's inner container */
+	.shell {
+		@apply mx-auto w-full max-w-[99rem] px-4 md:px-8;
 	}
 
+	/* mono eyebrow labels: `01 — INDEX`, `ABOUT`, photo captions */
+	.eyebrow {
+		@apply text-text-secondary font-mono text-xs tracking-[0.1em] uppercase;
+	}
+
+	/* display-02 — page titles; the blue full stop is the brand mark */
 	.title {
-		@apply text-accent-2 text-2xl font-semibold;
+		@apply text-accent-2 text-[clamp(2rem,3vw+1rem,3.375rem)] leading-[1.15] font-light tracking-[-0.02em];
+
+		&::after {
+			content: ".";
+			color: var(--color-accent);
+		}
+	}
+
+	/* display-01 — homepage hero only */
+	.display-1 {
+		@apply text-accent-2 text-[clamp(2.625rem,5vw+1rem,4.25rem)] leading-[1.1] font-light tracking-[-0.02em];
+	}
+
+	/* heading-03 — section headings within pages */
+	.heading-3 {
+		@apply text-accent-2 text-[2rem] leading-[1.25] font-light;
+	}
+
+	/* body-large — lead paragraphs under page titles */
+	.lead {
+		@apply text-xl leading-normal font-light;
+	}
+
+	/* Carbon primary button: blue, 48px, wide gap before the arrow */
+	.btn-primary {
+		@apply ease-productive inline-flex h-12 items-center justify-between gap-8 bg-[#0f62fe] pr-4 pl-4 text-sm text-white transition-colors duration-100 hover:bg-[#0043ce];
+	}
+
+	/* Carbon ghost button */
+	.btn-ghost {
+		@apply text-link ease-productive hover:bg-surface inline-flex h-12 items-center gap-2 px-4 text-sm transition-colors duration-100;
+	}
+
+	.cactus-link {
+		@apply ease-productive underline decoration-1 underline-offset-4 transition-colors duration-100;
+
+		@media (hover: hover) {
+			&:hover {
+				color: var(--color-link);
+				text-decoration-color: var(--color-link);
+			}
+		}
+	}
+
+	/* the one orchestrated page-load moment — stagger with [animation-delay:*] */
+	@media (prefers-reduced-motion: no-preference) {
+		.reveal {
+			animation: rise 0.7s var(--ease-expressive) both;
+		}
 	}
 }
 
 @utility prose {
 	--tw-prose-body: var(--color-global-text);
 	--tw-prose-bold: var(--color-global-text);
-	--tw-prose-bullets: var(--color-global-text);
+	--tw-prose-bullets: var(--color-text-secondary);
 	--tw-prose-code: var(--color-global-text);
 	--tw-prose-headings: var(--color-accent-2);
-	--tw-prose-hr: 0.5px dashed #666;
+	--tw-prose-hr: var(--color-border);
 	--tw-prose-links: var(--color-global-text);
-	--tw-prose-quotes: var(--color-quote);
-	--tw-prose-th-borders: #666;
+	--tw-prose-quotes: var(--color-global-text);
+	--tw-prose-quote-borders: var(--color-quote);
+	--tw-prose-captions: var(--color-text-secondary);
+	--tw-prose-th-borders: var(--color-border);
+	--tw-prose-td-borders: var(--color-border);
+	font-family: var(--font-serif);
 }

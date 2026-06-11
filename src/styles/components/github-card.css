@@ -1,5 +1,5 @@
 .github-card {
-	@apply bg-global-text/5 rounded-md px-4 py-3;
+	@apply bg-surface border-border border px-4 py-3;
 
 	.gh-title {
 		@apply relative flex items-center gap-2 text-base;
@@ -61,7 +61,7 @@
 		.gh-title .gh-avatar,
 		.gh-description,
 		.gh-chips span {
-			@apply bg-global-text/50 animate-pulse rounded-xl text-transparent;
+			@apply bg-global-text/50 animate-pulse text-transparent;
 		}
 		.gh-chips span:before {
 			@apply bg-transparent;

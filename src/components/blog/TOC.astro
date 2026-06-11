@@ -12,9 +12,9 @@ const { headings } = Astro.props;
 const toc = generateToc(headings);
 ---
 
-<details open class="lg:sticky lg:top-12 lg:order-2 lg:-me-32 lg:basis-64">
-	<summary class="title hover:marker:text-accent cursor-pointer text-lg">Table of Contents</summary>
-	<nav class="ms-4 lg:w-full">
+<details class="border-border border-t pt-4 lg:sticky lg:top-24 lg:col-span-3 lg:self-start" open>
+	<summary class="eyebrow hover:text-link cursor-pointer">Contents</summary>
+	<nav>
 		<ol class="mt-4">
 			{toc.map((heading) => <TOCHeading heading={heading} />)}
 		</ol>

@@ -3,11 +3,26 @@ import PageLayout from "@/layouts/Base.astro";
 ---
 
 <PageLayout meta={{ title: "Scandinavian Statistical Office Portal" }}>
-	<section class="space-y-6">
-		<h1 class="title">Scandinavian Statistical Office Portal</h1>
-		<p class="text-gray-600 dark:text-gray-400">
-			This preview area is still under construction. Check back soon for interactive content and documentation on
-			the Shiny app that streamlines access to Scandinavian statistical data.
-		</p>
+	<section class="border-border border-b">
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow reveal">Projects · Shiny · R · pxweb</p>
+			<h1 class="title reveal mt-4 [animation-delay:80ms]">
+				Scandinavian Statistical Office Portal
+			</h1>
+			<p class="lead reveal text-text-secondary mt-6 max-w-[40rem] [animation-delay:160ms]">
+				A Shiny app using the pxweb package facilitating easy download and visualisation of data
+				from Scandinavian statistical offices.
+			</p>
+		</div>
+	</section>
+
+	<section>
+		<div class="shell py-16 md:py-24">
+			<p class="eyebrow">Status</p>
+			<p class="text-text-secondary mt-4 max-w-[42rem] text-sm">
+				This preview area is still under construction. Check back soon for interactive content and
+				documentation on the Shiny app that streamlines access to Scandinavian statistical data.
+			</p>
+		</div>
 	</section>
 </PageLayout>
