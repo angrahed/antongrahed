@@ -4,20 +4,18 @@ import PageLayout from "@/layouts/Base.astro";
 
 const projects = [
 	{
+		cta: "View on GitHub",
 		description:
-			"A Shiny app using the pxweb package facilitating easy download and visualisation of data from Scandinavian statistical offices.",
-		passwordProtected: true,
-		slug: "scandinavian-statistical-office-portal",
-		tech: "Shiny · R · pxweb",
-		title: "Scandinavian Statistical Office Portal",
-		url: "/projects/scandinavian-statistical-office-portal",
+			"Harmonize countries in the EBRD style — the same tool in Julia, R, and Stata, from one source of truth.",
+		passwordProtected: false,
+		slug: "ebrdize",
+		tech: "R · Julia · Stata",
+		title: "EBRDize",
+		url: "https://github.com/angrahed/EBRDize",
 	},
 ];
 
-const projectPasswords: Record<string, string> = {
-	"scandinavian-statistical-office-portal":
-		import.meta.env.PUBLIC_SCANDI_PORTAL_PASSWORD ?? "scandi-preview",
-};
+const projectPasswords: Record<string, string> = {};
 ---
 
 <PageLayout meta={{ title: "Projects" }}>
@@ -72,7 +70,7 @@ const projectPasswords: Record<string, string> = {
 										</>
 									) : (
 										<>
-											<span class="eyebrow">View project</span>
+											<span class="eyebrow">{project.cta ?? "View project"}</span>
 											<Icon
 												aria-hidden="true"
 												class="ease-productive group-hover:text-link h-5 w-5 shrink-0 transition-all duration-100 group-hover:translate-x-1"
@@ -171,7 +169,13 @@ const projectPasswords: Record<string, string> = {
 					const isProtected = button.dataset.passwordProtected === "true";
 
 					if (!isProtected) {
-						if (projectUrl) window.location.href = projectUrl;
+						if (projectUrl) {
+							if (/^https?:\/\//.test(projectUrl)) {
+								window.open(projectUrl, "_blank", "noopener,noreferrer");
+							} else {
+								window.location.href = projectUrl;
+							}
+						}
 						return;
 					}
 
