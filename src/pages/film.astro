@@ -52,7 +52,7 @@ const galleryImages = await Promise.all(
 			<p class="eyebrow reveal">Film Photography</p>
 			<h1 class="title reveal mt-4 [animation-delay:80ms]">Shot on film</h1>
 			<p class="lead reveal text-text-secondary mt-6 max-w-[40rem] [animation-delay:160ms]">
-				A rolling selection from my negatives — 35mm from near and far, mostly on a Nikon F5,
+				A rolling selection from my negatives. 35mm from near and far, mostly on a Nikon F5,
 				Nikon FA, Nikon FM2N and an Olympus Mju II.
 			</p>
 		</div>
@@ -62,7 +62,7 @@ const galleryImages = await Promise.all(
 		<div class="shell py-16 md:py-24">
 			{
 				galleryImages.length === 0 ? (
-					<p class="text-text-secondary text-sm">No film photos yet — fresh scans are on their way.</p>
+					<p class="text-text-secondary text-sm">No film photos yet. Fresh scans are on their way.</p>
 				) : (
 					<div class="grid gap-x-8 gap-y-16 lg:grid-cols-12">
 						{galleryImages.map(({ alt, caption, date, lightboxSrc, placement, src }) => (

@@ -15,7 +15,7 @@ export const siteConfig: SiteConfig = {
 	},
 	// Used as the default description meta property and webmanifest description
 	description:
-		"Anton Grahed — Research Analyst at the EBRD's Office of the Chief Economist.",
+		"Anton Grahed, Research Analyst at the EBRD's Office of the Chief Economist.",
 	// HTML lang property, found in src/layouts/Base.astro L:18 & astro.config.ts L:48
 	lang: "en-GB",
 	// Meta property, found in src/components/BaseHead.astro L:42
