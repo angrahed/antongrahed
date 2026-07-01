@@ -135,6 +135,14 @@ const galleryImages = await Promise.all(
 		#film-lightbox[aria-hidden="false"] img {
 			animation: lightbox-zoom 240ms var(--ease-expressive) both;
 		}
+
+		[data-film-active] {
+			transition: filter 320ms ease-out;
+		}
+
+		[data-film-active].is-loading {
+			filter: blur(14px);
+		}
 	}
 
 	@keyframes lightbox-zoom {
@@ -152,29 +160,67 @@ const galleryImages = await Promise.all(
 <script>
 	const lightbox = document.getElementById("film-lightbox");
 	if (lightbox) {
-		const activeImg = lightbox.querySelector("[data-film-active]");
+		const activeImg = lightbox.querySelector<HTMLImageElement>("[data-film-active]");
 		const captionEl = lightbox.querySelector("[data-film-lightbox-caption]");
 		const closeBtn = lightbox.querySelector<HTMLButtonElement>("[data-film-close]");
 		const triggers = document.querySelectorAll<HTMLButtonElement>("[data-film-trigger]");
 		let lastFocused: HTMLButtonElement | null = null;
 
-		const open = (src: string, alt: string, caption: string, trigger: HTMLButtonElement) => {
+		// Warm the full-size scan on hover/focus so it is usually ready by click.
+		const preloaded = new Set<string>();
+		const warm = (trigger: HTMLButtonElement) => {
+			const src = trigger.dataset.filmSrc;
+			if (!src || preloaded.has(src)) return;
+			preloaded.add(src);
+			new Image().src = src;
+		};
+
+		const open = (trigger: HTMLButtonElement) => {
 			if (!activeImg) return;
+			const highSrc = trigger.dataset.filmSrc ?? "";
+			const alt = trigger.dataset.filmAlt ?? "";
+			const caption = trigger.dataset.filmCaption ?? "";
+			const thumb = trigger.querySelector<HTMLImageElement>("img");
+			const thumbSrc = thumb?.currentSrc || thumb?.getAttribute("src") || highSrc;
+
 			lastFocused = trigger;
-			activeImg.setAttribute("src", src);
+			activeImg.dataset.target = highSrc;
+
+			// Show the already-decoded grid thumbnail instantly (blurred) so the
+			// panel never opens on a blank frame while the full scan downloads.
+			activeImg.setAttribute("src", thumbSrc);
 			activeImg.setAttribute("alt", alt);
+			activeImg.classList.add("is-loading");
 			if (captionEl) captionEl.textContent = caption;
+
 			lightbox.classList.remove("hidden");
 			lightbox.classList.add("flex");
 			lightbox.setAttribute("aria-hidden", "false");
 			document.body.style.overflow = "hidden";
 			window.setTimeout(() => closeBtn?.focus(), 0);
+
+			if (!highSrc || thumbSrc === highSrc) {
+				activeImg.classList.remove("is-loading");
+				return;
+			}
+
+			// Swap to the full scan once it has fully decoded, then unblur.
+			const full = new Image();
+			full.src = highSrc;
+			const reveal = () => {
+				if (!activeImg || activeImg.dataset.target !== highSrc) return;
+				activeImg.setAttribute("src", highSrc);
+				activeImg.classList.remove("is-loading");
+			};
+			full.decode().then(reveal).catch(reveal);
 		};
 
 		const close = () => {
 			if (!activeImg) return;
+			activeImg.dataset.target = "";
 			activeImg.removeAttribute("src");
 			activeImg.setAttribute("alt", "");
+			activeImg.classList.remove("is-loading");
 			if (captionEl) captionEl.textContent = "";
 			lightbox.classList.remove("flex");
 			lightbox.classList.add("hidden");
@@ -184,12 +230,10 @@ const galleryImages = await Promise.all(
 		};
 
 		triggers.forEach((trigger) => {
-			trigger.addEventListener("click", () => {
-				const src = trigger.dataset.filmSrc;
-				const alt = trigger.dataset.filmAlt ?? "";
-				const caption = trigger.dataset.filmCaption ?? "";
-				if (src) open(src, alt, caption, trigger);
-			});
+			trigger.addEventListener("pointerenter", () => warm(trigger));
+			trigger.addEventListener("focus", () => warm(trigger));
+
+			trigger.addEventListener("click", () => open(trigger));
 
 			trigger.addEventListener("keydown", (event) => {
 				if (event.key === "Enter" || event.key === " ") {
