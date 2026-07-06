@@ -6,6 +6,16 @@ const projects = [
 	{
 		cta: "View on GitHub",
 		description:
+			"A resumable UN Comtrade scraper for unattended targeted scrapes and monthly release monitoring.",
+		passwordProtected: false,
+		slug: "tradescrapr",
+		tech: "Python",
+		title: "tradescrapr",
+		url: "https://github.com/angrahed/tradescrapr",
+	},
+	{
+		cta: "View on GitHub",
+		description:
 			"Harmonize countries in the EBRD style: the same tool in Julia, R, and Stata, from one source of truth.",
 		passwordProtected: false,
 		slug: "ebrdize",
@@ -44,7 +54,7 @@ const projectPasswords: Record<string, string> = {};
 			<p class="eyebrow reveal">Projects</p>
 			<h1 class="title reveal mt-4 [animation-delay:80ms]">Selected work</h1>
 			<p class="lead reveal text-text-secondary mt-6 max-w-[40rem] [animation-delay:160ms]">
-				Research tools and data explorations, mostly built in R. More on the way.
+				Research tools and data explorations, mostly built around economic data.
 			</p>
 		</div>
 	</section>
@@ -104,9 +114,13 @@ const projectPasswords: Record<string, string> = {};
 						</article>
 					))
 				}
-				<div class="bg-surface text-text-secondary flex min-h-64 items-center justify-center p-6 text-sm">
-					More projects in the pipeline.
-				</div>
+				{
+					projects.length % 2 === 1 && (
+						<div class="bg-surface text-text-secondary flex min-h-64 items-center justify-center p-6 text-sm">
+							More projects in the pipeline.
+						</div>
+					)
+				}
 			</div>
 		</div>
 	</section>
