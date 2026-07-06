@@ -4,6 +4,8 @@ import { Icon } from "astro-icon/components";
 import headshot from "@/assets/anton2.jpg";
 import PageLayout from "@/layouts/Base.astro";
 
+const headshotSize = Math.min(headshot.width, headshot.height);
+
 const tiles = [
 	{
 		description: "Career, education, and the interests in between.",
@@ -60,9 +62,10 @@ const tiles = [
 					class="aspect-square h-auto w-full object-cover"
 					decoding="async"
 					loading="eager"
+					quality="max"
 					src={headshot}
-					width={800}
-					height={800}
+					width={headshotSize}
+					height={headshotSize}
 				/>
 				<p class="eyebrow mt-3">Portrait · 35mm</p>
 			</div>

@@ -15,6 +15,8 @@ const spread = [
 	"lg:col-start-3 lg:col-span-7",
 ];
 
+const LIGHTBOX_MAX_WIDTH = 3200;
+
 const galleryImages = await Promise.all(
 	Object.entries(filmModules)
 		.sort(([a], [b]) => a.localeCompare(b))
@@ -30,9 +32,15 @@ const galleryImages = await Promise.all(
 				.trim();
 			const date = hasDate ? `${parts[1]?.padStart(2, "0")}/${parts[0]}` : "";
 			const frame = String(index + 1).padStart(2, "0");
+			const lightboxWidth = Math.min(mod.default.width, LIGHTBOX_MAX_WIDTH);
 
-			// pre-sized lightbox rendition so full-screen view doesn't load multi-MB originals
-			const lightbox = await getImage({ format: "webp", src: mod.default, width: 2000 });
+			// Pre-sized lightbox rendition: high quality, no upscaling smaller scans.
+			const lightbox = await getImage({
+				format: "jpg",
+				quality: "max",
+				src: mod.default,
+				width: lightboxWidth,
+			});
 
 			return {
 				alt: `Film photograph — ${location}`,
@@ -78,7 +86,9 @@ const galleryImages = await Promise.all(
 									alt={alt}
 									class="h-auto w-full"
 									decoding="async"
+									format="jpg"
 									loading="lazy"
+									quality="max"
 									sizes="(min-width: 1024px) 60vw, calc(100vw - 2rem)"
 									src={src}
 									widths={[640, 1024, 1600]}
