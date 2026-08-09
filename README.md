@@ -2,7 +2,7 @@
 
 Personal website of Anton Grahed — economist at the EBRD's Office of the Chief Economist, film photographer, and stamp collector.
 
-The design is inspired by IBM's website and the [Carbon Design System](https://carbondesignsystem.com/): IBM Plex throughout (Sans for the interface, Serif for long-form writing, Mono for labels and captions), IBM Blue `#0f62fe`, sharp corners, hairline rules, and the black footer. Light and dark themes both map onto Carbon's White and Gray 100 palettes.
+The main portfolio is a motion-led editorial design built around IBM Plex, a restrained blue-and-paper palette, a Conway's Game of Life hero, and dedicated film and philately archives. Writing and supporting routes retain the site's original Carbon-inspired shell.
 
 Built on the [Astro Cactus](https://github.com/chrismwilliams/astro-theme-cactus) starter, heavily redesigned.
 
@@ -13,7 +13,7 @@ Built on the [Astro Cactus](https://github.com/chrismwilliams/astro-theme-cactus
 - [IBM Plex](https://www.ibm.com/plex/) — self-hosted via Fontsource
 - [Pagefind](https://pagefind.app) — static search (⌘K), production builds only
 - [Satori](https://github.com/vercel/satori) — Open Graph image generation
-- GitHub Pages via the CI workflow in `.github/workflows/ci.yml`
+- GitHub Actions checks for every push and pull request to `main`
 
 ## Commands
 
@@ -28,7 +28,8 @@ Built on the [Astro Cactus](https://github.com/chrismwilliams/astro-theme-cactus
 
 ## Structure
 
-- `src/pages/` — home, about, projects (password-gated demo), film gallery (lightbox), stamps, 404
+- `src/pages/` — motion-led home, film gallery, stamp catalogue, writing, supporting pages, and 404
+- `src/styles/alternative.css` — the main portfolio, gallery, and catalogue design system
 - `src/styles/global.css` — Carbon-derived design tokens (`--color-*`), IBM Plex font tokens, component classes (`.shell`, `.eyebrow`, `.title`, `.btn-primary`, …)
 - `src/content/` — content collections for posts, notes, and tags (currently empty)
 - `scripts/generate-brand-assets.mjs` — regenerates `public/icon.svg` (AG monogram) and `public/social-card.png` from IBM Plex

@@ -19,6 +19,9 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# Private stamp source photos; metadata-free stamp-*.jpg derivatives are public.
+src/assets/stamps/Photo *.jpg
+
 # misc
 *.pem
 .cache

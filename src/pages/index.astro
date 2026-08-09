@@ -1,105 +1,841 @@
 ---
 import { Image } from "astro:assets";
-import { Icon } from "astro-icon/components";
 import headshot from "@/assets/anton2.jpg";
-import PageLayout from "@/layouts/Base.astro";
+import AlternativeFilmPreview from "@/components/alternative/AlternativeFilmPreview.astro";
+import GameOfLifeHero from "@/components/alternative/GameOfLifeHero.astro";
+import { bookItems } from "@/data/books";
+import { featuredStamps } from "@/data/stamps";
+import AlternativeLayout from "@/layouts/Alternative.astro";
 
-const headshotSize = Math.min(headshot.width, headshot.height);
-
-const tiles = [
+const projects = [
 	{
-		description: "Career, education, and the interests in between.",
-		href: "/about/",
-		num: "01",
-		title: "About",
+		description:
+			"A resumable UN Comtrade scraper for unattended targeted scrapes and monthly release monitoring.",
+		tech: "Python",
+		title: "tradescrapr",
+		url: "https://github.com/angrahed/tradescrapr",
 	},
 	{
-		description: "Research tools and data explorations.",
-		href: "/projects/",
-		num: "02",
-		title: "Projects",
+		description:
+			"A tool for harmonizing countries in the EBRD style across R, Julia, Stata, and Python.",
+		tech: "R · Julia · Stata · Python",
+		title: "EBRDo",
+		url: "https://github.com/angrahed/EBRDo",
 	},
 	{
-		description: "A rolling selection from my negatives.",
-		href: "/film/",
-		num: "03",
-		title: "Film",
+		description:
+			"A Julia port of R's countrycode package: convert between coding schemes and standardize country names.",
+		tech: "Julia",
+		title: "CountryCodes.jl",
+		url: "https://github.com/angrahed/CountryCodes.jl",
 	},
 	{
-		description: "Postage stamps, collected for the design. 1840 to today.",
-		href: "/stamps/",
-		num: "04",
-		title: "Stamps",
+		description:
+			"A Julia client for the World Bank Open Data API: paginated queries as tidy DataFrames, plus cached metadata and local search.",
+		tech: "Julia",
+		title: "WBData.jl",
+		url: "https://github.com/angrahed/WBData.jl",
 	},
 ];
 ---
 
-<PageLayout meta={{ title: "Home" }}>
-	<section class="py-16 md:py-24">
-		<div class="shell grid items-start gap-x-8 gap-y-12 lg:grid-cols-12">
-			<div class="lg:col-span-7">
-				<p class="eyebrow reveal">Economist, EBRD Office of the Chief Economist</p>
-				<h1 class="display-1 reveal mt-6 [animation-delay:80ms]">
-					Working on the economics of transition
-				</h1>
-				<p class="lead reveal text-text-secondary mt-8 max-w-[36rem] [animation-delay:160ms]">
-					Hi, I'm Anton Grahed. I research economic growth, development, and the economic legacy of communism at the European Bank for Reconstruction and Development.
+<AlternativeLayout
+	meta={{
+		description: "The personal portfolio of Anton Grahed, economist at the EBRD.",
+	}}
+>
+	<GameOfLifeHero />
+
+	<section class="alt-section profile-section" id="about">
+		<div class="alt-shell">
+			<div class="section-heading" data-reveal>
+				<p class="alt-kicker">01 · About</p>
+				<h2 class="alt-heading">About</h2>
+				<p class="alt-lead">
+					Research Analyst in the Office of the Chief Economist at the European Bank for
+					Reconstruction and Development. BSc and MSc in Economics from the London School of
+					Economics.
 				</p>
-				<div class="reveal mt-12 flex flex-wrap gap-px [animation-delay:240ms]">
-					<a class="btn-primary min-w-44" href="/about/">
-						About me
-						<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
-					</a>
-					<a class="btn-ghost" href="/projects/">
-						View projects
-						<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
-					</a>
+			</div>
+
+			<div class="profile-layout">
+				<figure class="alt-photo-frame profile-photo" data-reveal>
+					<Image
+						alt="Portrait of Anton Grahed"
+						class="profile-photo__image"
+						decoding="async"
+						loading="lazy"
+						quality="max"
+						sizes="(min-width: 1024px) 36vw, calc(100vw - 2rem)"
+						src={headshot}
+						widths={[480, 720, 960]}
+					/>
+					<figcaption>Portrait · 35mm</figcaption>
+				</figure>
+
+				<div class="alt-console profile-console" data-reveal>
+					<div aria-hidden="true" class="alt-console__bar">
+						<span aria-hidden="true" class="window-dots"><i></i><i></i><i></i></span>
+					</div>
+					<div class="alt-console__body profile-copy">
+						<div>
+							<p class="alt-kicker">Abstract</p>
+							<p>
+								Hi! My name is Anton Grahed. I'm a Research Analyst in the Office of the Chief
+								Economist at the EBRD, and before that I did my BSc and MSc in Economics at the LSE.
+							</p>
+						</div>
+						<div>
+							<p class="alt-kicker">Work</p>
+							<p>
+								As a Research Analyst in the Office of the Chief Economist, I support the Bank's
+								applied research on development economics and growth, mostly through the data work
+								and visualisation behind it.
+							</p>
+						</div>
+						<div>
+							<p class="alt-kicker">Education</p>
+							<p>
+								I did my BSc and MSc in Economics at the London School of Economics and Political
+								Science.
+							</p>
+						</div>
+						<div>
+							<p class="alt-kicker">Interests</p>
+							<p>
+								I have broad interests across economics, but I'm especially drawn to
+								twentieth-century economic history, the causes and conditions for growth,
+								international economics, migration, the Nordic model, and how communism shaped
+								Eastern Europe's later development.
+							</p>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="reveal lg:col-span-5 [animation-delay:320ms]">
-				<Image
-					alt="Portrait of Anton Grahed"
-					class="aspect-square h-auto w-full object-cover"
-					decoding="async"
-					loading="eager"
-					quality="max"
-					src={headshot}
-					width={headshotSize}
-					height={headshotSize}
-				/>
-				<p class="eyebrow mt-3">Portrait · 35mm</p>
+
+			<div class="fact-grid" data-reveal>
+				<div class="alt-card fact-card">
+					<span class="fact-card__value">EBRD</span>
+					<span class="alt-kicker">Office of the Chief Economist</span>
+				</div>
+				<div class="alt-card fact-card fact-card--blue">
+					<span class="fact-card__value">LSE</span>
+					<span class="alt-kicker">BSc + MSc Economics</span>
+				</div>
 			</div>
 		</div>
 	</section>
 
-	<section class="border-border bg-surface border-t">
-		<div class="shell py-16 md:py-24">
-			<p class="eyebrow">01 — Index</p>
-			<h2 class="heading-3 mt-4">Explore.</h2>
-			<div class="bg-border mt-10 grid gap-px sm:grid-cols-2 lg:grid-cols-4">
+	<section class="alt-section alt-section--ink work-section" id="projects">
+		<div class="alt-shell">
+			<div class="section-heading section-heading--split" data-reveal>
+				<div>
+					<p class="alt-kicker">02 · Projects</p>
+					<h2 class="alt-heading">Selected work</h2>
+				</div>
+				<p class="alt-lead">
+					Research tools and data explorations, mostly built around economic data.
+				</p>
+			</div>
+
+			<div class="project-grid">
 				{
-					tiles.map((tile) => (
+					projects.map((project, index) => (
 						<a
-							class="group bg-global-bg hover:bg-surface-hover ease-productive flex min-h-52 flex-col justify-between p-6 transition-colors duration-100"
-							href={tile.href}
+							aria-label={`View ${project.title} on GitHub`}
+							class="project-card"
+							data-reveal
+							href={project.url}
+							rel="noreferrer"
+							target="_blank"
 						>
-							<div>
-								<p class="text-text-secondary font-mono text-xs">{tile.num}</p>
-								<p class="mt-3 text-xl">{tile.title}</p>
-							</div>
-							<div class="mt-8 flex items-end justify-between gap-4">
-								<p class="text-text-secondary text-sm">{tile.description}</p>
-								<Icon
-									aria-hidden="true"
-									class="ease-productive group-hover:text-link h-5 w-5 shrink-0 transition-all duration-100 group-hover:translate-x-1"
-									focusable="false"
-									name="mdi:arrow-right"
-								/>
-							</div>
+							<span class="project-card__top">
+								<span class="project-card__number">{String(index + 1).padStart(2, "0")}</span>
+								<span class="project-card__arrow" aria-hidden="true">
+									↗
+								</span>
+							</span>
+							<span class="alt-kicker">{project.tech}</span>
+							<strong>{project.title}</strong>
+							<span class="project-card__description">{project.description}</span>
+							<span class="project-card__footer">View on GitHub</span>
 						</a>
 					))
 				}
 			</div>
+
+			<div class="writing-panel alt-console" data-reveal>
+				<div class="alt-console__bar">
+					<span>WRITING</span>
+				</div>
+				<div class="alt-console__body writing-panel__body">
+					<div>
+						<p class="alt-kicker">Posts</p>
+						<h3>Writing</h3>
+						<p>Notes on economics, growth, and the things I'm reading and building.</p>
+					</div>
+					<div class="writing-panel__links">
+						<a class="alt-button" href="/posts/">Browse posts <span aria-hidden="true">→</span></a>
+						<a class="alt-button alt-button--ghost" href="/rss.xml">RSS feed</a>
+					</div>
+				</div>
+			</div>
 		</div>
 	</section>
-</PageLayout>
+
+	<section class="alt-section archive-section" id="archive">
+		<div class="alt-shell">
+			<div class="section-heading section-heading--split" data-reveal>
+				<div>
+					<p class="alt-kicker">03 · Film</p>
+					<h2 class="alt-heading">Shot on film</h2>
+				</div>
+				<p class="alt-lead">
+					A rolling selection from my negatives. 35mm from near and far, mostly on a Nikon F5, Nikon
+					FA, Nikon FM2N and an Olympus Mju II.
+				</p>
+			</div>
+
+			<AlternativeFilmPreview />
+
+			<div class="archive-actions" data-reveal>
+				<a class="alt-button" href="/film/">
+					View the film archive <span aria-hidden="true">→</span>
+				</a>
+			</div>
+
+			<div class="stamp-panel" data-reveal>
+				<div class="stamp-panel__copy">
+					<p class="alt-kicker">04 · Philately</p>
+					<h2 class="alt-heading">Selected Stamps</h2>
+					<p class="alt-lead">A collection of my favourite stamps! Will be updated regularly.</p>
+					<a class="alt-button alt-button--ghost" href="/stamps/">
+						Open the collection →
+					</a>
+				</div>
+				<div class="collection-grid" data-alt-stamp-preview>
+					{
+						featuredStamps.map((stamp) => (
+							<a
+								aria-label={`View ${stamp.caption} in the stamp collection`}
+								class="collection-tile"
+								data-alt-stamp-id={stamp.id}
+								data-alt-stamp-preview-item={stamp.id}
+								href={`/stamps/#${stamp.id}`}
+							>
+								<span class="collection-tile__image-frame">
+									<Image
+										alt={stamp.alt}
+										class="collection-tile__image"
+										decoding="async"
+										loading="lazy"
+										quality={85}
+										sizes="(min-width: 64rem) 22vw, (min-width: 44rem) 42vw, 42vw"
+										src={stamp.src}
+										widths={[240, 360, 480, 640]}
+									/>
+								</span>
+								<span class="collection-tile__caption">
+									<span>{stamp.caption}</span>
+									<span aria-hidden="true">↗</span>
+								</span>
+							</a>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section
+		class="alt-section alt-section--paper-deep books-section"
+		data-alt-book-count={bookItems.length}
+		data-alt-book-section
+		id="books"
+	>
+		<div class="alt-shell">
+			<div class="section-heading section-heading--split" data-reveal>
+				<div>
+					<p class="alt-kicker">05 · Reading</p>
+					<h2 class="alt-heading">Favourite books</h2>
+				</div>
+				<p class="alt-lead">Books I've liked and would recommend.</p>
+			</div>
+
+			{
+				bookItems.length === 0 ? (
+					<div class="books-empty" data-alt-book-empty data-reveal role="status">
+						<p class="alt-kicker">No entries yet</p>
+						<p>I haven't added the list yet.</p>
+					</div>
+				) : (
+					<ol aria-label="Favourite books" class="book-list" data-alt-book-list data-reveal>
+						{bookItems.map((book, index) => (
+							<li class="book-card" data-alt-book-id={book.id} data-alt-book-item id={book.id}>
+								<article>
+									<p class="book-card__number">{String(index + 1).padStart(2, "0")}</p>
+									<div>
+										<h3>{book.url ? <a href={book.url}>{book.title}</a> : book.title}</h3>
+										<p class="book-card__byline">
+											{book.author}
+											{book.firstPublished !== undefined && ` · ${book.firstPublished}`}
+										</p>
+										<p class="book-card__note">{book.note}</p>
+									</div>
+								</article>
+							</li>
+						))}
+					</ol>
+				)
+			}
+		</div>
+	</section>
+
+	<section class="alt-section alt-section--azure contact-section" id="contact">
+		<div class="alt-shell contact-layout" data-reveal>
+			<div>
+				<p class="alt-kicker">06 · Contact</p>
+				<h2 class="alt-heading">Get in touch.</h2>
+			</div>
+			<div class="contact-copy">
+				<p>Research Analyst, Office of the Chief Economist, EBRD.</p>
+				<div class="contact-actions">
+					<a class="alt-button" href="mailto:graheda@ebrd.com"
+						>Email me <span aria-hidden="true">→</span></a
+					>
+					<a
+						class="alt-button alt-button--ghost"
+						href="https://github.com/angrahed"
+						rel="noreferrer"
+						target="_blank">GitHub ↗</a
+					>
+				</div>
+			</div>
+		</div>
+	</section>
+</AlternativeLayout>
+
+<style>
+	.section-heading {
+		max-width: 52rem;
+	}
+
+	.profile-section,
+	.work-section,
+	.archive-section,
+	.books-section,
+	.contact-section {
+		padding-block: clamp(4rem, 9vw, 9rem);
+	}
+
+	.section-heading--split {
+		display: grid;
+		max-width: none;
+		gap: 2rem;
+	}
+
+	.profile-layout {
+		display: grid;
+		gap: 1px;
+		margin-top: clamp(2.5rem, 6vw, 5rem);
+		background: var(--alt-line);
+		border: 1px solid var(--alt-line);
+	}
+
+	.profile-photo,
+	.profile-console {
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	.profile-photo {
+		margin: 0;
+		background: var(--alt-paper-raised);
+	}
+
+	.profile-photo__image {
+		display: block;
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		object-position: 50% 36%;
+	}
+
+	.profile-photo figcaption {
+		display: flex;
+		min-height: 2.5rem;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 0.75rem;
+		border-top: 1px solid var(--alt-line);
+		font-family: var(--alt-font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.profile-console {
+		background: var(--alt-paper-raised);
+	}
+
+	.profile-console .alt-console__bar {
+		border-bottom-color: var(--alt-line);
+	}
+
+	.window-dots {
+		display: inline-flex;
+		gap: 0.25rem;
+	}
+
+	.window-dots i {
+		display: block;
+		width: 0.5rem;
+		height: 0.5rem;
+		background: currentColor;
+	}
+
+	.profile-copy {
+		display: grid;
+		gap: 1px;
+		padding: 0;
+		background: var(--alt-line);
+	}
+
+	.profile-copy > div {
+		padding: clamp(1.25rem, 3vw, 2rem);
+		background: var(--alt-paper-raised);
+	}
+
+	.profile-copy p:last-child {
+		max-width: 43rem;
+		margin: 0.75rem 0 0;
+		font-size: clamp(1rem, 1.5vw, 1.125rem);
+		line-height: 1.7;
+	}
+
+	.fact-grid {
+		display: grid;
+		gap: 1px;
+		margin-top: 1px;
+		background: var(--alt-line);
+		border: 1px solid var(--alt-line);
+		border-top: 0;
+	}
+
+	.fact-card {
+		display: flex;
+		min-height: 11rem;
+		flex-direction: column;
+		justify-content: space-between;
+		border: 0;
+		border-radius: 0;
+		background: var(--alt-azure);
+		color: var(--alt-white);
+	}
+
+	.fact-card--blue {
+		background: var(--alt-blue);
+		color: var(--alt-white);
+	}
+
+	.fact-card__value {
+		font-size: clamp(2.5rem, 7vw, 5rem);
+		font-weight: 300;
+		line-height: 1;
+		letter-spacing: -0.05em;
+	}
+
+	.work-section .alt-kicker {
+		color: inherit;
+	}
+
+	.project-grid {
+		display: grid;
+		gap: 1px;
+		margin-top: clamp(2.5rem, 6vw, 5rem);
+		background: color-mix(in srgb, var(--alt-white) 25%, transparent);
+		border: 1px solid color-mix(in srgb, var(--alt-white) 25%, transparent);
+	}
+
+	.project-card {
+		display: flex;
+		min-height: 22rem;
+		flex-direction: column;
+		padding: clamp(1.25rem, 2.5vw, 2rem);
+		background: var(--alt-paper-raised);
+		color: var(--alt-ink);
+		text-decoration: none;
+		transition:
+			transform 180ms ease,
+			background-color 180ms ease;
+	}
+
+	.project-card:hover {
+		position: relative;
+		z-index: 1;
+		background: var(--alt-sky-soft);
+		transform: translateY(-0.375rem);
+	}
+
+	.project-card__top {
+		display: flex;
+		align-items: start;
+		justify-content: space-between;
+		margin-bottom: 3.5rem;
+		font-family: var(--alt-font-mono);
+		font-size: 0.75rem;
+	}
+
+	.project-card__number {
+		display: grid;
+		width: 2rem;
+		height: 2rem;
+		place-items: center;
+		background: var(--alt-ink);
+		color: var(--alt-white);
+	}
+
+	.project-card__arrow {
+		font-size: 1.5rem;
+	}
+
+	.project-card strong {
+		margin-top: 0.75rem;
+		font-size: clamp(1.5rem, 3vw, 2.25rem);
+		font-weight: 400;
+		letter-spacing: -0.035em;
+	}
+
+	.project-card__description {
+		margin-top: 1rem;
+		font-size: 0.9375rem;
+		line-height: 1.6;
+	}
+
+	.project-card__footer {
+		margin-top: auto;
+		padding-top: 2rem;
+		border-top: 1px solid var(--alt-line);
+		font-family: var(--alt-font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.writing-panel {
+		margin-top: clamp(2.5rem, 7vw, 6rem);
+	}
+
+	.writing-panel__body {
+		display: grid;
+		gap: 2rem;
+		background: var(--alt-paper);
+		color: var(--alt-ink);
+	}
+
+	.writing-panel h3 {
+		margin: 0.5rem 0 0;
+		font-size: clamp(2rem, 5vw, 4rem);
+		font-weight: 300;
+		letter-spacing: -0.05em;
+	}
+
+	.writing-panel p:not(.alt-kicker) {
+		max-width: 36rem;
+		line-height: 1.65;
+	}
+
+	.writing-panel__links,
+	.contact-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+
+	.archive-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 1.5rem;
+	}
+
+	.stamp-panel {
+		display: grid;
+		gap: clamp(2rem, 6vw, 5rem);
+		margin-top: clamp(5rem, 12vw, 10rem);
+		padding: clamp(1.5rem, 5vw, 4rem);
+		background: var(--alt-ink);
+		color: var(--alt-white);
+	}
+
+	.stamp-panel__copy .alt-lead {
+		color: inherit;
+	}
+
+	.stamp-panel__copy > .alt-button {
+		margin-top: 2rem;
+	}
+
+	.collection-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		align-self: center;
+	}
+
+	.collection-tile {
+		display: grid;
+		aspect-ratio: 5 / 4;
+		grid-template-rows: minmax(0, 1fr) auto;
+		overflow: hidden;
+		border: 1px solid currentColor;
+		background: var(--alt-paper-raised);
+		box-shadow: 0 1rem 2.5rem rgb(7 26 51 / 18%);
+		color: var(--alt-ink);
+		font-family: var(--alt-font-mono);
+		font-size: 0.625rem;
+		letter-spacing: 0.08em;
+		text-decoration: none;
+		text-transform: uppercase;
+		transition:
+			border-color 180ms ease,
+			transform 180ms ease;
+	}
+
+	.collection-tile:hover,
+	.collection-tile:focus-visible {
+		border-color: var(--alt-azure);
+		transform: translateY(-0.25rem);
+	}
+
+	.collection-tile__image-frame {
+		display: grid;
+		min-height: 0;
+		place-items: center;
+		overflow: hidden;
+		padding: clamp(0.35rem, 1vw, 0.75rem);
+		background: var(--alt-sky-soft);
+	}
+
+	.collection-tile:nth-child(2n) .collection-tile__image-frame {
+		background: var(--alt-sky);
+	}
+
+	.collection-tile__image {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	.collection-tile__caption {
+		display: flex;
+		min-width: 0;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 0.65rem 0.75rem;
+		border-top: 1px solid var(--alt-line);
+	}
+
+	.collection-tile__caption span:first-child {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.books-empty,
+	.book-list {
+		margin-top: clamp(2.5rem, 6vw, 5rem);
+	}
+
+	.books-section .alt-kicker {
+		color: var(--alt-blue);
+	}
+
+	.books-empty {
+		display: grid;
+		min-height: 18rem;
+		align-content: center;
+		gap: 0.75rem;
+		padding: clamp(1.5rem, 4vw, 3rem);
+		border: 1px solid var(--alt-line);
+		background: var(--alt-paper-raised);
+	}
+
+	.books-empty > p:last-child {
+		font-size: clamp(1.25rem, 2.5vw, 2rem);
+		font-weight: 300;
+		letter-spacing: -0.025em;
+	}
+
+	.book-list {
+		display: grid;
+		gap: 1px;
+		border: 1px solid var(--alt-line);
+		background: var(--alt-line);
+		list-style: none;
+	}
+
+	.book-card {
+		min-width: 0;
+		background: var(--alt-paper-raised);
+	}
+
+	.book-card article {
+		display: flex;
+		min-height: 20rem;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 3rem;
+		padding: clamp(1.25rem, 3vw, 2rem);
+	}
+
+	.book-card__number,
+	.book-card__byline {
+		color: var(--alt-ink-muted);
+		font-family: var(--alt-font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.book-card h3 {
+		font-size: clamp(1.5rem, 3vw, 2.25rem);
+		font-weight: 400;
+		letter-spacing: -0.035em;
+		line-height: 1.1;
+	}
+
+	.book-card h3 a {
+		border-bottom: 1px solid currentColor;
+	}
+
+	.book-card h3 a:hover,
+	.book-card h3 a:focus-visible {
+		background: var(--alt-sky);
+	}
+
+	.book-card__byline {
+		margin-top: 0.8rem;
+	}
+
+	.book-card__note {
+		margin-top: 1.5rem;
+		line-height: 1.65;
+	}
+
+	.contact-layout {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.contact-copy {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		justify-content: space-between;
+	}
+
+	.contact-copy p {
+		max-width: 32rem;
+		font-size: clamp(1.125rem, 2vw, 1.5rem);
+		line-height: 1.5;
+	}
+
+	.contact-section .alt-button:not(.alt-button--ghost) {
+		background: var(--alt-paper);
+		color: var(--alt-ink);
+	}
+
+	.contact-section .alt-button:not(.alt-button--ghost):hover {
+		background: var(--alt-sky);
+	}
+
+	:global(html.reveal-ready) [data-reveal] {
+		opacity: 0;
+		transform: translateY(2rem);
+		transition:
+			opacity 600ms cubic-bezier(0.2, 0, 0.2, 1),
+			transform 600ms cubic-bezier(0.2, 0, 0.2, 1);
+	}
+
+	:global(html.reveal-ready) [data-reveal].is-visible {
+		opacity: 1;
+		transform: none;
+	}
+
+	@media (min-width: 44rem) {
+		.section-heading--split {
+			grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.7fr);
+			align-items: end;
+		}
+
+		.fact-grid,
+		.project-grid,
+		.book-list {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.writing-panel__body,
+		.contact-layout {
+			grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+		}
+
+		.stamp-panel {
+			grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 1.1fr);
+		}
+	}
+
+	@media (min-width: 64rem) {
+		.profile-layout {
+			grid-template-columns: minmax(18rem, 0.78fr) minmax(0, 1.22fr);
+		}
+
+		.project-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.book-list {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.collection-tile,
+		.project-card,
+		:global(html.reveal-ready) [data-reveal] {
+			transition: none;
+		}
+
+		.collection-tile:hover,
+		.collection-tile:focus-visible,
+		.project-card:hover,
+		:global(html.reveal-ready) [data-reveal] {
+			opacity: 1;
+			transform: none;
+		}
+	}
+</style>
+
+<script>
+	const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+	if (!motionPreference.matches) {
+		document.documentElement.classList.add("reveal-ready");
+		const reveals = document.querySelectorAll<HTMLElement>("[data-reveal]");
+		const revealObserver = new IntersectionObserver(
+			(entries, observer) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					(entry.target as HTMLElement).classList.add("is-visible");
+					observer.unobserve(entry.target);
+				}
+			},
+			{ rootMargin: "0px 0px -10%", threshold: 0.08 },
+		);
+
+		for (const reveal of reveals) revealObserver.observe(reveal);
+	}
+</script>

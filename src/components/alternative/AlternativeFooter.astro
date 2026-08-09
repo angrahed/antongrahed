@@ -1,0 +1,59 @@
+---
+const year = new Date().getFullYear();
+
+const siteLinks = [
+	{ href: "/", label: "Home" },
+	{ href: "/#about", label: "About" },
+	{ href: "/#projects", label: "Projects" },
+	{ href: "/film/", label: "Film" },
+	{ href: "/stamps/", label: "Stamps" },
+	{ href: "/#books", label: "Books" },
+	{ href: "/posts/", label: "Writing" },
+];
+---
+
+<footer class="alt-footer">
+	<div class="alt-shell alt-footer__grid">
+		<div class="alt-footer__intro">
+			<p class="alt-label alt-label--inverse">Anton Grahed</p>
+			<p class="alt-footer__title">Economic research and data.</p>
+			<p class="alt-footer__copy">Research Analyst, Office of the Chief Economist, EBRD.</p>
+			<p class="alt-footer__copy">
+				This is a personal website maintained by Anton Grahed. Its views, opinions and recommendations
+				are expressed in a personal capacity and do not represent the European Bank for Reconstruction
+				and Development (EBRD).
+			</p>
+		</div>
+
+		<nav aria-label="Footer navigation" class="alt-footer__column">
+			<p class="alt-footer__heading">Site</p>
+			<ul>
+				{
+					siteLinks.map((link) => (
+						<li>
+							<a href={link.href}>{link.label}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<div class="alt-footer__column">
+			<p class="alt-footer__heading">Elsewhere</p>
+			<ul>
+				<li><a href="mailto:graheda@ebrd.com">Email <span aria-hidden="true">↗</span></a></li>
+				<li>
+					<a href="https://github.com/angrahed" rel="noreferrer" target="_blank">
+						GitHub <span aria-hidden="true">↗</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="alt-shell alt-footer__base">
+		<p>© {year} Anton Grahed</p>
+		<p>Built with Astro. Set in IBM Plex.</p>
+		<a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+	</div>
+</footer>
