@@ -25,6 +25,7 @@
 		"@fontsource/ibm-plex-sans": "^5.2.8",
 		"@fontsource/ibm-plex-serif": "^5.2.7",
 		"@tailwindcss/vite": "4.1.11",
+		"@vercel/analytics": "^2.0.1",
 		"astro": "5.10.1",
 		"astro-expressive-code": "^0.41.2",
 		"astro-icon": "^1.1.5",
