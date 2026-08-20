@@ -1,6 +1,11 @@
-import { getAllPosts } from "@/data/post";
-import { siteConfig } from "@/site.config";
 import rss from "@astrojs/rss";
+import type { GetStaticPaths } from "astro";
+import { getAllPosts } from "@/data/post";
+import { siteConfig, siteFeatures } from "@/site.config";
+
+export const getStaticPaths = (() => {
+	return siteFeatures.posts ? [{ params: { rss: "rss" } }] : [];
+}) satisfies GetStaticPaths;
 
 export const GET = async () => {
 	const posts = await getAllPosts();

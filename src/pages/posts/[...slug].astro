@@ -2,10 +2,13 @@
 import { render } from "astro:content";
 import { getAllPosts } from "@/data/post";
 import PostLayout from "@/layouts/BlogPost.astro";
+import { siteFeatures } from "@/site.config";
 import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
 
 // if you're using an adaptor in SSR mode, getStaticPaths wont work -> https://docs.astro.build/en/guides/routing/#modifying-the-slug-example-for-ssr
 export const getStaticPaths = (async () => {
+	if (!siteFeatures.posts) return [];
+
 	const blogEntries = await getAllPosts();
 	return blogEntries.map((post) => ({
 		params: { slug: post.id },

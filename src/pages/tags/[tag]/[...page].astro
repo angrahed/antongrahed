@@ -4,11 +4,14 @@ import Pagination from "@/components/Paginator.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import { getAllPosts, getTagMeta, getUniqueTags } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
+import { siteFeatures } from "@/site.config";
 import { collectionDateSort } from "@/utils/date";
 import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
 import { Icon } from "astro-icon/components";
 
 export const getStaticPaths = (async ({ paginate }) => {
+	if (!siteFeatures.posts) return [];
+
 	const allPosts = await getAllPosts();
 	const sortedPosts = allPosts.sort(collectionDateSort);
 	const uniqueTags = getUniqueTags(sortedPosts);

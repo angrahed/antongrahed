@@ -31,6 +31,13 @@ export const siteConfig: SiteConfig = {
 	url: "https://antongrahed.com",
 };
 
+// Flip a section to `true` to restore its existing navigation and content.
+export const siteFeatures = {
+	books: false,
+	posts: false,
+	stamps: false,
+} as const;
+
 // Used to generate links in both the Header & Footer.
 export const menuLinks: { path: string; title: string }[] = [
 	{
@@ -41,10 +48,14 @@ export const menuLinks: { path: string; title: string }[] = [
 		path: "/about/",
 		title: "About",
 	},
-	{
-		path: "/posts/",
-		title: "Posts",
-	},
+	...(siteFeatures.posts
+		? [
+				{
+					path: "/posts/",
+					title: "Posts",
+				},
+			]
+		: []),
 	{
 		path: "/projects/",
 		title: "Projects",
@@ -53,10 +64,14 @@ export const menuLinks: { path: string; title: string }[] = [
 		path: "/film/",
 		title: "Film",
 	},
-	{
-		path: "/stamps/",
-		title: "Stamps",
-	},
+	...(siteFeatures.stamps
+		? [
+				{
+					path: "/stamps/",
+					title: "Stamps",
+				},
+			]
+		: []),
 ];
 
 // https://expressive-code.com/reference/configuration/

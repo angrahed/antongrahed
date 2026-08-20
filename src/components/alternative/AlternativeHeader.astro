@@ -1,4 +1,6 @@
 ---
+import { siteFeatures } from "@/site.config";
+
 interface NavItem {
 	activePath?: string;
 	href: string;
@@ -13,8 +15,8 @@ const navItems: NavItem[] = [
 	{ href: "/#about", label: "About" },
 	{ href: "/#projects", label: "Projects" },
 	{ activePath: "/film", href: "/film/", label: "Film" },
-	{ activePath: "/stamps", href: "/stamps/", label: "Stamps" },
-	{ href: "/#books", label: "Books" },
+	...(siteFeatures.stamps ? [{ activePath: "/stamps", href: "/stamps/", label: "Stamps" }] : []),
+	...(siteFeatures.books ? [{ href: "/#books", label: "Books" }] : []),
 ];
 ---
 

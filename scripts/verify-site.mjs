@@ -26,27 +26,16 @@ const LIFE_STEP_MS = 420;
 const LIFE_SCENE_COUNT = 6;
 const LIFE_SCENE_LENGTH = 24;
 const LIFE_STATES = new Set(["dead", "newborn", "alive", "mature"]);
-const ROOT_HEADING = "Working on the economics of transition";
-const HOME_ANCHOR_TARGETS = ["about", "projects", "archive", "books", "contact"];
+const ROOT_HEADING = "Working on the economics of transition.";
+const HOME_ANCHOR_TARGETS = ["about", "projects", "archive", "contact"];
 const STAMP_IDS = Array.from(
 	{ length: 42 },
 	(_, index) => `stamp-${String(index + 1).padStart(3, "0")}`,
 );
-const HOME_STAMP_PREVIEWS = [
-	{ href: "/stamps/#stamp-004", id: "stamp-004" },
-	{ href: "/stamps/#stamp-022", id: "stamp-022" },
-	{ href: "/stamps/#stamp-024", id: "stamp-024" },
-	{ href: "/stamps/#stamp-030", id: "stamp-030" },
-];
-const HEADER_HREFS = [
-	"/",
-	"/#about",
-	"/#projects",
-	"/film/",
-	"/stamps/",
-	"/#books",
-];
-const FOOTER_HREFS = [...HEADER_HREFS, "/posts/"];
+const HEADER_HREFS = ["/", "/#about", "/#projects", "/film/"];
+const FOOTER_HREFS = [...HEADER_HREFS];
+const HIDDEN_REDIRECT_PATHS = ["/stamps/", "/posts/", "/tags/"];
+const HIDDEN_NOT_FOUND_PATHS = ["/rss.xml"];
 const SITE_ROUTES = [
 	{
 		activeHref: "/",
@@ -59,12 +48,6 @@ const SITE_ROUTES = [
 		canonicalPath: "/film/",
 		label: "site film",
 		pathname: "/film/",
-	},
-	{
-		activeHref: "/stamps/",
-		canonicalPath: "/stamps/",
-		label: "site stamps",
-		pathname: "/stamps/",
 	},
 ];
 const VIEWPORTS = [
@@ -262,7 +245,12 @@ async function settle(page) {
 function watchPage(page, label) {
 	const errors = [];
 	page.on("console", (message) => {
-		if (message.type() === "error") errors.push(`console: ${message.text()}`);
+		const source = message.location().url;
+		const isExpectedLocalAnalyticsError =
+			message.type() === "error" && source.endsWith("/_vercel/insights/script.js");
+		if (message.type() === "error" && !isExpectedLocalAnalyticsError) {
+			errors.push(`console: ${message.text()}`);
+		}
 	});
 	page.on("pageerror", (error) => errors.push(`page: ${describeError(error)}`));
 	return () =>
@@ -315,6 +303,66 @@ async function checkRoot(browser) {
 	} finally {
 		finishErrorCheck();
 		await page.close();
+	}
+}
+
+async function checkHiddenRoutes(browser) {
+	for (const pathname of HIDDEN_REDIRECT_PATHS) {
+		const page = await browser.newPage();
+		const label = `hidden route ${pathname}`;
+		const finishErrorCheck = watchPage(page, label);
+
+		try {
+			await page.setViewport({ height: 900, width: 1440 });
+			await page.goto(pageUrl(pathname), {
+				timeout: 15_000,
+				waitUntil: "domcontentloaded",
+			});
+			try {
+				await page.waitForFunction(() => window.location.pathname === "/", {
+					polling: 50,
+					timeout: 5_000,
+				});
+			} catch {
+				// The final URL assertion below reports a missing or incorrect redirect.
+			}
+			await settle(page);
+			const state = await page.evaluate(() => ({
+				heading: document.querySelector("main h1, h1")?.textContent?.replace(/\s+/g, " ").trim(),
+				pathname: window.location.pathname,
+			}));
+			report(
+				`${label}: redirects to the site home`,
+				state.pathname === "/" && state.heading === ROOT_HEADING,
+				`final path=${JSON.stringify(state.pathname)}; heading=${JSON.stringify(state.heading)}`,
+			);
+		} catch (error) {
+			report(`${label}: redirect completes`, false, describeError(error));
+		} finally {
+			finishErrorCheck();
+			await page.close();
+		}
+	}
+
+	for (const pathname of HIDDEN_NOT_FOUND_PATHS) {
+		const page = await browser.newPage();
+		const label = `hidden route ${pathname}`;
+
+		try {
+			const response = await page.goto(pageUrl(pathname), {
+				timeout: 15_000,
+				waitUntil: "domcontentloaded",
+			});
+			report(
+				`${label}: is not published`,
+				response?.status() === 404 && page.url() === pageUrl(pathname),
+				`status=${response?.status() ?? "unknown"}; final URL=${JSON.stringify(page.url())}`,
+			);
+		} catch (error) {
+			report(`${label}: hidden-state check completes`, false, describeError(error));
+		} finally {
+			await page.close();
+		}
 	}
 }
 
@@ -549,52 +597,15 @@ async function inspectHome(page) {
 			} catch {
 				storedFilmPreviewIds = [];
 			}
-			const bookSections = [...document.querySelectorAll("#books[data-alt-book-section]")];
-			const bookSection = bookSections[0];
-			const bookItems = bookSection
-				? [...bookSection.querySelectorAll("[data-alt-book-item]")]
-				: [];
-			const bookLists = bookSection
-				? [...bookSection.querySelectorAll("[data-alt-book-list]")]
-				: [];
-			const bookEmptyStates = bookSection
-				? [...bookSection.querySelectorAll('[data-alt-book-empty][role="status"]')]
-				: [];
-			const bookEmptyState = bookEmptyStates[0];
-			const bookEmptyStyle = bookEmptyState ? getComputedStyle(bookEmptyState) : null;
-			const bookEmptyRect = bookEmptyState?.getBoundingClientRect();
-			const bookIds = bookItems.map((item) => item.getAttribute("id")?.trim() ?? "");
+			const hiddenFeatureHrefs = [
+				...document.querySelectorAll(
+					'main a[href="/posts/"], main a[href="/rss.xml"], main a[href="/tags/"], main a[href="/stamps/"], main a[href^="/stamps/#"], main a[href="/#books"]',
+				),
+			].map((link) => link.getAttribute("href") ?? "");
 
 			return {
 				anchorTargets: anchorIds.filter((id) => document.getElementById(id)),
-				bookCount: Number.parseInt(bookSection?.getAttribute("data-alt-book-count") ?? "", 10),
-				bookEmptyCount: bookEmptyStates.length,
-				bookEmptyText: bookEmptyState?.textContent?.replace(/\s+/g, " ").trim() ?? "",
-				bookEmptyVisible: Boolean(
-					bookEmptyStyle &&
-						bookEmptyRect &&
-						bookEmptyStyle.display !== "none" &&
-						bookEmptyStyle.visibility !== "hidden" &&
-						bookEmptyRect.width > 0 &&
-						bookEmptyRect.height > 0,
-				),
-				bookHeading:
-					bookSection?.querySelector("h2")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
-				bookItemCount: bookItems.length,
-				bookItemsValid: bookItems.every((item) => {
-					const id = item.getAttribute("id")?.trim() ?? "";
-					return (
-						/^book-[a-z0-9][a-z0-9-]*$/.test(id) &&
-						item.getAttribute("data-alt-book-id") === id &&
-						Boolean(item.querySelector("h3")?.textContent?.trim()) &&
-						Boolean(item.querySelector(".book-card__byline")?.textContent?.trim()) &&
-						Boolean(item.querySelector(".book-card__note")?.textContent?.trim()) &&
-						bookLists.some((list) => item.closest("ol, ul") === list)
-					);
-				}),
-				bookListCount: bookLists.length,
-				bookSectionCount: bookSections.length,
-				bookUniqueIdCount: new Set(bookIds).size,
+				bookSectionCount: document.querySelectorAll("#books[data-alt-book-section]").length,
 				blueColorCount: blueColors.size,
 				blueLiveCellCount: blueLiveCellColors.length,
 				boardDisplay: boardStyle?.display ?? "",
@@ -642,17 +653,11 @@ async function inspectHome(page) {
 				gridColumns,
 				hasLifeArt: Boolean(lifeArt),
 				hasLifeBoard: Boolean(lifeBoard),
+				hiddenFeatureHrefs,
 				homeFilmCtaCount: document.querySelectorAll('main a[href="/film/"]').length,
 				homeStampsCtaCount: document.querySelectorAll('main a[href="/stamps/"]').length,
-				stampPreviews: stampPreviews.map((preview) => {
-					const link = preview.matches("a[href]")
-						? preview
-						: (preview.closest("a[href]") ?? preview.querySelector("a[href]"));
-					return {
-						href: link?.getAttribute("href") ?? "",
-						id: preview.getAttribute("data-alt-stamp-preview-item")?.trim() ?? "",
-					};
-				}),
+				stampPanelCount: document.querySelectorAll(".stamp-panel").length,
+				stampPreviewCount: stampPreviews.length,
 				invalidStateCount: states.filter((state) => !allowedStates.includes(state)).length,
 				legacyHeroNodeCount: document.querySelectorAll(
 					"[data-abstract-art], [data-abstract-form], [data-motion-layer], [data-scroll-story], .cut-paper, .journey__panorama, .journey__traveller",
@@ -683,6 +688,7 @@ async function inspectHome(page) {
 						toggleRect.height > 0,
 				),
 				validCoordinates,
+				writingPanelCount: document.querySelectorAll(".writing-panel").length,
 			};
 		},
 		{
@@ -698,27 +704,18 @@ async function inspectHome(page) {
 			arraysEqual(structure.sectionIds, HOME_ANCHOR_TARGETS),
 		`found ${structure.anchorTargets.join(", ") || "none"}`,
 	);
-	const booksArePopulated = structure.bookCount > 0;
 	report(
-		"site home: Favourite books reflects its typed collection honestly",
-		structure.bookSectionCount === 1 &&
-			/^favourite books$/i.test(structure.bookHeading) &&
-			Number.isInteger(structure.bookCount) &&
-			structure.bookCount >= 0 &&
-			structure.bookItemCount === structure.bookCount &&
-			structure.bookUniqueIdCount === structure.bookItemCount &&
-			structure.bookItemsValid &&
-			(booksArePopulated
-				? structure.bookListCount === 1 && structure.bookEmptyCount === 0
-				: structure.bookListCount === 0 &&
-					structure.bookEmptyCount === 1 &&
-					structure.bookEmptyVisible &&
-					Boolean(structure.bookEmptyText)),
-		`count=${structure.bookCount}; items=${structure.bookItemCount}; lists=${structure.bookListCount}; empty states=${structure.bookEmptyCount}`,
+		"site home: Books, Writing, and Stamps content is hidden",
+		structure.bookSectionCount === 0 &&
+			structure.writingPanelCount === 0 &&
+			structure.stampPanelCount === 0 &&
+			structure.stampPreviewCount === 0 &&
+			structure.hiddenFeatureHrefs.length === 0,
+		`books=${structure.bookSectionCount}; writing=${structure.writingPanelCount}; stamp panels=${structure.stampPanelCount}; stamp previews=${structure.stampPreviewCount}; hidden links=${structure.hiddenFeatureHrefs.join(", ") || "none"}`,
 	);
 	report(
-		"site home: Film and Stamps calls-to-action stay in the main site",
-		structure.homeFilmCtaCount >= 1 && structure.homeStampsCtaCount >= 1,
+		"site home: Film call-to-action remains while Stamps is hidden",
+		structure.homeFilmCtaCount >= 1 && structure.homeStampsCtaCount === 0,
 		`film=${structure.homeFilmCtaCount}; stamps=${structure.homeStampsCtaCount}`,
 	);
 	report(
@@ -773,15 +770,6 @@ async function inspectHome(page) {
 		"site home: all randomized film previews load with natural dimensions",
 		allFilmPreviewsLoaded && loadedFilmPreviewCount === FILM_PREVIEW_COUNT,
 		`${loadedFilmPreviewCount}/${FILM_PREVIEW_COUNT} loaded`,
-	);
-	const expectedStampPreviews = HOME_STAMP_PREVIEWS.map(({ href, id }) => `${id}:${href}`).sort();
-	const actualStampPreviews = structure.stampPreviews.map(({ href, id }) => `${id}:${href}`).sort();
-	report(
-		"site home: four unique stamp previews link to their catalogue items",
-		structure.stampPreviews.length === HOME_STAMP_PREVIEWS.length &&
-			new Set(structure.stampPreviews.map(({ id }) => id)).size === HOME_STAMP_PREVIEWS.length &&
-			arraysEqual(actualStampPreviews, expectedStampPreviews),
-		actualStampPreviews.join(", ") || "none",
 	);
 	report(
 		"site home: 25x25 Game of Life board exists",
@@ -910,7 +898,8 @@ async function checkKeyboardNavigation(page, label) {
 	report(`${label}: Tab reaches the header navigation`, focusedNavLink);
 }
 
-async function inspectStamps(page) {
+// Kept ready for when the preserved Stamps section is enabled again.
+async function _inspectStamps(page) {
 	const inventory = await page.evaluate(() => {
 		const catalogue = document.querySelector("[data-alt-stamp-catalogue]");
 		const items = catalogue ? [...catalogue.querySelectorAll("[data-alt-stamp-item]")] : [];
@@ -1693,8 +1682,6 @@ async function runDetailedRouteChecks(page, route) {
 		await checkLifeAnimation(page);
 	} else if (route.pathname === "/film/") {
 		await inspectFilm(page);
-	} else if (route.pathname === "/stamps/") {
-		await inspectStamps(page);
 	}
 }
 
@@ -1842,16 +1829,6 @@ async function checkJavaScriptDisabledHome(browser) {
 				const filmIds = filmItems.map(
 					(item) => item.getAttribute("data-alt-film-preview-item")?.trim() ?? "",
 				);
-				const bookSection = document.querySelector("#books[data-alt-book-section]");
-				const bookItems = bookSection
-					? [...bookSection.querySelectorAll("[data-alt-book-item]")]
-					: [];
-				const bookEmptyStates = bookSection
-					? [...bookSection.querySelectorAll('[data-alt-book-empty][role="status"]')]
-					: [];
-				const bookEmptyState = bookEmptyStates[0];
-				const bookEmptyStyle = bookEmptyState ? getComputedStyle(bookEmptyState) : null;
-				const bookEmptyRect = bookEmptyState?.getBoundingClientRect();
 				const states = cells.map(
 					(cell) => cell.getAttribute("data-state")?.trim().toLowerCase() ?? "",
 				);
@@ -1871,18 +1848,7 @@ async function checkJavaScriptDisabledHome(browser) {
 				return {
 					artHidden: art?.getAttribute("aria-hidden") === "true",
 					artText: art?.textContent?.replace(/\s+/g, "") ?? "",
-					bookCount: Number.parseInt(bookSection?.getAttribute("data-alt-book-count") ?? "", 10),
-					bookEmptyCount: bookEmptyStates.length,
-					bookEmptyText: bookEmptyState?.textContent?.replace(/\s+/g, " ").trim() ?? "",
-					bookEmptyVisible: Boolean(
-						bookEmptyStyle &&
-							bookEmptyRect &&
-							bookEmptyStyle.display !== "none" &&
-							bookEmptyStyle.visibility !== "hidden" &&
-							bookEmptyRect.width > 0 &&
-							bookEmptyRect.height > 0,
-					),
-					bookItemCount: bookItems.length,
+					bookSectionCount: document.querySelectorAll("#books[data-alt-book-section]").length,
 					boardSceneCount: Number.parseInt(board?.getAttribute("data-life-scene-count") ?? "", 10),
 					boardSceneLength: Number.parseInt(
 						board?.getAttribute("data-life-scene-length") ?? "",
@@ -1919,7 +1885,9 @@ async function checkJavaScriptDisabledHome(browser) {
 					invalidStateCount: states.filter((state) => !allowedStates.includes(state)).length,
 					liveCellCount: states.filter((state) => state !== "dead").length,
 					running: board?.getAttribute("data-life-running") ?? "",
+					stampPanelCount: document.querySelectorAll(".stamp-panel").length,
 					visible: Boolean(rect && rect.width > 0 && rect.height > 0),
+					writingPanelCount: document.querySelectorAll(".writing-panel").length,
 				};
 			},
 			{
@@ -1940,13 +1908,11 @@ async function checkJavaScriptDisabledHome(browser) {
 			`size=${structure.boardSize}; scenes=${structure.boardSceneCount}; scene length=${structure.boardSceneLength}; cells=${structure.cellCount}; coordinates=${structure.coordinateCount}; visible=${structure.visible}`,
 		);
 		report(
-			"alternative no-JS: Books empty state is useful and honest",
-			structure.bookCount === 0 &&
-				structure.bookItemCount === 0 &&
-				structure.bookEmptyCount === 1 &&
-				structure.bookEmptyVisible &&
-				Boolean(structure.bookEmptyText),
-			`count=${structure.bookCount}; items=${structure.bookItemCount}; empty states=${structure.bookEmptyCount}`,
+			"alternative no-JS: Books, Writing, and Stamps content remains absent",
+			structure.bookSectionCount === 0 &&
+				structure.writingPanelCount === 0 &&
+				structure.stampPanelCount === 0,
+			`books=${structure.bookSectionCount}; writing=${structure.writingPanelCount}; stamps=${structure.stampPanelCount}`,
 		);
 		report(
 			"alternative no-JS: three complete film previews remain available",
@@ -2210,6 +2176,7 @@ try {
 	});
 
 	await checkRoot(browser);
+	await checkHiddenRoutes(browser);
 	for (const route of SITE_ROUTES) {
 		for (const [index, viewport] of VIEWPORTS.entries()) {
 			await checkAlternativeAtViewport(browser, route, viewport, index === 0);

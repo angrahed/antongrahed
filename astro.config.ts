@@ -17,7 +17,21 @@ import remarkDirective from "remark-directive"; /* Handle ::: directives as node
 import { remarkAdmonitions } from "./src/plugins/remark-admonitions"; /* Add admonitions */
 import { remarkGithubCard } from "./src/plugins/remark-github-card";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
-import { expressiveCodeOptions, siteConfig } from "./src/site.config";
+import { expressiveCodeOptions, siteConfig, siteFeatures } from "./src/site.config";
+
+const isHiddenFeaturePath = (page: string) => {
+	const pathname = new URL(page).pathname;
+	return (
+		(!siteFeatures.stamps && (pathname === "/stamps" || pathname.startsWith("/stamps/"))) ||
+		(!siteFeatures.posts &&
+			(pathname === "/posts" ||
+				pathname.startsWith("/posts/") ||
+				pathname === "/tags" ||
+				pathname.startsWith("/tags/") ||
+				pathname === "/rss.xml" ||
+				pathname.startsWith("/og-image/")))
+	);
+};
 
 // https://astro.build/config
 export default defineConfig({
@@ -28,7 +42,7 @@ export default defineConfig({
 	integrations: [
 		expressiveCode(expressiveCodeOptions),
 		icon(),
-		sitemap(),
+		sitemap({ filter: (page) => !isHiddenFeaturePath(page) }),
 		mdx(),
 		robotsTxt(),
 		webmanifest({

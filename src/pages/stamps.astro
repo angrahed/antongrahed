@@ -1,6 +1,9 @@
 ---
 import AlternativeStampGallery from "@/components/alternative/AlternativeStampGallery.astro";
 import AlternativeLayout from "@/layouts/Alternative.astro";
+import { siteFeatures } from "@/site.config";
+
+if (!siteFeatures.stamps) return Astro.redirect("/");
 ---
 
 <AlternativeLayout

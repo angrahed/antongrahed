@@ -3,7 +3,10 @@ import { Icon } from "astro-icon/components";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { getAllPosts, groupPostsByYear } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
+import { siteFeatures } from "@/site.config";
 import { collectionDateSort } from "@/utils/date";
+
+if (!siteFeatures.posts) return Astro.redirect("/");
 
 const meta = {
 	description:

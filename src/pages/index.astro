@@ -6,6 +6,12 @@ import GameOfLifeHero from "@/components/alternative/GameOfLifeHero.astro";
 import { bookItems } from "@/data/books";
 import { featuredStamps } from "@/data/stamps";
 import AlternativeLayout from "@/layouts/Alternative.astro";
+import { siteFeatures } from "@/site.config";
+
+const readingSectionNumber = String(4 + Number(siteFeatures.stamps)).padStart(2, "0");
+const contactSectionNumber = String(
+	4 + Number(siteFeatures.stamps) + Number(siteFeatures.books),
+).padStart(2, "0");
 
 const projects = [
 	{
@@ -164,22 +170,30 @@ const projects = [
 				}
 			</div>
 
-			<div class="writing-panel alt-console" data-reveal>
-				<div class="alt-console__bar">
-					<span>WRITING</span>
-				</div>
-				<div class="alt-console__body writing-panel__body">
-					<div>
-						<p class="alt-kicker">Posts</p>
-						<h3>Writing</h3>
-						<p>Notes on economics, growth, and the things I'm reading and building.</p>
+			{
+				siteFeatures.posts && (
+					<div class="writing-panel alt-console" data-reveal>
+						<div class="alt-console__bar">
+							<span>WRITING</span>
+						</div>
+						<div class="alt-console__body writing-panel__body">
+							<div>
+								<p class="alt-kicker">Posts</p>
+								<h3>Writing</h3>
+								<p>Notes on economics, growth, and the things I'm reading and building.</p>
+							</div>
+							<div class="writing-panel__links">
+								<a class="alt-button" href="/posts/">
+									Browse posts <span aria-hidden="true">→</span>
+								</a>
+								<a class="alt-button alt-button--ghost" href="/rss.xml">
+									RSS feed
+								</a>
+							</div>
+						</div>
 					</div>
-					<div class="writing-panel__links">
-						<a class="alt-button" href="/posts/">Browse posts <span aria-hidden="true">→</span></a>
-						<a class="alt-button alt-button--ghost" href="/rss.xml">RSS feed</a>
-					</div>
-				</div>
-			</div>
+				)
+			}
 		</div>
 	</section>
 
@@ -204,97 +218,103 @@ const projects = [
 				</a>
 			</div>
 
-			<div class="stamp-panel" data-reveal>
-				<div class="stamp-panel__copy">
-					<p class="alt-kicker">04 · Philately</p>
-					<h2 class="alt-heading">Selected Stamps</h2>
-					<p class="alt-lead">A collection of my favourite stamps! Will be updated regularly.</p>
-					<a class="alt-button alt-button--ghost" href="/stamps/">
-						Open the collection →
-					</a>
-				</div>
-				<div class="collection-grid" data-alt-stamp-preview>
-					{
-						featuredStamps.map((stamp) => (
-							<a
-								aria-label={`View ${stamp.caption} in the stamp collection`}
-								class="collection-tile"
-								data-alt-stamp-id={stamp.id}
-								data-alt-stamp-preview-item={stamp.id}
-								href={`/stamps/#${stamp.id}`}
-							>
-								<span class="collection-tile__image-frame">
-									<Image
-										alt={stamp.alt}
-										class="collection-tile__image"
-										decoding="async"
-										loading="lazy"
-										quality={85}
-										sizes="(min-width: 64rem) 22vw, (min-width: 44rem) 42vw, 42vw"
-										src={stamp.src}
-										widths={[240, 360, 480, 640]}
-									/>
-								</span>
-								<span class="collection-tile__caption">
-									<span>{stamp.caption}</span>
-									<span aria-hidden="true">↗</span>
-								</span>
-							</a>
-						))
-					}
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<section
-		class="alt-section alt-section--paper-deep books-section"
-		data-alt-book-count={bookItems.length}
-		data-alt-book-section
-		id="books"
-	>
-		<div class="alt-shell">
-			<div class="section-heading section-heading--split" data-reveal>
-				<div>
-					<p class="alt-kicker">05 · Reading</p>
-					<h2 class="alt-heading">Favourite books</h2>
-				</div>
-				<p class="alt-lead">Books I've liked and would recommend.</p>
-			</div>
-
 			{
-				bookItems.length === 0 ? (
-					<div class="books-empty" data-alt-book-empty data-reveal role="status">
-						<p class="alt-kicker">No entries yet</p>
-						<p>I haven't added the list yet.</p>
+				siteFeatures.stamps && (
+					<div class="stamp-panel" data-reveal>
+						<div class="stamp-panel__copy">
+							<p class="alt-kicker">04 · Philately</p>
+							<h2 class="alt-heading">Selected Stamps</h2>
+							<p class="alt-lead">
+								A collection of my favourite stamps! Will be updated regularly.
+							</p>
+							<a class="alt-button alt-button--ghost" href="/stamps/">
+								Open the collection →
+							</a>
+						</div>
+						<div class="collection-grid" data-alt-stamp-preview>
+							{featuredStamps.map((stamp) => (
+								<a
+									aria-label={`View ${stamp.caption} in the stamp collection`}
+									class="collection-tile"
+									data-alt-stamp-id={stamp.id}
+									data-alt-stamp-preview-item={stamp.id}
+									href={`/stamps/#${stamp.id}`}
+								>
+									<span class="collection-tile__image-frame">
+										<Image
+											alt={stamp.alt}
+											class="collection-tile__image"
+											decoding="async"
+											loading="lazy"
+											quality={85}
+											sizes="(min-width: 64rem) 22vw, (min-width: 44rem) 42vw, 42vw"
+											src={stamp.src}
+											widths={[240, 360, 480, 640]}
+										/>
+									</span>
+									<span class="collection-tile__caption">
+										<span>{stamp.caption}</span>
+										<span aria-hidden="true">↗</span>
+									</span>
+								</a>
+							))}
+						</div>
 					</div>
-				) : (
-					<ol aria-label="Favourite books" class="book-list" data-alt-book-list data-reveal>
-						{bookItems.map((book, index) => (
-							<li class="book-card" data-alt-book-id={book.id} data-alt-book-item id={book.id}>
-								<article>
-									<p class="book-card__number">{String(index + 1).padStart(2, "0")}</p>
-									<div>
-										<h3>{book.url ? <a href={book.url}>{book.title}</a> : book.title}</h3>
-										<p class="book-card__byline">
-											{book.author}
-											{book.firstPublished !== undefined && ` · ${book.firstPublished}`}
-										</p>
-										<p class="book-card__note">{book.note}</p>
-									</div>
-								</article>
-							</li>
-						))}
-					</ol>
 				)
 			}
 		</div>
 	</section>
 
+	{
+		siteFeatures.books && (
+			<section
+				class="alt-section alt-section--paper-deep books-section"
+				data-alt-book-count={bookItems.length}
+				data-alt-book-section
+				id="books"
+			>
+				<div class="alt-shell">
+					<div class="section-heading section-heading--split" data-reveal>
+						<div>
+							<p class="alt-kicker">{readingSectionNumber} · Reading</p>
+							<h2 class="alt-heading">Favourite books</h2>
+						</div>
+						<p class="alt-lead">Books I've liked and would recommend.</p>
+					</div>
+
+					{bookItems.length === 0 ? (
+						<div class="books-empty" data-alt-book-empty data-reveal role="status">
+							<p class="alt-kicker">No entries yet</p>
+							<p>I haven't added the list yet.</p>
+						</div>
+					) : (
+						<ol aria-label="Favourite books" class="book-list" data-alt-book-list data-reveal>
+							{bookItems.map((book, index) => (
+								<li class="book-card" data-alt-book-id={book.id} data-alt-book-item id={book.id}>
+									<article>
+										<p class="book-card__number">{String(index + 1).padStart(2, "0")}</p>
+										<div>
+											<h3>{book.url ? <a href={book.url}>{book.title}</a> : book.title}</h3>
+											<p class="book-card__byline">
+												{book.author}
+												{book.firstPublished !== undefined && ` · ${book.firstPublished}`}
+											</p>
+											<p class="book-card__note">{book.note}</p>
+										</div>
+									</article>
+								</li>
+							))}
+						</ol>
+					)}
+				</div>
+			</section>
+		)
+	}
+
 	<section class="alt-section alt-section--azure contact-section" id="contact">
 		<div class="alt-shell contact-layout" data-reveal>
 			<div>
-				<p class="alt-kicker">06 · Contact</p>
+				<p class="alt-kicker">{contactSectionNumber} · Contact</p>
 				<h2 class="alt-heading">Get in touch.</h2>
 			</div>
 			<div class="contact-copy">

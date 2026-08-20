@@ -1,4 +1,6 @@
 ---
+import { siteFeatures } from "@/site.config";
+
 const year = new Date().getFullYear();
 
 const siteLinks = [
@@ -6,9 +8,9 @@ const siteLinks = [
 	{ href: "/#about", label: "About" },
 	{ href: "/#projects", label: "Projects" },
 	{ href: "/film/", label: "Film" },
-	{ href: "/stamps/", label: "Stamps" },
-	{ href: "/#books", label: "Books" },
-	{ href: "/posts/", label: "Writing" },
+	...(siteFeatures.stamps ? [{ href: "/stamps/", label: "Stamps" }] : []),
+	...(siteFeatures.books ? [{ href: "/#books", label: "Books" }] : []),
+	...(siteFeatures.posts ? [{ href: "/posts/", label: "Writing" }] : []),
 ];
 ---
 

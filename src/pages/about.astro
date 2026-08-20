@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import PageLayout from "@/layouts/Base.astro";
+import { siteFeatures } from "@/site.config";
 
 const meta = {
 	description:
@@ -96,11 +97,20 @@ const facts = [
 				<div id="elsewhere">
 					<p class="eyebrow">04 — Elsewhere</p>
 					<div class="prose prose-cactus mt-4 max-w-none">
-						<p>
-							Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
-							Olympus Mju II, and collect stamps. Both are documented on this site, under
-							<a href="/film/">Film</a> and <a href="/stamps/">Stamps</a>.
-						</p>
+						{
+							siteFeatures.stamps ? (
+								<p>
+									Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
+									Olympus Mju II, and collect stamps. Both are documented on this site, under
+									<a href="/film/">Film</a> and <a href="/stamps/">Stamps</a>.
+								</p>
+							) : (
+								<p>
+									Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
+									Olympus Mju II. The photographs are documented under <a href="/film/">Film</a>.
+								</p>
+							)
+						}
 					</div>
 				</div>
 			</div>

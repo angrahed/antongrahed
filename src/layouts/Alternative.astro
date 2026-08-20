@@ -8,7 +8,7 @@ import Analytics from "@vercel/analytics/astro";
 
 import AlternativeFooter from "@/components/alternative/AlternativeFooter.astro";
 import AlternativeHeader from "@/components/alternative/AlternativeHeader.astro";
-import { siteConfig } from "@/site.config";
+import { siteConfig, siteFeatures } from "@/site.config";
 import "@/styles/alternative.css";
 
 interface Props {
@@ -42,7 +42,11 @@ const socialImageURL = new URL("/social-card.png", Astro.site ?? Astro.url);
 		<link href="/icons/apple-touch-icon.png" rel="apple-touch-icon" />
 		<link href="/manifest.webmanifest" rel="manifest" />
 		<link href="/sitemap-index.xml" rel="sitemap" />
-		<link href="/rss.xml" rel="alternate" title="Blog" type="application/rss+xml" />
+		{
+			siteFeatures.posts && (
+				<link href="/rss.xml" rel="alternate" title="Blog" type="application/rss+xml" />
+			)
+		}
 		<meta content="website" property="og:type" />
 		<meta content={title} property="og:title" />
 		<meta content={description} property="og:description" />

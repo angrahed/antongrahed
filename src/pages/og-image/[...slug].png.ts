@@ -2,7 +2,7 @@ import PlexMono from "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-no
 import PlexSansLight from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-300-normal.woff";
 import PlexSansSemiBold from "@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff";
 import { getAllPosts } from "@/data/post";
-import { siteConfig } from "@/site.config";
+import { siteConfig, siteFeatures } from "@/site.config";
 import { getFormattedDate } from "@/utils/date";
 import { Resvg } from "@resvg/resvg-js";
 import type { APIContext, InferGetStaticPropsType } from "astro";
@@ -81,6 +81,8 @@ export async function GET(context: APIContext) {
 }
 
 export async function getStaticPaths() {
+	if (!siteFeatures.posts) return [];
+
 	const posts = await getAllPosts();
 	return posts
 		.filter(({ data }) => !data.ogImage)
