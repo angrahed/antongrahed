@@ -819,7 +819,9 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 		}
 	}
 
-	@media (min-width: 60rem) {
+	/* Side by side on wide screens, and on phones held sideways (too short to stack). */
+	@media (min-width: 60rem),
+		(orientation: landscape) and (min-width: 36rem) and (max-height: 32rem) {
 		.story__body {
 			grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 			column-gap: clamp(2rem, 4vw, 4rem);
@@ -836,6 +838,21 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 
 		.story__stage::after {
 			display: none;
+		}
+
+		.story__plot {
+			height: auto;
+			flex: 1;
+		}
+
+		.story__bar {
+			flex-direction: row;
+			align-items: center;
+		}
+
+		.story__progress li {
+			width: 0.9rem;
+			flex: 0 1 auto;
 		}
 
 		.story__steps {
@@ -897,6 +914,10 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 		);
 		const callouts = new Map<string, HTMLElement>();
 		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+		// Must match the side-by-side media query in the styles above.
+		const sideBySide = window.matchMedia(
+			"(min-width: 60rem), (orientation: landscape) and (min-width: 36rem) and (max-height: 32rem)",
+		);
 
 		const pips = steps.map(() => document.createElement("li"));
 		progress?.replaceChildren(...pips);
@@ -978,7 +999,11 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 					);
 				}
 			}
-			for (const row of scene.rows ?? []) {
+			const rows = scene.rows ?? [];
+			// When rows are tighter than the text, name only the economies in focus.
+			const tight = rows.length > 1 && (rows[1]?.y ?? 0) - (rows[0]?.y ?? 0) < 12;
+			for (const row of rows) {
+				if (tight && focusDim(row.iso)) continue;
 				const text = el(
 					"text",
 					{
@@ -1208,7 +1233,7 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 			ticking = true;
 			requestAnimationFrame(() => {
 				ticking = false;
-				const line = window.innerHeight * (window.innerWidth < 960 ? 0.86 : 0.6);
+				const line = window.innerHeight * (sideBySide.matches ? 0.6 : 0.86);
 				let index = 0;
 				steps.forEach((step, i) => {
 					const card = step.firstElementChild ?? step;

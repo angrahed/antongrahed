@@ -314,6 +314,10 @@ const withFocus = (marks: Record<string, Mark>, focus: readonly string[]) => {
 	return marks;
 };
 
+/** On a phone, adjacent ranked rows are too close for every callout; keep the extremes. */
+const labelled = (frame: Frame, all: string[], compact: string[]) =>
+	frame.compact ? compact : all;
+
 /** Ranked rows: one row per economy, sorted, with its name on the left. */
 const rowsFor = (frame: Frame, order: string[], box: Box) => {
 	const step = (box.bottom - box.top) / order.length;
@@ -471,7 +475,7 @@ const depth = (frame: Frame): Scene => {
 	}
 	const focus = ["GEO", "TJK", "MDA", "POL"];
 	return {
-		callouts: focus.map((iso) => ({
+		callouts: labelled(frame, focus, ["GEO", "POL"]).map((iso) => ({
 			iso,
 			text: signed((trough[iso]?.value ?? 100) - 100, 0, "%"),
 		})),
@@ -629,7 +633,10 @@ const mortality = (frame: Frame): Scene => {
 	for (const iso of order) marks[iso] = { r: rows.r, x: x(lifeChange[iso] ?? 0), y: rows.y(iso) };
 	const focus = ["RUS", "UKR", "LVA", "CZE"];
 	return {
-		callouts: focus.map((iso) => ({ iso, text: signed(lifeChange[iso] ?? 0, 1, " yrs") })),
+		callouts: labelled(frame, focus, ["RUS", "CZE"]).map((iso) => ({
+			iso,
+			text: signed(lifeChange[iso] ?? 0, 1, " yrs"),
+		})),
 		marks: withFocus(marks, focus),
 		rows: rows.rows,
 		rules: [{ x1: x(0), x2: x(0), y1: box.top, y2: box.bottom }],
@@ -736,7 +743,10 @@ const leaving = (frame: Frame): Scene => {
 	for (const iso of order) marks[iso] = { r: rows.r, x: x(popChange[iso] ?? 0), y: rows.y(iso) };
 	const focus = ["LVA", "UKR", "TJK", "TKM"];
 	return {
-		callouts: focus.map((iso) => ({ iso, text: signed(popChange[iso] ?? 0, 0, "%") })),
+		callouts: labelled(frame, focus, ["LVA", "UKR", "TKM"]).map((iso) => ({
+			iso,
+			text: signed(popChange[iso] ?? 0, 0, "%"),
+		})),
 		marks: withFocus(marks, focus),
 		rows: rows.rows,
 		rules: [{ x1: x(0), x2: x(0), y1: box.top, y2: box.bottom }],
