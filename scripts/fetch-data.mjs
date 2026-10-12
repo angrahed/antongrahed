@@ -120,6 +120,7 @@ const INDICATORS = [
 	{ code: "NY.GDP.DEFL.KD.ZG", digits: 2, key: "deflator" },
 	{ code: "NE.TRD.GNFS.ZS", digits: 2, key: "trade" },
 	{ code: "SP.DYN.LE00.IN", digits: 2, key: "lifeexp" },
+	{ code: "SP.POP.TOTL", digits: 0, key: "population" },
 ];
 
 /**
@@ -234,6 +235,34 @@ async function fetchVdem(years) {
 	};
 }
 
+/* ---------- IMF World Economic Outlook (fills early-1990s inflation gaps) ---------- */
+
+/** IMF codes that differ from ISO 3166 alpha-3. */
+const IMF_CODES = { UVK: "XKX" };
+
+async function fetchImfInflation(years) {
+	// The DataMapper API refuses requests without a browser-like User-Agent.
+	const body = await fetchJson("https://www.imf.org/external/datamapper/api/v1/PCPIPCH", {
+		headers: {
+			Accept: "application/json",
+			"User-Agent": "Mozilla/5.0 (compatible; antongrahed.com data refresh)",
+		},
+	});
+	const table = body?.values?.PCPIPCH;
+	if (!table) throw new Error("Unexpected IMF DataMapper response for PCPIPCH");
+	const values = {};
+	for (const [code, series] of Object.entries(table)) {
+		const iso = IMF_CODES[code] ?? code;
+		if (!COUNTRIES.includes(iso)) continue;
+		values[iso] = years.map((year) => {
+			const value = series[year];
+			return value === undefined || value === null ? null : round(value, 2);
+		});
+	}
+	for (const iso of COUNTRIES) values[iso] ??= years.map(() => null);
+	return values;
+}
+
 async function buildTransition() {
 	console.log("World Bank WDI");
 	const results = [];
@@ -317,6 +346,13 @@ async function buildTransition() {
 			},
 		]),
 	);
+
+	console.log("IMF WEO inflation");
+	indicators.inflation_imf = {
+		code: "PCPIPCH",
+		name: "Inflation, average consumer prices (annual percent change), IMF WEO",
+	};
+	values.inflation_imf = await fetchImfInflation(years);
 
 	console.log("V-Dem via Our World in Data");
 	const vdem = await fetchVdem(years);

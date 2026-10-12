@@ -7,6 +7,7 @@ import Portrait from "@/components/about/Portrait.astro";
 import FilmStrip from "@/components/film/FilmStrip.astro";
 import TransitionFigure from "@/components/home/TransitionFigure.astro";
 import ProjectCard from "@/components/projects/ProjectCard.astro";
+import TransitionStory from "@/components/story/TransitionStory.astro";
 import { bookItems } from "@/data/books";
 import { featuredStamps } from "@/data/stamps";
 import Site from "@/layouts/Site.astro";
@@ -38,6 +39,20 @@ const places = getFilmPlaces(frames);
 						<a class="button" href="/projects/">See projects</a>
 					</div>
 				</div>
+			</div>
+		</div>
+	</section>
+
+	<TransitionStory />
+
+	<section aria-labelledby="explore-title" class="section" data-section="Data" id="explore">
+		<div class="wrap">
+			<div class="section-head">
+				<h2 id="explore-title">Explore the data</h2>
+				<p>
+					The figure behind the story: switch measures, move through the years, compare up to three
+					economies and download everything as a CSV.
+				</p>
 			</div>
 			<TransitionFigure />
 		</div>
@@ -182,13 +197,12 @@ const places = getFilmPlaces(frames);
 
 <style>
 	.hero {
-		padding-block: clamp(2rem, 4vw, 3.25rem) clamp(4rem, 8vw, 6.5rem);
+		padding-block: clamp(2rem, 4vw, 3.25rem) clamp(1rem, 3vw, 2rem);
 	}
 
 	.hero__intro {
 		display: grid;
 		gap: 1.5rem 3rem;
-		margin-bottom: clamp(2rem, 4vw, 2.75rem);
 	}
 
 	.hero__title {

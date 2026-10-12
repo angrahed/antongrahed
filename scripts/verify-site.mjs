@@ -174,10 +174,71 @@ await check("internal links resolve", async () => {
 
 console.log("\nFigure 1");
 
+await check("story: every step moves the 30 marks to a titled scene inside the plot", async () => {
+	for (const phone of [false, true]) {
+		const page = await open("/", phone ? { width: 390 } : {});
+		const count = await page.$$eval("[data-story-step]", (steps) => steps.length);
+		assert(count === 16, `expected 16 steps, found ${count}`);
+		const ready = await page.$eval(".story", (story) => story.classList.contains("is-ready"));
+		assert(ready, "story never became ready");
+		for (let index = 0; index < count; index += 1) {
+			const state = await page.evaluate((index) => {
+				const step = document.querySelectorAll("[data-story-step]")[index];
+				const card = step.firstElementChild;
+				const line = window.innerHeight * (window.innerWidth < 960 ? 0.86 : 0.6);
+				window.scrollTo({
+					behavior: "instant",
+					top: card.getBoundingClientRect().top + window.scrollY - line + 40,
+				});
+				return { chapter: step.dataset.chapter };
+			}, index);
+			await sleep(120);
+			const scene = await page.evaluate((index) => {
+				const plot = document.querySelector("[data-story-plot]").getBoundingClientRect();
+				const marks = [...document.querySelectorAll(".story__mark:not(.is-hidden)")];
+				const outside = marks.filter((mark) => {
+					const box = mark.getBoundingClientRect();
+					const x = box.left + box.width / 2;
+					const y = box.top + box.height / 2;
+					return x < plot.left - 1 || x > plot.right + 1 || y < plot.top - 1 || y > plot.bottom + 1;
+				});
+				const stage = document.querySelector("[data-story-stage]").getBoundingClientRect();
+				const box = document
+					.querySelectorAll("[data-story-step]")
+					[index].firstElementChild.getBoundingClientRect();
+				const probe = document.elementFromPoint(box.left + 20, box.top + 12);
+				const readable =
+					box.top >= stage.bottom - 1 &&
+					Boolean(
+						probe?.closest("[data-story-step]") ===
+							document.querySelectorAll("[data-story-step]")[index],
+					);
+				return {
+					chapter: document.querySelector("[data-story-chapter]")?.textContent,
+					outside: outside.map((mark) => mark.dataset.iso),
+					readable,
+					title: document.querySelector("[data-story-title]")?.textContent ?? "",
+					visible: marks.length,
+				};
+			}, index);
+			const where = `${phone ? "phone" : "desktop"} step ${index + 1}`;
+			assert(scene.chapter === state.chapter, `${where}: chapter ${scene.chapter}`);
+			assert(scene.title.length > 10, `${where}: no chart title`);
+			assert(scene.visible >= 24, `${where}: only ${scene.visible} marks`);
+			assert(!scene.outside.length, `${where}: outside the plot ${scene.outside}`);
+			// On phones the chart is pinned above the text; it must never cover it.
+			if (phone) assert(scene.readable, `${where}: text is covered`);
+		}
+		await page.close();
+	}
+});
+
 await check("intro draws the lines once, then settles on the latest year", async () => {
 	const page = await open("/", { motion: "no-preference" });
 	const classes = await page.$eval("#figure-1", (figure) => figure.className);
 	assert(classes.includes("is-intro"), "intro did not start");
+	// The intro waits until the figure is on screen (it sits below the story).
+	await page.$eval("#figure-1", (figure) => figure.scrollIntoView({ behavior: "instant" }));
 	await page.waitForFunction(
 		() => document.getElementById("figure-1")?.classList.contains("is-done"),
 		{
@@ -371,7 +432,7 @@ await check("About: portrait develops, text lights with scroll, interests rotate
 		live: document.querySelector("[data-rotator]")?.classList.contains("is-live"),
 	}));
 	assert(before.armed && before.lit === "0.000" && before.live, JSON.stringify(before));
-	await page.$eval("#about", (section) => section.scrollIntoView());
+	await page.$eval("#about", (section) => section.scrollIntoView({ behavior: "instant" }));
 	const first = await page.$eval(".rotator__item[data-active]", (item) => item.textContent);
 	await sleep(3200);
 	const after = await page.evaluate(() => ({

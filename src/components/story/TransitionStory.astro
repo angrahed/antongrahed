@@ -1,0 +1,1235 @@
+---
+/**
+ * The transition story: a scrolling essay beside a sticky stage on which the same
+ * 30 marks, one per economy, move between a map, line charts, ranked dot plots and
+ * scatters. Every number in the text comes from the same snapshot as the charts.
+ */
+import {
+	facts,
+	NO_EARLY_INFLATION,
+	nameFor,
+	POPULATION_YEAR,
+	regionLabel,
+	regionOrder,
+} from "@/lib/story";
+import { countries } from "@/lib/transition";
+
+const millions = Math.round(facts.population1990 / 1e6);
+const fallAt1995 = 100 - facts.medianIndex1995;
+const ukraineGap = 100 - facts.ukraineIndex;
+const listOf = (names: string[]) =>
+	names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
+---
+
+<section aria-labelledby="story-title" class="story" data-section="Story" id="story">
+	<header class="wrap story__intro">
+		<p class="story__kicker">A story in data · 1990–{facts.lastYear}</p>
+		<h2 class="story__title" id="story-title">Thirty-five years of transition</h2>
+		<p class="lead">
+			How thirty economies left central planning, what it cost them, and where they stand now. Each
+			circle below is one economy; scroll to follow them.
+		</p>
+	</header>
+
+	<div class="wrap story__body" data-story>
+		<div aria-hidden="true" class="story__stage" data-story-stage>
+			<div class="story__bar">
+				<p class="story__chapter" data-story-chapter>Prologue</p>
+				<ol class="story__progress" data-story-progress></ol>
+			</div>
+			<p class="story__chart-title" data-story-title></p>
+			<div class="story__plot" data-story-plot>
+				<div class="story__map" data-story-map></div>
+				<svg class="story__svg" data-story-svg></svg>
+				<div class="story__marks">
+					{
+						countries.map((country, index) => (
+							<span
+								class="story__mark"
+								data-iso={country.iso3}
+								data-region={country.region}
+								style={`--i: ${index}`}
+							>
+								<b>{country.iso3}</b>
+							</span>
+						))
+					}
+				</div>
+				<div class="story__callouts" data-story-callouts></div>
+			</div>
+			<ul class="story__legend" role="list">
+				{
+					regionOrder.map((region) => (
+						<li data-region={region}>
+							<i />
+							{regionLabel[region]}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+
+		<div class="story__steps">
+			<article class="story__step" data-chapter="Prologue" data-scene="geo" data-story-step>
+				<div class="story__card">
+					<p class="story__eyebrow">Prologue</p>
+					<h3>Thirty economies, one experiment</h3>
+					<p>
+						Between 1989 and 1992 the economies of Central and Eastern Europe, the former Soviet
+						Union and Mongolia began to dismantle central planning, almost at the same time. Thirty
+						of them are followed here, from Slovenia on the Adriatic to Mongolia on the Chinese
+						border. In 1990 they were home to {millions} million people.
+					</p>
+					<p class="story__source">Source: World Bank, World Development Indicators.</p>
+				</div>
+			</article>
+
+			<article class="story__step" data-chapter="Prologue" data-scene="tiles" data-story-step>
+				<div class="story__card">
+					<h3>One circle per economy</h3>
+					<p>
+						From here on each circle is one economy. They are arranged so that neighbours stay
+						roughly together, and coloured by region:
+					</p>
+					<ul class="story__regions" role="list">
+						{
+							regionOrder.map((region) => (
+								<li data-region={region}>
+									<i />
+									{regionLabel[region]}
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</article>
+
+			<article class="story__step" data-chapter="Prologue" data-scene="people" data-story-step>
+				<div class="story__card">
+					<h3>Very different sizes</h3>
+					<p>
+						Sized by population, the circles show how unequal the starting points were: Russia alone
+						had 148 million people, Montenegro about 600,000. The charts that follow count each
+						economy once, whatever its size.
+					</p>
+					<p class="story__source">Population in 1990. Source: World Bank WDI.</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="I · The fall"
+				data-scene="fall"
+				data-story-step
+				id="story-fall"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Chapter I · 1990–2000</p>
+					<h3>Output collapsed</h3>
+					<p>
+						As planning broke down faster than markets could replace it, output fell almost
+						everywhere. By 1995 the median economy produced {fallAt1995}% less per person than in
+						1990. Each circle sits at its economy's lowest point.
+					</p>
+					<p class="story__source">
+						GDP per capita at purchasing power parity, 1990 = 100. Bosnia and Herzegovina is left
+						out (its early-1990s series is not comparable with later years), as are Kosovo,
+						Montenegro and Serbia, which have no data for 1990. Source: World Bank WDI.
+					</p>
+				</div>
+			</article>
+
+			<article class="story__step" data-chapter="I · The fall" data-scene="depth" data-story-step>
+				<div class="story__card">
+					<h3>Deepest where there was war</h3>
+					<p>
+						Georgia, Tajikistan and Moldova, all scarred by armed conflict in the early 1990s, lost
+						between 65% and 73% of their output per person. Poland, the earliest and most radical
+						reformer, lost 7%.
+					</p>
+					<p class="story__source">Source: World Bank WDI.</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="I · The fall"
+				data-scene="recovery"
+				data-story-step
+			>
+				<div class="story__card">
+					<h3>A long way back</h3>
+					<p>
+						Poland was back at its 1990 level by 1994. For the median economy it took until 2003.
+						Georgia needed until 2012, the Kyrgyz Republic and Tajikistan until 2022, Moldova until
+						2023. Ukraine has not got back.
+					</p>
+					<p class="story__source">Source: World Bank WDI.</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="II · Prices set free"
+				data-scene="prices"
+				data-story-step
+				id="story-prices"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Chapter II · 1990–1995</p>
+					<h3>Prices set free</h3>
+					<p>
+						Freeing prices released years of pent-up demand at once, and budget deficits were often
+						covered by printing money. Ukraine's consumer prices rose 4,735% in 1993: on average,
+						they doubled every nine weeks. Hungary, which had loosened controls gradually since
+						1968, peaked at 35%.
+					</p>
+					<p class="story__source">
+						Peak annual average consumer price inflation, 1990–99. World Bank WDI, gaps filled from
+						the IMF World Economic Outlook. Open circles: the data begin after prices were freed, so
+						the true peak may have been higher. No comparable data for {noInflation}.
+					</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="III · The missing years"
+				data-scene="lifespan"
+				data-story-step
+				id="story-mortality"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Chapter III · 1990–2000</p>
+					<h3>A mortality crisis</h3>
+					<p>
+						Life expectancy at birth fell across much of the former Soviet Union. In Russia it
+						dropped from 68.9 years in 1990 to 64.5 in 1994. In Bosnia and Herzegovina and
+						Tajikistan, war drove it far lower.
+					</p>
+					<p class="story__source">
+						Each circle at its lowest point by 2000. Source: World Bank WDI.
+					</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="III · The missing years"
+				data-scene="mortality"
+				data-story-step
+			>
+				<div class="story__card">
+					<h3>Concentrated in the former Soviet Union</h3>
+					<p>
+						Between 1990 and 1995 life expectancy fell by 4.2 years in Russia, 3.2 in Ukraine and
+						2.9 in Latvia, while it rose in Czechia, Slovakia and Poland. Research points to
+						alcohol, stress and strained health systems (Brainerd and Cutler, 2005); whether rapid
+						privatisation played a part is still debated (Stuckler, King and McKee, 2009; Earle and
+						Gehlbach, 2010).
+					</p>
+					<p class="story__source">Source: World Bank WDI.</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="IV · Two roads"
+				data-scene="roads-1995"
+				data-story-step
+				id="story-roads"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Chapter IV · 1995–2007</p>
+					<h3>Two roads</h3>
+					<p>
+						By the mid-1990s the region had already split. Central Europe and the Baltics combined
+						higher incomes with competitive politics; much of Central Asia combined low incomes with
+						little political competition at all.
+					</p>
+					<p class="story__source">
+						Horizontal: V-Dem liberal democracy index, 0 to 1. Vertical: GDP per capita at PPP, log
+						scale. Sources: V-Dem v16; World Bank WDI.
+					</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="IV · Two roads"
+				data-scene="roads-2007"
+				data-story-step
+			>
+				<div class="story__card">
+					<h3>Anchored by Europe</h3>
+					<p>
+						Eight of them joined the European Union in 2004, Bulgaria and Romania in 2007 and
+						Croatia in 2013 (ringed once members). The prospect of membership tied reform to a
+						common set of rules and a timetable.
+					</p>
+					<p class="story__source">Sources: V-Dem v16; World Bank WDI.</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="V · Catching up"
+				data-scene="catchup"
+				data-story-step
+				id="story-catchup"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Chapter V · 1995–{facts.lastYear}</p>
+					<h3>Catching up, unevenly</h3>
+					<p>
+						Measured against the G7, Lithuania went from 28% of its income per person in 1995 to 76%
+						in {facts.lastYear}, and Poland from 33% to 73%. Ukraine stood at 25% in both years.
+					</p>
+					<p class="story__source">
+						GDP per capita at PPP as a percentage of the population-weighted G7 average. Open
+						circles 1995, filled {facts.lastYear}. Source: World Bank WDI.
+					</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="VI · The leaving"
+				data-scene="leaving"
+				data-story-step
+				id="story-leaving"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Chapter VI · 1990–{POPULATION_YEAR}</p>
+					<h3>The leaving</h3>
+					<p>
+						Populations diverged as sharply as incomes. Latvia has 31% fewer people than in 1990,
+						Albania and Bosnia and Herzegovina 29% fewer, through emigration and low birth rates;
+						Ukraine's figure also reflects the war. Tajikistan and Turkmenistan have doubled.
+					</p>
+					<p class="story__source">Source: World Bank WDI.</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="VII · Reversals"
+				data-scene="reversals"
+				data-story-step
+				id="story-reversals"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Chapter VII · 2007–{facts.lastYear}</p>
+					<h3>Reversals</h3>
+					<p>
+						Democratic gains proved reversible. Hungary's liberal democracy score fell from 0.77 in
+						2007 to 0.32. Poland's dropped after 2015 and has partly recovered since 2023. Russia's
+						has fallen to 0.06, close to Belarus and Turkmenistan at the bottom of the scale.
+					</p>
+					<p class="story__source">Source: V-Dem v16 via Our World in Data.</p>
+				</div>
+			</article>
+
+			<article class="story__step" data-chapter="VII · Reversals" data-scene="war" data-story-step>
+				<div class="story__card">
+					<h3>War</h3>
+					<p>
+						Russia's full-scale invasion in 2022 cut Ukraine's output per person by 23% in a year.
+						In
+						{facts.lastYear} it was still {ukraineGap}% below its 1990 level, the only economy here
+						with comparable data that has not got back to where it started.
+					</p>
+					<p class="story__source">
+						GDP per capita at PPP, 1990 = 100, log scale. Source: World Bank WDI.
+					</p>
+				</div>
+			</article>
+
+			<article
+				class="story__step"
+				data-chapter="Epilogue"
+				data-scene="now"
+				data-story-step
+				id="story-now"
+			>
+				<div class="story__card">
+					<p class="story__eyebrow">Epilogue · {facts.lastYear}</p>
+					<h3>Where they stand</h3>
+					<p>
+						Thirty-five years on, the same starting point has led to very different places. Czechia
+						produces 77% as much per person as the G7, Tajikistan 8%. Estonia scores 0.84 on V-Dem's
+						index, Belarus 0.04. The figure below has the data behind every chapter.
+					</p>
+					<a class="text-link" href="#figure-1">Explore the data</a>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>
+
+<style is:global>
+	.story {
+		--region-ceb: var(--series-1);
+		--region-eec: var(--series-2);
+		--region-rus: var(--series-3);
+		--region-cas: var(--series-4);
+		--region-see: light-dark(#8a3ffc, #a56eff);
+		--story-top: calc(var(--header-h) + 0.75rem);
+		padding-top: clamp(2.5rem, 6vw, 4.5rem);
+	}
+
+	.story [data-region="ceb"] {
+		--c: var(--region-ceb);
+	}
+
+	.story [data-region="eec"] {
+		--c: var(--region-eec);
+	}
+
+	.story [data-region="rus"] {
+		--c: var(--region-rus);
+	}
+
+	.story [data-region="cas"] {
+		--c: var(--region-cas);
+		--on-c: #1b1400;
+	}
+
+	.story [data-region="see"] {
+		--c: var(--region-see);
+	}
+
+	.story__intro {
+		max-width: 46rem;
+		margin-bottom: clamp(1rem, 4vw, 2rem);
+	}
+
+	.story__kicker,
+	.story__eyebrow,
+	.story__chapter {
+		margin: 0;
+		color: var(--ink-3);
+		font-family: var(--font-mono);
+		font-size: var(--step--2);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.story__title {
+		margin: 0.4rem 0 0.8rem;
+		font-size: var(--step-4);
+		font-weight: 300;
+		letter-spacing: -0.01em;
+		line-height: 1.1;
+	}
+
+	.story__body {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* ---------- stage ---------- */
+
+	/* Phones: the stage is pinned above the text, which scrolls up underneath it. */
+	.story__stage {
+		position: sticky;
+		z-index: 3;
+		top: var(--header-h);
+		display: flex;
+		padding-block: 0.6rem 0.5rem;
+		flex-direction: column;
+		align-self: start;
+		grid-area: 1 / 1;
+		background: var(--paper);
+	}
+
+	.story__stage::after {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		left: 0;
+		height: 1.5rem;
+		background: linear-gradient(var(--paper), transparent);
+		content: "";
+		pointer-events: none;
+	}
+
+	.story__bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.story__chapter {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.story__progress {
+		display: flex;
+		margin: 0;
+		padding: 0;
+		gap: 3px;
+		list-style: none;
+	}
+
+	.story__progress li {
+		width: 0.9rem;
+		min-width: 3px;
+		flex: 0 1 auto;
+		height: 3px;
+		border-radius: 1px;
+		background: var(--rule);
+		transition: background-color 300ms var(--ease);
+	}
+
+	.story__progress li.is-done {
+		background: var(--rule-strong);
+	}
+
+	.story__progress li.is-active {
+		background: var(--signal);
+	}
+
+	.story__chart-title {
+		min-height: 2.6em;
+		margin: 0.45rem 0 0.25rem;
+		color: var(--ink-2);
+		font-size: var(--step--1);
+		line-height: 1.3;
+	}
+
+	.story__plot {
+		position: relative;
+		min-height: 0;
+		flex: 1;
+		overflow: hidden;
+	}
+
+	.story__map {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background: var(--rule-strong);
+		-webkit-mask: url("/film/basemap.svg") center / 100% 100% no-repeat;
+		mask: url("/film/basemap.svg") center / 100% 100% no-repeat;
+		opacity: 0;
+		transition: opacity 700ms var(--ease);
+	}
+
+	.story__map.is-on {
+		opacity: 0.85;
+	}
+
+	.story__svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	.story__layer {
+		opacity: 0;
+		transition: opacity 600ms var(--ease);
+	}
+
+	.story__layer.is-in {
+		opacity: 1;
+	}
+
+	.story__layer .grid {
+		stroke: var(--rule);
+		stroke-width: 1;
+	}
+
+	.story__layer .tick {
+		fill: var(--ink-3);
+		font-family: var(--font-mono);
+		font-size: 10.5px;
+	}
+
+	.story__layer .tick.is-strong {
+		fill: var(--ink);
+	}
+
+	.story__layer .row {
+		fill: var(--ink-2);
+		font-size: 11px;
+	}
+
+	.story__layer .rule {
+		stroke: var(--ink-3);
+		stroke-dasharray: 3 3;
+		stroke-width: 1;
+	}
+
+	.story__layer .rule-label {
+		fill: var(--ink-3);
+		font-family: var(--font-mono);
+		font-size: 10px;
+	}
+
+	.story__layer .note {
+		fill: var(--rule-strong);
+		font-size: clamp(2.25rem, 6vw, 3.75rem);
+		font-weight: 300;
+	}
+
+	.story__layer .line {
+		fill: none;
+		stroke: var(--ink);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-opacity: 0.13;
+		stroke-width: 1.2;
+	}
+
+	.story__layer .line.is-strong {
+		stroke: var(--c);
+		stroke-opacity: 1;
+		stroke-width: 2.25;
+	}
+
+	.story__layer.is-in .line {
+		animation: story-draw 1.3s var(--ease) both;
+	}
+
+	@keyframes story-draw {
+		from {
+			stroke-dashoffset: 1;
+		}
+
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	.story__layer .ghost {
+		fill: var(--paper);
+		stroke: var(--c);
+		stroke-width: 1.5;
+	}
+
+	.story__layer .link {
+		stroke: var(--c);
+		stroke-opacity: 0.45;
+		stroke-width: 2;
+	}
+
+	.story__layer .is-dim {
+		opacity: 0.3;
+	}
+
+	/* ---------- the 30 marks ---------- */
+
+	.story__marks,
+	.story__callouts {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.story__mark {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: grid;
+		width: 12px;
+		height: 12px;
+		box-sizing: border-box;
+		place-items: center;
+		border: 1.5px solid var(--c);
+		border-radius: 50%;
+		background: var(--c);
+		opacity: 0;
+		transition:
+			transform 900ms var(--ease) calc(var(--i) * 12ms),
+			width 900ms var(--ease) calc(var(--i) * 12ms),
+			height 900ms var(--ease) calc(var(--i) * 12ms),
+			opacity 500ms var(--ease),
+			background-color 500ms var(--ease),
+			box-shadow 500ms var(--ease);
+	}
+
+	.story.is-ready .story__mark {
+		opacity: 1;
+	}
+
+	.story.is-ready .story__mark.is-dim {
+		opacity: 0.28;
+	}
+
+	.story.is-ready .story__mark.is-hidden {
+		opacity: 0;
+	}
+
+	.story__mark.is-hollow {
+		background: var(--paper);
+	}
+
+	.story__mark.is-ring {
+		box-shadow:
+			0 0 0 2px var(--paper),
+			0 0 0 3.5px var(--ink);
+	}
+
+	.story__mark b {
+		color: var(--on-c, #fff);
+		font-size: 8.5px;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		opacity: 0;
+		transition: opacity 400ms var(--ease);
+	}
+
+	.story__mark.is-hollow b {
+		color: var(--c);
+	}
+
+	.story__mark.is-labelled b {
+		opacity: 1;
+	}
+
+	.story__callout {
+		position: absolute;
+		top: 0;
+		left: 0;
+		padding: 0.05rem 0.3rem;
+		border-radius: var(--radius);
+		background: color-mix(in srgb, var(--paper) 88%, transparent);
+		color: var(--ink);
+		font-size: var(--step--2);
+		font-weight: 600;
+		line-height: 1.35;
+		white-space: nowrap;
+		opacity: 0;
+		transition:
+			opacity 400ms var(--ease),
+			transform 900ms var(--ease);
+	}
+
+	.story__callout.is-in {
+		opacity: 1;
+		transition-delay: 450ms, 0ms;
+	}
+
+	.story__legend {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0.5rem 0 0;
+		padding: 0;
+		gap: 0.25rem 1rem;
+		color: var(--ink-3);
+		font-size: var(--step--2);
+		list-style: none;
+	}
+
+	:is(.story__legend, .story__regions) li {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	:is(.story__legend, .story__regions) i {
+		width: 0.6rem;
+		height: 0.6rem;
+		border-radius: 50%;
+		background: var(--c);
+	}
+
+	.story__regions {
+		display: grid;
+		margin: 0.75rem 0 0;
+		padding: 0;
+		gap: 0.3rem;
+		font-size: var(--step--1);
+		list-style: none;
+	}
+
+	/* ---------- steps ---------- */
+
+	.story__steps {
+		position: relative;
+		z-index: 1;
+		grid-area: 1 / 1;
+		padding: calc(var(--story-plot-h) + 7.5rem) 0 20svh;
+	}
+
+	.story__step {
+		min-height: 62svh;
+	}
+
+	.story__card {
+		max-width: 32rem;
+	}
+
+	.story__card h3 {
+		margin: 0.3rem 0 0.6rem;
+		font-size: var(--step-2);
+		font-weight: 400;
+		line-height: 1.2;
+	}
+
+	.story__card p {
+		margin: 0 0 0.75rem;
+		font-size: var(--step-0);
+		line-height: 1.55;
+	}
+
+	.story__card .story__source {
+		margin: 0.75rem 0 0;
+		color: var(--ink-3);
+		font-size: var(--step--2);
+		line-height: 1.45;
+	}
+
+	@media (max-width: 59.99rem) {
+		.story {
+			--story-plot-h: min(44svh, 26rem);
+		}
+
+		/* Progress runs the full width above the chapter name. */
+		.story__bar {
+			flex-direction: column-reverse;
+			align-items: stretch;
+			gap: 0.45rem;
+		}
+
+		.story__progress li {
+			flex: 1 1 0;
+			width: auto;
+		}
+
+		.story__plot {
+			flex: 0 0 auto;
+			height: var(--story-plot-h);
+		}
+
+		.story__legend {
+			display: none;
+		}
+
+		.story__layer .row {
+			font-size: 10px;
+		}
+	}
+
+	@media (min-width: 60rem) {
+		.story__body {
+			grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+			column-gap: clamp(2rem, 4vw, 4rem);
+		}
+
+		.story__stage {
+			top: var(--story-top);
+			height: calc(100svh - var(--story-top) - var(--statusbar-h) - 0.75rem);
+			min-height: 22rem;
+			padding: 0;
+			grid-area: 1 / 2;
+			background: none;
+		}
+
+		.story__stage::after {
+			display: none;
+		}
+
+		.story__steps {
+			grid-area: 1 / 1;
+			padding: 18svh 0 30svh;
+		}
+
+		.story__step {
+			display: flex;
+			min-height: 88svh;
+			align-items: center;
+		}
+
+		.story__card h3 {
+			font-size: var(--step-3);
+			font-weight: 300;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.story__mark,
+		.story__callout,
+		.story__layer,
+		.story__map {
+			transition: none;
+		}
+
+		.story__layer.is-in .line {
+			animation: none;
+		}
+	}
+
+	.story.is-instant :is(.story__mark, .story__callout, .story__layer) {
+		transition: none;
+	}
+</style>
+
+<script>
+	import { type Frame, isSceneId, regionFor, type Scene, type SceneId, scenes } from "@/lib/story";
+
+	const root = document.querySelector<HTMLElement>("[data-story]");
+	const section = root?.closest<HTMLElement>(".story");
+	const svgNS = "http://www.w3.org/2000/svg";
+
+	if (root && section) {
+		const plot = root.querySelector<HTMLElement>("[data-story-plot]");
+		const svg = root.querySelector<SVGSVGElement>("[data-story-svg]");
+		const map = root.querySelector<HTMLElement>("[data-story-map]");
+		const calloutLayer = root.querySelector<HTMLElement>("[data-story-callouts]");
+		const chapterLabel = root.querySelector<HTMLElement>("[data-story-chapter]");
+		const chartTitle = root.querySelector<HTMLElement>("[data-story-title]");
+		const progress = root.querySelector<HTMLElement>("[data-story-progress]");
+		const steps = Array.from(root.querySelectorAll<HTMLElement>("[data-story-step]"));
+		const marks = new Map(
+			Array.from(root.querySelectorAll<HTMLElement>(".story__mark")).map((mark) => [
+				mark.dataset.iso ?? "",
+				mark,
+			]),
+		);
+		const callouts = new Map<string, HTMLElement>();
+		const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+		const pips = steps.map(() => document.createElement("li"));
+		progress?.replaceChildren(...pips);
+
+		let active = -1;
+		let current: SceneId = "geo";
+
+		const frame = (): Frame => {
+			const width = plot?.clientWidth ?? 600;
+			const height = plot?.clientHeight ?? 400;
+			const compact = width < 520;
+			return { base: compact ? 6.5 : 11, compact, height, width };
+		};
+
+		const el = <K extends keyof SVGElementTagNameMap>(
+			name: K,
+			attributes: Record<string, string | number>,
+			text?: string,
+		) => {
+			const node = document.createElementNS(svgNS, name);
+			for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value));
+			if (text != null) node.textContent = text;
+			return node;
+		};
+
+		/** Axes, rules, lines and labels for one scene, as an SVG group that fades in. */
+		const drawLayer = (scene: Scene, size: Frame) => {
+			const g = el("g", { class: "story__layer" });
+			const focusDim = (iso: string) => scene.marks[iso]?.dim;
+			if (scene.yTicks) {
+				for (const tick of scene.yTicks.ticks) {
+					g.append(
+						el("line", {
+							class: "grid",
+							x1: scene.yTicks.x,
+							x2: size.width - 8,
+							y1: tick.pos,
+							y2: tick.pos,
+						}),
+						el(
+							"text",
+							{
+								class: `tick${tick.strong ? " is-strong" : ""}`,
+								"dominant-baseline": "middle",
+								"text-anchor": "end",
+								x: scene.yTicks.x - 6,
+								y: tick.pos,
+							},
+							tick.label,
+						),
+					);
+				}
+			}
+			if (scene.xTicks) {
+				const top = scene.yTicks ? null : 4;
+				for (const tick of scene.xTicks.ticks) {
+					if (top != null && scene.rows) {
+						g.append(
+							el("line", {
+								class: "grid",
+								x1: tick.pos,
+								x2: tick.pos,
+								y1: top,
+								y2: scene.xTicks.y,
+							}),
+						);
+					}
+					g.append(
+						el(
+							"text",
+							{
+								class: `tick${tick.strong ? " is-strong" : ""}`,
+								"text-anchor": "middle",
+								x: tick.pos,
+								y: scene.xTicks.y + 17,
+							},
+							tick.label,
+						),
+					);
+				}
+			}
+			for (const row of scene.rows ?? []) {
+				const text = el(
+					"text",
+					{
+						class: `row${focusDim(row.iso) ? " is-dim" : ""}`,
+						"dominant-baseline": "middle",
+						"text-anchor": "end",
+						x: row.x,
+						y: row.y,
+					},
+					row.label,
+				);
+				g.append(text);
+			}
+			for (const rule of scene.rules ?? []) {
+				g.append(el("line", { class: "rule", ...pick(rule) }));
+				if (rule.label) {
+					g.append(
+						el(
+							"text",
+							{
+								class: "rule-label",
+								"text-anchor": rule.x1 === rule.x2 ? "middle" : "end",
+								x: rule.x1 === rule.x2 ? rule.x1 : rule.x2,
+								y: Math.min(rule.y1, rule.y2) - 6,
+							},
+							rule.label,
+						),
+					);
+				}
+			}
+			for (const note of scene.notes ?? []) {
+				g.append(
+					el(
+						"text",
+						{ class: "note", "text-anchor": note.anchor ?? "start", x: note.x, y: note.y },
+						note.text,
+					),
+				);
+			}
+			const faint = (scene.lines ?? []).filter((line) => !line.strong);
+			const strong = (scene.lines ?? []).filter((line) => line.strong);
+			for (const line of [...faint, ...strong]) {
+				if (!line.d) continue;
+				g.append(
+					el("path", {
+						class: `line${line.strong ? " is-strong" : ""}`,
+						d: line.d,
+						"data-region": regionFor(line.iso),
+						pathLength: 1,
+						"stroke-dasharray": 1,
+					}),
+				);
+			}
+			for (const link of scene.links ?? []) {
+				g.append(
+					el("line", {
+						class: `link${focusDim(link.iso) ? " is-dim" : ""}`,
+						"data-region": regionFor(link.iso),
+						...pick(link),
+					}),
+				);
+			}
+			for (const ghost of scene.ghosts ?? []) {
+				g.append(
+					el("circle", {
+						class: `ghost${focusDim(ghost.iso) ? " is-dim" : ""}`,
+						cx: ghost.x,
+						cy: ghost.y,
+						"data-region": regionFor(ghost.iso),
+						r: ghost.r,
+					}),
+				);
+			}
+			return g;
+		};
+
+		const pick = ({ x1, x2, y1, y2 }: { x1: number; x2: number; y1: number; y2: number }) => ({
+			x1,
+			x2,
+			y1,
+			y2,
+		});
+
+		const placeCallouts = (scene: Scene, size: Frame) => {
+			const wanted = new Set(scene.callouts.map((callout) => callout.iso));
+			for (const [iso, node] of callouts) if (!wanted.has(iso)) node.classList.remove("is-in");
+			const placed: { bottom: number; left: number; right: number; top: number }[] = [];
+			const ordered = [...scene.callouts].sort(
+				(a, b) => (scene.marks[a.iso]?.y ?? 0) - (scene.marks[b.iso]?.y ?? 0),
+			);
+			const visible = Object.entries(scene.marks).filter(([, mark]) => !mark.hidden);
+			// Keep callouts off the axis labels and the row names on the left.
+			const floor = Math.max(scene.yTicks?.x ?? 0, (scene.rows?.[0]?.x ?? -4) + 4);
+			const ceiling = scene.xTicks ? scene.xTicks.y + 2 : size.height;
+			for (const { iso, side, text } of ordered) {
+				const mark = scene.marks[iso];
+				if (!mark || mark.hidden) continue;
+				let node = callouts.get(iso);
+				if (!node) {
+					node = document.createElement("span");
+					node.className = "story__callout";
+					calloutLayer?.append(node);
+					callouts.set(iso, node);
+				}
+				node.textContent = text;
+				const width = node.offsetWidth;
+				const height = node.offsetHeight || 18;
+				const gap = mark.r + 5;
+				const spots = {
+					above: { left: mark.x - width / 2, top: mark.y - gap - height },
+					below: { left: mark.x - width / 2, top: mark.y + gap },
+					left: { left: mark.x - gap - width, top: mark.y - height / 2 },
+					right: { left: mark.x + gap, top: mark.y - height / 2 },
+				};
+				const order = [side ?? "right", "right", "left", "above", "below"] as const;
+				// Score each side by what it would cover: other circles (full weight when in
+				// focus), callouts already placed, and the edges of the plot.
+				const cost = ({ left, top }: { left: number; top: number }) => {
+					if (left < floor || top < 0 || left + width > size.width || top + height > ceiling) {
+						return Number.POSITIVE_INFINITY;
+					}
+					let total = 0;
+					for (const other of placed) {
+						if (
+							left < other.right &&
+							left + width > other.left &&
+							top < other.bottom &&
+							top + height > other.top
+						) {
+							total += 100;
+						}
+					}
+					for (const [otherIso, other] of visible) {
+						if (otherIso === iso) continue;
+						const dx = Math.max(left - other.x, 0, other.x - (left + width));
+						const dy = Math.max(top - other.y, 0, other.y - (top + height));
+						if (dx * dx + dy * dy < other.r * other.r) total += other.dim ? 1 : 4;
+					}
+					return total;
+				};
+				let best = spots[order[0]];
+				let bestCost = cost(best);
+				for (const key of order.slice(1)) {
+					if (bestCost === 0) break;
+					const spot = spots[key];
+					const value = cost(spot);
+					if (value < bestCost) {
+						best = spot;
+						bestCost = value;
+					}
+				}
+				const left = Math.min(Math.max(floor, best.left), size.width - width - 2);
+				const top = Math.min(Math.max(0, best.top), ceiling - height);
+				placed.push({ bottom: top + height, left, right: left + width, top });
+				node.style.transform = `translate(${left}px, ${top}px)`;
+				node.classList.add("is-in");
+			}
+		};
+
+		const render = (id: SceneId, instant = false) => {
+			const size = frame();
+			const scene = scenes[id](size);
+			if (instant || reduceMotion.matches) section.classList.add("is-instant");
+			for (const [iso, node] of marks) {
+				const mark = scene.marks[iso];
+				if (!mark || mark.hidden) {
+					node.classList.add("is-hidden");
+					continue;
+				}
+				node.classList.remove("is-hidden");
+				node.classList.toggle("is-dim", Boolean(mark.dim));
+				node.classList.toggle("is-hollow", Boolean(mark.hollow));
+				node.classList.toggle("is-ring", Boolean(mark.ring));
+				node.classList.toggle("is-labelled", mark.r >= 10.5);
+				node.style.width = `${2 * mark.r}px`;
+				node.style.height = `${2 * mark.r}px`;
+				node.style.transform = `translate(${mark.x}px, ${mark.y}px) translate(-50%, -50%)`;
+			}
+			if (map) {
+				map.classList.toggle("is-on", Boolean(scene.map));
+				if (scene.map) {
+					map.style.width = `${scene.map.width}px`;
+					map.style.height = `${scene.map.height}px`;
+					map.style.transform = `translate(${scene.map.x}px, ${scene.map.y}px)`;
+				}
+			}
+			if (svg) {
+				svg.setAttribute("viewBox", `0 0 ${size.width} ${size.height}`);
+				for (const old of Array.from(svg.children)) {
+					old.classList.remove("is-in");
+					window.setTimeout(() => old.remove(), section.classList.contains("is-instant") ? 0 : 650);
+				}
+				const layer = drawLayer(scene, size);
+				svg.append(layer);
+				if (section.classList.contains("is-instant")) layer.classList.add("is-in");
+				else requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.add("is-in")));
+			}
+			if (chartTitle) chartTitle.textContent = scene.title;
+			placeCallouts(scene, size);
+			if (section.classList.contains("is-instant")) {
+				requestAnimationFrame(() =>
+					requestAnimationFrame(() => section.classList.remove("is-instant")),
+				);
+			}
+		};
+
+		const activate = (index: number) => {
+			if (index === active) return;
+			active = index;
+			const step = steps[index];
+			const scene = step?.dataset.scene ?? "geo";
+			if (chapterLabel) chapterLabel.textContent = step?.dataset.chapter ?? "";
+			pips.forEach((pip, i) => {
+				pip.classList.toggle("is-active", i === index);
+				pip.classList.toggle("is-done", i < index);
+			});
+			if (isSceneId(scene) && scene !== current) {
+				current = scene;
+				render(scene);
+			}
+		};
+
+		/** The active step is the last one whose card has crossed the trigger line. */
+		let ticking = false;
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(() => {
+				ticking = false;
+				const line = window.innerHeight * (window.innerWidth < 960 ? 0.86 : 0.6);
+				let index = 0;
+				steps.forEach((step, i) => {
+					const card = step.firstElementChild ?? step;
+					if (card.getBoundingClientRect().top < line) index = i;
+				});
+				activate(index);
+			});
+		};
+
+		render(current, true);
+		activate(0);
+		section.classList.add("is-ready");
+		onScroll();
+		window.addEventListener("scroll", onScroll, { passive: true });
+
+		let resizeFrame = 0;
+		if (plot && "ResizeObserver" in window) {
+			new ResizeObserver(() => {
+				window.cancelAnimationFrame(resizeFrame);
+				resizeFrame = window.requestAnimationFrame(() => render(current, true));
+			}).observe(plot);
+		}
+	}
+</script>

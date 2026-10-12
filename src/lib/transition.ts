@@ -32,7 +32,7 @@ export type Ramp = "div" | "grow" | "seq";
 /** Where a measure's data comes from: the World Bank's WDI, or V-Dem. */
 type SourceId = "vdem" | "wdi";
 type ScaleKind = "linear" | "log" | "symlog";
-type Series = readonly (number | null)[];
+export type Series = readonly (number | null)[];
 
 export interface Measure {
 	baseline?: number;
@@ -106,7 +106,8 @@ export const sourceLine = (measure: Pick<Measure, "source">) => {
 	return `${name}, updated ${dayFormat.format(new Date(lastUpdated))}`;
 };
 
-const alignedSeries = (key: string): Record<string, Series> => {
+/** A snapshot series by its key in transition.json, one value per year for every economy. */
+export const alignedSeries = (key: string): Record<string, Series> => {
 	const table = rawValues[key] ?? {};
 	return Object.fromEntries(
 		countries.map((country) => [country.iso3, table[country.iso3] ?? years.map(() => null)]),
