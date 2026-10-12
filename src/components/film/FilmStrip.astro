@@ -1,0 +1,184 @@
+---
+import Rebate from "@/components/film/Rebate.astro";
+import { getFilmFrames } from "@/lib/film";
+import { filmImage } from "@/lib/film-images";
+
+const frames = await getFilmFrames();
+const STRIP_WIDTHS = [480, 720, 960, 1280];
+const FALLBACK_IDS = [
+	"film-2026-07-paris-01",
+	"film-2025-04-wasinki-park",
+	"film-2025-04-cafe-moskau",
+];
+
+const manifest = await Promise.all(
+	frames.map(async (frame) => ({
+		alt: frame.alt,
+		aspect: frame.aspect,
+		date: frame.dateLabel,
+		frame: frame.frame,
+		id: frame.id,
+		image: await filmImage(frame, STRIP_WIDTHS),
+		title: frame.title,
+	})),
+);
+
+const fallback = FALLBACK_IDS.map((id) => manifest.find((item) => item.id === id)).filter(
+	(item): item is (typeof manifest)[number] => Boolean(item),
+);
+const initial = fallback.length === 3 ? fallback : manifest.slice(-3);
+const payload = JSON.stringify(manifest).replaceAll("<", "\\u003c");
+---
+
+<div class="filmstrip" data-filmstrip>
+	{
+		initial.map((item) => (
+			<figure class="filmstrip__frame" data-filmstrip-item style={`--ar: ${item.aspect}`}>
+				<a
+					aria-label={`Open frame ${item.frame}, ${item.title}, in the film archive`}
+					class="filmstrip__link"
+					data-filmstrip-link
+					href={`/film/#frame-${item.frame}`}
+				>
+					<img
+						alt={item.alt}
+						data-filmstrip-image
+						decoding="async"
+						height={item.image.height}
+						loading="lazy"
+						sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, calc(100vw - 2rem)"
+						src={item.image.src}
+						srcset={item.image.srcset}
+						width={item.image.width}
+					/>
+				</a>
+				<Rebate date={item.date} frame={item.frame} title={item.title} />
+			</figure>
+		))
+	}
+</div>
+
+<script data-filmstrip-data is:inline set:html={payload} type="application/json" />
+
+<style>
+	.filmstrip {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.filmstrip__frame {
+		min-width: 0;
+		margin: 0;
+		background: var(--rebate);
+	}
+
+	.filmstrip__link {
+		display: block;
+		overflow: hidden;
+	}
+
+	.filmstrip__link img {
+		width: 100%;
+		height: auto;
+		aspect-ratio: var(--ar);
+		object-fit: cover;
+		transition: opacity 200ms var(--ease);
+	}
+
+	.filmstrip__link:hover img {
+		opacity: 0.92;
+	}
+
+	/* Equal-height row: each frame's width is proportional to its aspect ratio. */
+	@media (min-width: 40rem) {
+		.filmstrip {
+			display: flex;
+			align-items: flex-start;
+		}
+
+		.filmstrip__frame {
+			flex: var(--ar) 1 0%;
+		}
+	}
+</style>
+
+<script>
+	interface StripItem {
+		alt: string;
+		aspect: number;
+		date: string;
+		frame: number;
+		id: string;
+		image: { height: number; src: string; srcset: string; width: number };
+		title: string;
+	}
+
+	const STORAGE_KEY = "filmstrip:last";
+	const strip = document.querySelector<HTMLElement>("[data-filmstrip]");
+	const dataElement = document.querySelector<HTMLScriptElement>("[data-filmstrip-data]");
+
+	const random = () => {
+		const value = new Uint32Array(1);
+		crypto.getRandomValues(value);
+		return (value[0] ?? 0) / 2 ** 32;
+	};
+
+	if (strip && dataElement?.textContent) {
+		const items = JSON.parse(dataElement.textContent) as StripItem[];
+		const slots = Array.from(strip.querySelectorAll<HTMLElement>("[data-filmstrip-item]"));
+		let previous: string[] = [];
+		try {
+			previous = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "[]");
+		} catch {
+			previous = [];
+		}
+
+		// Three distinct frames, not the set shown last time, with a combined aspect
+		// ratio that keeps the row a comfortable height.
+		let choice: StripItem[] = [];
+		for (let attempt = 0; attempt < 60; attempt += 1) {
+			const pool = [...items];
+			const picked: StripItem[] = [];
+			while (picked.length < slots.length && pool.length > 0) {
+				picked.push(pool.splice(Math.floor(random() * pool.length), 1)[0] as StripItem);
+			}
+			const total = picked.reduce((sum, item) => sum + item.aspect, 0);
+			const repeat = picked.every((item) => previous.includes(item.id));
+			if (total >= 3.2 && total <= 4.8 && !repeat) {
+				choice = picked;
+				break;
+			}
+		}
+
+		if (choice.length === slots.length) {
+			choice.forEach((item, index) => {
+				const slot = slots[index];
+				const link = slot?.querySelector<HTMLAnchorElement>("[data-filmstrip-link]");
+				const image = slot?.querySelector<HTMLImageElement>("[data-filmstrip-image]");
+				if (!slot || !link || !image) return;
+				slot.style.setProperty("--ar", String(item.aspect));
+				link.href = `/film/#frame-${item.frame}`;
+				link.setAttribute(
+					"aria-label",
+					`Open frame ${item.frame}, ${item.title}, in the film archive`,
+				);
+				image.alt = item.alt;
+				image.width = item.image.width;
+				image.height = item.image.height;
+				image.srcset = item.image.srcset;
+				image.src = item.image.src;
+				const frame = slot.querySelector("[data-rebate-frame]");
+				const title = slot.querySelector("[data-rebate-title]");
+				const date = slot.querySelector("[data-rebate-date]");
+				if (frame) frame.textContent = String(item.frame).padStart(2, "0");
+				if (title) title.textContent = item.title;
+				if (date) date.textContent = item.date;
+			});
+			try {
+				sessionStorage.setItem(STORAGE_KEY, JSON.stringify(choice.map((item) => item.id)));
+			} catch {
+				// Without storage the strip still changes on each visit.
+			}
+		}
+	}
+</script>

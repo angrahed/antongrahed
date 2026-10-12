@@ -1,307 +1,153 @@
 ---
 import { Image } from "astro:assets";
-import headshot from "@/assets/anton2.jpg";
-import AlternativeFilmPreview from "@/components/alternative/AlternativeFilmPreview.astro";
-import GameOfLifeHero from "@/components/alternative/GameOfLifeHero.astro";
+import AboutFacts from "@/components/about/AboutFacts.astro";
+import InterestRotator from "@/components/about/InterestRotator.astro";
+import LitText from "@/components/about/LitText.astro";
+import Portrait from "@/components/about/Portrait.astro";
+import FilmStrip from "@/components/film/FilmStrip.astro";
+import TransitionFigure from "@/components/home/TransitionFigure.astro";
+import ProjectCard from "@/components/projects/ProjectCard.astro";
 import { bookItems } from "@/data/books";
 import { featuredStamps } from "@/data/stamps";
-import AlternativeLayout from "@/layouts/Alternative.astro";
-import { siteFeatures } from "@/site.config";
+import Site from "@/layouts/Site.astro";
+import { getFilmFrames, getFilmPlaces } from "@/lib/film";
+import { projects } from "@/lib/projects";
+import { contact, siteFeatures } from "@/site.config";
 
-const readingSectionNumber = String(4 + Number(siteFeatures.stamps)).padStart(2, "0");
-const contactSectionNumber = String(
-	4 + Number(siteFeatures.stamps) + Number(siteFeatures.books),
-).padStart(2, "0");
-
-const projects = [
-	{
-		description:
-			"A resumable UN Comtrade scraper for unattended targeted scrapes and monthly release monitoring.",
-		tech: "Python",
-		title: "tradescrapr",
-		url: "https://github.com/angrahed/tradescrapr",
-	},
-	{
-		description:
-			"A tool for harmonizing countries in the EBRD style across R, Julia, Stata, and Python.",
-		tech: "R · Julia · Stata · Python",
-		title: "EBRDo",
-		url: "https://github.com/angrahed/EBRDo",
-	},
-	{
-		description:
-			"A Julia port of R's countrycode package: convert between coding schemes and standardize country names.",
-		tech: "Julia",
-		title: "CountryCodes.jl",
-		url: "https://github.com/angrahed/CountryCodes.jl",
-	},
-	{
-		description:
-			"A Julia client for the World Bank Open Data API: paginated queries as tidy DataFrames, plus cached metadata and local search.",
-		tech: "Julia",
-		title: "WBData.jl",
-		url: "https://github.com/angrahed/WBData.jl",
-	},
-];
+const frames = await getFilmFrames();
+const places = getFilmPlaces(frames);
 ---
 
-<AlternativeLayout
+<Site
 	meta={{
-		description: "The personal portfolio of Anton Grahed, economist at the EBRD.",
+		description:
+			"Anton Grahed, Research Analyst in the Office of the Chief Economist at the EBRD. Economic growth, development and the legacy of communism.",
 	}}
 >
-	<GameOfLifeHero />
-
-	<section class="alt-section profile-section" id="about">
-		<div class="alt-shell">
-			<div class="section-heading" data-reveal>
-				<p class="alt-kicker">01 · About</p>
-				<h2 class="alt-heading">About</h2>
-				<p class="alt-lead">
-					Research Analyst in the Office of the Chief Economist at the European Bank for
-					Reconstruction and Development. BSc and MSc in Economics from the London School of
-					Economics.
-				</p>
-			</div>
-
-			<div class="profile-layout">
-				<figure class="alt-photo-frame profile-photo" data-reveal>
-					<Image
-						alt="Portrait of Anton Grahed"
-						class="profile-photo__image"
-						decoding="async"
-						loading="lazy"
-						quality="max"
-						sizes="(min-width: 1024px) 36vw, calc(100vw - 2rem)"
-						src={headshot}
-						widths={[480, 720, 960]}
-					/>
-					<figcaption>Portrait · 35mm</figcaption>
-				</figure>
-
-				<div class="alt-console profile-console" data-reveal>
-					<div aria-hidden="true" class="alt-console__bar">
-						<span aria-hidden="true" class="window-dots"><i></i><i></i><i></i></span>
-					</div>
-					<div class="alt-console__body profile-copy">
-						<div>
-							<p class="alt-kicker">Abstract</p>
-							<p>
-								Hi! My name is Anton Grahed. I'm a Research Analyst in the Office of the Chief
-								Economist at the EBRD, and before that I did my BSc and MSc in Economics at the LSE.
-							</p>
-						</div>
-						<div>
-							<p class="alt-kicker">Work</p>
-							<p>
-								As a Research Analyst in the Office of the Chief Economist, I support the Bank's
-								applied research on development economics and growth, mostly through the data work
-								and visualisation behind it.
-							</p>
-						</div>
-						<div>
-							<p class="alt-kicker">Education</p>
-							<p>
-								I did my BSc and MSc in Economics at the London School of Economics and Political
-								Science.
-							</p>
-						</div>
-						<div>
-							<p class="alt-kicker">Interests</p>
-							<p>
-								I have broad interests across economics, but I'm especially drawn to
-								twentieth-century economic history, the causes and conditions for growth,
-								international economics, migration, the Nordic model, and how communism shaped
-								Eastern Europe's later development.
-							</p>
-						</div>
+	<section class="hero" data-section="Home">
+		<div class="wrap">
+			<div class="hero__intro">
+				<h1 class="display hero__title">Working on the economics of transition.</h1>
+				<div class="hero__aside">
+					<p class="lead">
+						Hi, I’m Anton Grahed. I research economic growth, development, and the economic legacy
+						of communism at the European Bank for Reconstruction and Development.
+					</p>
+					<div class="hero__actions">
+						<a class="button button--primary" href="/about/">About me</a>
+						<a class="button" href="/projects/">See projects</a>
 					</div>
 				</div>
 			</div>
+			<TransitionFigure />
+		</div>
+	</section>
 
-			<div class="fact-grid" data-reveal>
-				<div class="alt-card fact-card">
-					<span class="fact-card__value">EBRD</span>
-					<span class="alt-kicker">Office of the Chief Economist</span>
-				</div>
-				<div class="alt-card fact-card fact-card--blue">
-					<span class="fact-card__value">LSE</span>
-					<span class="alt-kicker">BSc + MSc Economics</span>
-				</div>
+	<section aria-labelledby="about-title" class="section" data-section="About" id="about">
+		<div class="wrap about">
+			<div class="about__portrait">
+				<Portrait sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 18rem, calc(100vw - 2rem)" />
+			</div>
+			<div class="about__body">
+				<h2 class="about__title" id="about-title">About</h2>
+				<LitText
+					class="about__lead"
+					text="I’m a Research Analyst in the Office of the Chief Economist at the EBRD. I support the Bank’s applied research on development economics and growth, mostly through the data work and visualisation behind it."
+				/>
+				<InterestRotator />
+				<AboutFacts />
+				<a class="text-link about__more" href="/about/">Read the full profile</a>
 			</div>
 		</div>
 	</section>
 
-	<section class="alt-section alt-section--ink work-section" id="projects">
-		<div class="alt-shell">
-			<div class="section-heading section-heading--split" data-reveal>
-				<div>
-					<p class="alt-kicker">02 · Projects</p>
-					<h2 class="alt-heading">Selected work</h2>
-				</div>
-				<p class="alt-lead">
-					Research tools and data explorations, mostly built around economic data.
+	<section aria-labelledby="projects-title" class="section" data-section="Projects" id="projects">
+		<div class="wrap">
+			<div class="section-head">
+				<h2 id="projects-title">Projects</h2>
+				<p>
+					Research tools and data explorations, mostly built around economic data. Each is open
+					source on GitHub.
 				</p>
 			</div>
-
 			<div class="project-grid">
-				{
-					projects.map((project, index) => (
-						<a
-							aria-label={`View ${project.title} on GitHub`}
-							class="project-card"
-							data-reveal
-							href={project.url}
-							rel="noreferrer"
-							target="_blank"
-						>
-							<span class="project-card__top">
-								<span class="project-card__number">{String(index + 1).padStart(2, "0")}</span>
-								<span class="project-card__arrow" aria-hidden="true">
-									↗
-								</span>
-							</span>
-							<span class="alt-kicker">{project.tech}</span>
-							<strong>{project.title}</strong>
-							<span class="project-card__description">{project.description}</span>
-							<span class="project-card__footer">View on GitHub</span>
-						</a>
-					))
-				}
+				{projects.map((project) => <ProjectCard project={project} />)}
 			</div>
-
-			{
-				siteFeatures.posts && (
-					<div class="writing-panel alt-console" data-reveal>
-						<div class="alt-console__bar">
-							<span>WRITING</span>
-						</div>
-						<div class="alt-console__body writing-panel__body">
-							<div>
-								<p class="alt-kicker">Posts</p>
-								<h3>Writing</h3>
-								<p>Notes on economics, growth, and the things I'm reading and building.</p>
-							</div>
-							<div class="writing-panel__links">
-								<a class="alt-button" href="/posts/">
-									Browse posts <span aria-hidden="true">→</span>
-								</a>
-								<a class="alt-button alt-button--ghost" href="/rss.xml">
-									RSS feed
-								</a>
-							</div>
-						</div>
-					</div>
-				)
-			}
 		</div>
 	</section>
 
-	<section class="alt-section archive-section" id="archive">
-		<div class="alt-shell">
-			<div class="section-heading section-heading--split" data-reveal>
-				<div>
-					<p class="alt-kicker">03 · Film</p>
-					<h2 class="alt-heading">Shot on film</h2>
-				</div>
-				<p class="alt-lead">
-					A rolling selection from my negatives. 35mm from near and far, mostly on a Nikon F5, Nikon
-					FA, Nikon FM2N and an Olympus Mju II.
+	<section aria-labelledby="film-title" class="section" data-section="Film" id="film">
+		<div class="wrap">
+			<div class="section-head">
+				<h2 id="film-title">Film</h2>
+				<p>
+					A rolling selection from {frames.length} frames shot on 35mm in {places.length} places, mostly
+					on a Nikon F5, Nikon FA, Nikon FM2N and an Olympus Mju II.
 				</p>
 			</div>
-
-			<AlternativeFilmPreview />
-
-			<div class="archive-actions" data-reveal>
-				<a class="alt-button" href="/film/">
-					View the film archive <span aria-hidden="true">→</span>
-				</a>
-			</div>
-
-			{
-				siteFeatures.stamps && (
-					<div class="stamp-panel" data-reveal>
-						<div class="stamp-panel__copy">
-							<p class="alt-kicker">04 · Philately</p>
-							<h2 class="alt-heading">Selected Stamps</h2>
-							<p class="alt-lead">
-								A collection of my favourite stamps! Will be updated regularly.
-							</p>
-							<a class="alt-button alt-button--ghost" href="/stamps/">
-								Open the collection →
-							</a>
-						</div>
-						<div class="collection-grid" data-alt-stamp-preview>
-							{featuredStamps.map((stamp) => (
-								<a
-									aria-label={`View ${stamp.caption} in the stamp collection`}
-									class="collection-tile"
-									data-alt-stamp-id={stamp.id}
-									data-alt-stamp-preview-item={stamp.id}
-									href={`/stamps/#${stamp.id}`}
-								>
-									<span class="collection-tile__image-frame">
-										<Image
-											alt={stamp.alt}
-											class="collection-tile__image"
-											decoding="async"
-											loading="lazy"
-											quality={85}
-											sizes="(min-width: 64rem) 22vw, (min-width: 44rem) 42vw, 42vw"
-											src={stamp.src}
-											widths={[240, 360, 480, 640]}
-										/>
-									</span>
-									<span class="collection-tile__caption">
-										<span>{stamp.caption}</span>
-										<span aria-hidden="true">↗</span>
-									</span>
-								</a>
-							))}
-						</div>
-					</div>
-				)
-			}
+			<FilmStrip />
+			<p class="film-more"><a class="text-link" href="/film/">Open the film archive</a></p>
 		</div>
 	</section>
+
+	{
+		siteFeatures.stamps && (
+			<section aria-labelledby="stamps-title" class="section" data-section="Stamps" id="stamps">
+				<div class="wrap">
+					<div class="section-head">
+						<h2 id="stamps-title">Stamps</h2>
+						<p>A few favourites from my postage stamp collection.</p>
+					</div>
+					<ul class="stamp-teaser" role="list">
+						{featuredStamps.map((stamp) => (
+							<li>
+								<a href={`/stamps/#${stamp.id}`}>
+									<Image
+										alt={stamp.alt}
+										decoding="async"
+										loading="lazy"
+										quality={82}
+										sizes="(min-width: 52rem) 22vw, 45vw"
+										src={stamp.src}
+										widths={[240, 360, 480]}
+									/>
+									<span>{stamp.caption}</span>
+								</a>
+							</li>
+						))}
+					</ul>
+					<p class="film-more">
+						<a class="text-link" href="/stamps/">
+							See the whole collection
+						</a>
+					</p>
+				</div>
+			</section>
+		)
+	}
 
 	{
 		siteFeatures.books && (
-			<section
-				class="alt-section alt-section--paper-deep books-section"
-				data-alt-book-count={bookItems.length}
-				data-alt-book-section
-				id="books"
-			>
-				<div class="alt-shell">
-					<div class="section-heading section-heading--split" data-reveal>
-						<div>
-							<p class="alt-kicker">{readingSectionNumber} · Reading</p>
-							<h2 class="alt-heading">Favourite books</h2>
-						</div>
-						<p class="alt-lead">Books I've liked and would recommend.</p>
+			<section aria-labelledby="books-title" class="section" data-section="Books" id="books">
+				<div class="wrap">
+					<div class="section-head">
+						<h2 id="books-title">Favourite books</h2>
+						<p>Books I’ve liked and would recommend.</p>
 					</div>
-
 					{bookItems.length === 0 ? (
-						<div class="books-empty" data-alt-book-empty data-reveal role="status">
-							<p class="alt-kicker">No entries yet</p>
-							<p>I haven't added the list yet.</p>
-						</div>
+						<p class="muted">The list is coming soon.</p>
 					) : (
-						<ol aria-label="Favourite books" class="book-list" data-alt-book-list data-reveal>
-							{bookItems.map((book, index) => (
-								<li class="book-card" data-alt-book-id={book.id} data-alt-book-item id={book.id}>
-									<article>
-										<p class="book-card__number">{String(index + 1).padStart(2, "0")}</p>
-										<div>
-											<h3>{book.url ? <a href={book.url}>{book.title}</a> : book.title}</h3>
-											<p class="book-card__byline">
-												{book.author}
-												{book.firstPublished !== undefined && ` · ${book.firstPublished}`}
-											</p>
-											<p class="book-card__note">{book.note}</p>
-										</div>
-									</article>
+						<ol class="books" role="list">
+							{bookItems.map((book) => (
+								<li id={book.id}>
+									<p class="books__title">
+										{book.url ? <a href={book.url}>{book.title}</a> : book.title}
+									</p>
+									<p class="meta">
+										{book.author}
+										{book.firstPublished !== undefined && `, ${book.firstPublished}`}
+									</p>
+									<p class="muted">{book.note}</p>
 								</li>
 							))}
 						</ol>
@@ -311,551 +157,198 @@ const projects = [
 		)
 	}
 
-	<section class="alt-section alt-section--azure contact-section" id="contact">
-		<div class="alt-shell contact-layout" data-reveal>
-			<div>
-				<p class="alt-kicker">{contactSectionNumber} · Contact</p>
-				<h2 class="alt-heading">Get in touch.</h2>
-			</div>
-			<div class="contact-copy">
-				<p>Research Analyst, Office of the Chief Economist, EBRD.</p>
-				<div class="contact-actions">
-					<a class="alt-button" href="mailto:graheda@ebrd.com"
-						>Email me <span aria-hidden="true">→</span></a
+	<section
+		aria-labelledby="contact-title"
+		class="section contact"
+		data-section="Contact"
+		id="contact"
+	>
+		<div class="wrap contact__inner">
+			<h2 class="contact__title" id="contact-title">Get in touch</h2>
+			<div class="contact__body">
+				<p class="lead">
+					Email is the quickest way to reach me. The code for the projects is on GitHub.
+				</p>
+				<div class="contact__actions">
+					<a class="button button--primary" href={`mailto:${contact.email}`}
+						>Email {contact.email}</a
 					>
-					<a
-						class="alt-button alt-button--ghost"
-						href="https://github.com/angrahed"
-						rel="noreferrer"
-						target="_blank">GitHub ↗</a
-					>
+					<a class="button" href={contact.github} rel="noreferrer">GitHub</a>
 				</div>
 			</div>
 		</div>
 	</section>
-</AlternativeLayout>
+</Site>
 
 <style>
-	.section-heading {
-		max-width: 52rem;
+	.hero {
+		padding-block: clamp(2rem, 4vw, 3.25rem) clamp(4rem, 8vw, 6.5rem);
 	}
 
-	.profile-section,
-	.work-section,
-	.archive-section,
-	.books-section,
-	.contact-section {
-		padding-block: clamp(4rem, 9vw, 9rem);
-	}
-
-	.section-heading--split {
+	.hero__intro {
 		display: grid;
-		max-width: none;
-		gap: 2rem;
+		gap: 1.5rem 3rem;
+		margin-bottom: clamp(2rem, 4vw, 2.75rem);
 	}
 
-	.profile-layout {
-		display: grid;
-		gap: 1px;
-		margin-top: clamp(2.5rem, 6vw, 5rem);
-		background: var(--alt-line);
-		border: 1px solid var(--alt-line);
+	.hero__title {
+		max-width: 13ch;
 	}
 
-	.profile-photo,
-	.profile-console {
-		border: 0;
-		border-radius: 0;
-		box-shadow: none;
+	.hero__aside {
+		max-width: 34rem;
 	}
 
-	.profile-photo {
-		margin: 0;
-		background: var(--alt-paper-raised);
-	}
-
-	.profile-photo__image {
-		display: block;
-		width: 100%;
-		aspect-ratio: 4 / 5;
-		object-fit: cover;
-		object-position: 50% 36%;
-	}
-
-	.profile-photo figcaption {
+	.hero__actions {
 		display: flex;
-		min-height: 2.5rem;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0 0.75rem;
-		border-top: 1px solid var(--alt-line);
-		font-family: var(--alt-font-mono);
-		font-size: 0.6875rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin-top: 1.5rem;
 	}
 
-	.profile-console {
-		background: var(--alt-paper-raised);
+	@media (min-width: 60rem) {
+		.hero__intro {
+			grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+			align-items: end;
+		}
 	}
 
-	.profile-console .alt-console__bar {
-		border-bottom-color: var(--alt-line);
-	}
-
-	.window-dots {
-		display: inline-flex;
-		gap: 0.25rem;
-	}
-
-	.window-dots i {
-		display: block;
-		width: 0.5rem;
-		height: 0.5rem;
-		background: currentColor;
-	}
-
-	.profile-copy {
+	/* About */
+	.about {
 		display: grid;
-		gap: 1px;
-		padding: 0;
-		background: var(--alt-line);
+		gap: 2rem clamp(2rem, 5vw, 4.5rem);
 	}
 
-	.profile-copy > div {
-		padding: clamp(1.25rem, 3vw, 2rem);
-		background: var(--alt-paper-raised);
+	.about__portrait {
+		max-width: 22rem;
 	}
 
-	.profile-copy p:last-child {
-		max-width: 43rem;
-		margin: 0.75rem 0 0;
-		font-size: clamp(1rem, 1.5vw, 1.125rem);
-		line-height: 1.7;
-	}
-
-	.fact-grid {
+	.about__body {
 		display: grid;
-		gap: 1px;
-		margin-top: 1px;
-		background: var(--alt-line);
-		border: 1px solid var(--alt-line);
-		border-top: 0;
+		min-width: 0;
+		align-content: start;
+		gap: clamp(1.75rem, 3.5vw, 2.5rem);
 	}
 
-	.fact-card {
-		display: flex;
-		min-height: 11rem;
-		flex-direction: column;
-		justify-content: space-between;
-		border: 0;
-		border-radius: 0;
-		background: var(--alt-azure);
-		color: var(--alt-white);
+	.about__title {
+		margin-bottom: -0.75rem;
+		font-size: var(--step-4);
+		font-weight: 360;
+		letter-spacing: -0.03em;
 	}
 
-	.fact-card--blue {
-		background: var(--alt-blue);
-		color: var(--alt-white);
+	.about__body :global(.about__lead) {
+		max-width: 40rem;
+		color: var(--ink);
+		font-size: var(--step-3);
+		font-weight: 320;
+		line-height: 1.32;
+		letter-spacing: -0.02em;
 	}
 
-	.fact-card__value {
-		font-size: clamp(2.5rem, 7vw, 5rem);
-		font-weight: 300;
-		line-height: 1;
-		letter-spacing: -0.05em;
+	.about__more {
+		justify-self: start;
 	}
 
-	.work-section .alt-kicker {
-		color: inherit;
+	@media (min-width: 52rem) {
+		.about {
+			grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr);
+			align-items: start;
+		}
+
+		.about__portrait {
+			position: sticky;
+			top: calc(var(--header-h) + 2rem);
+		}
 	}
 
+	/* Projects */
 	.project-grid {
 		display: grid;
 		gap: 1px;
-		margin-top: clamp(2.5rem, 6vw, 5rem);
-		background: color-mix(in srgb, var(--alt-white) 25%, transparent);
-		border: 1px solid color-mix(in srgb, var(--alt-white) 25%, transparent);
+		border: 1px solid var(--rule);
+		background: var(--rule);
 	}
 
-	.project-card {
-		display: flex;
-		min-height: 22rem;
-		flex-direction: column;
-		padding: clamp(1.25rem, 2.5vw, 2rem);
-		background: var(--alt-paper-raised);
-		color: var(--alt-ink);
-		text-decoration: none;
-		transition:
-			transform 180ms ease,
-			background-color 180ms ease;
+	@media (min-width: 52rem) {
+		.project-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 
-	.project-card:hover {
-		position: relative;
-		z-index: 1;
-		background: var(--alt-sky-soft);
-		transform: translateY(-0.375rem);
-	}
-
-	.project-card__top {
-		display: flex;
-		align-items: start;
-		justify-content: space-between;
-		margin-bottom: 3.5rem;
-		font-family: var(--alt-font-mono);
-		font-size: 0.75rem;
-	}
-
-	.project-card__number {
-		display: grid;
-		width: 2rem;
-		height: 2rem;
-		place-items: center;
-		background: var(--alt-ink);
-		color: var(--alt-white);
-	}
-
-	.project-card__arrow {
-		font-size: 1.5rem;
-	}
-
-	.project-card strong {
-		margin-top: 0.75rem;
-		font-size: clamp(1.5rem, 3vw, 2.25rem);
-		font-weight: 400;
-		letter-spacing: -0.035em;
-	}
-
-	.project-card__description {
-		margin-top: 1rem;
-		font-size: 0.9375rem;
-		line-height: 1.6;
-	}
-
-	.project-card__footer {
-		margin-top: auto;
-		padding-top: 2rem;
-		border-top: 1px solid var(--alt-line);
-		font-family: var(--alt-font-mono);
-		font-size: 0.6875rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
-	.writing-panel {
-		margin-top: clamp(2.5rem, 7vw, 6rem);
-	}
-
-	.writing-panel__body {
-		display: grid;
-		gap: 2rem;
-		background: var(--alt-paper);
-		color: var(--alt-ink);
-	}
-
-	.writing-panel h3 {
-		margin: 0.5rem 0 0;
-		font-size: clamp(2rem, 5vw, 4rem);
-		font-weight: 300;
-		letter-spacing: -0.05em;
-	}
-
-	.writing-panel p:not(.alt-kicker) {
-		max-width: 36rem;
-		line-height: 1.65;
-	}
-
-	.writing-panel__links,
-	.contact-actions {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-start;
-		gap: 0.5rem;
-	}
-
-	.archive-actions {
-		display: flex;
-		justify-content: flex-end;
+	/* Film */
+	.film-more {
 		margin-top: 1.5rem;
 	}
 
-	.stamp-panel {
-		display: grid;
-		gap: clamp(2rem, 6vw, 5rem);
-		margin-top: clamp(5rem, 12vw, 10rem);
-		padding: clamp(1.5rem, 5vw, 4rem);
-		background: var(--alt-ink);
-		color: var(--alt-white);
-	}
-
-	.stamp-panel__copy .alt-lead {
-		color: inherit;
-	}
-
-	.stamp-panel__copy > .alt-button {
-		margin-top: 2rem;
-	}
-
-	.collection-grid {
+	/* Stamps */
+	.stamp-teaser {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1rem;
-		align-self: center;
 	}
 
-	.collection-tile {
+	.stamp-teaser a {
 		display: grid;
-		aspect-ratio: 5 / 4;
-		grid-template-rows: minmax(0, 1fr) auto;
-		overflow: hidden;
-		border: 1px solid currentColor;
-		background: var(--alt-paper-raised);
-		box-shadow: 0 1rem 2.5rem rgb(7 26 51 / 18%);
-		color: var(--alt-ink);
-		font-family: var(--alt-font-mono);
-		font-size: 0.625rem;
-		letter-spacing: 0.08em;
+		gap: 0.5rem;
+		color: var(--ink-2);
+		font-size: var(--step--1);
 		text-decoration: none;
-		text-transform: uppercase;
-		transition:
-			border-color 180ms ease,
-			transform 180ms ease;
 	}
 
-	.collection-tile:hover,
-	.collection-tile:focus-visible {
-		border-color: var(--alt-azure);
-		transform: translateY(-0.25rem);
-	}
-
-	.collection-tile__image-frame {
-		display: grid;
-		min-height: 0;
-		place-items: center;
-		overflow: hidden;
-		padding: clamp(0.35rem, 1vw, 0.75rem);
-		background: var(--alt-sky-soft);
-	}
-
-	.collection-tile:nth-child(2n) .collection-tile__image-frame {
-		background: var(--alt-sky);
-	}
-
-	.collection-tile__image {
-		display: block;
+	.stamp-teaser :global(img) {
 		width: 100%;
-		height: 100%;
+		height: auto;
+		aspect-ratio: 5 / 4;
+		padding: 0.75rem;
+		border: 1px solid var(--rule);
+		background: var(--surface);
 		object-fit: contain;
 	}
 
-	.collection-tile__caption {
-		display: flex;
-		min-width: 0;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 0.65rem 0.75rem;
-		border-top: 1px solid var(--alt-line);
+	.stamp-teaser a:hover :global(img) {
+		border-color: var(--signal);
 	}
 
-	.collection-tile__caption span:first-child {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.books-empty,
-	.book-list {
-		margin-top: clamp(2.5rem, 6vw, 5rem);
-	}
-
-	.books-section .alt-kicker {
-		color: var(--alt-blue);
-	}
-
-	.books-empty {
-		display: grid;
-		min-height: 18rem;
-		align-content: center;
-		gap: 0.75rem;
-		padding: clamp(1.5rem, 4vw, 3rem);
-		border: 1px solid var(--alt-line);
-		background: var(--alt-paper-raised);
-	}
-
-	.books-empty > p:last-child {
-		font-size: clamp(1.25rem, 2.5vw, 2rem);
-		font-weight: 300;
-		letter-spacing: -0.025em;
-	}
-
-	.book-list {
-		display: grid;
-		gap: 1px;
-		border: 1px solid var(--alt-line);
-		background: var(--alt-line);
-		list-style: none;
-	}
-
-	.book-card {
-		min-width: 0;
-		background: var(--alt-paper-raised);
-	}
-
-	.book-card article {
-		display: flex;
-		min-height: 20rem;
-		flex-direction: column;
-		justify-content: space-between;
-		gap: 3rem;
-		padding: clamp(1.25rem, 3vw, 2rem);
-	}
-
-	.book-card__number,
-	.book-card__byline {
-		color: var(--alt-ink-muted);
-		font-family: var(--alt-font-mono);
-		font-size: 0.6875rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
-	.book-card h3 {
-		font-size: clamp(1.5rem, 3vw, 2.25rem);
-		font-weight: 400;
-		letter-spacing: -0.035em;
-		line-height: 1.1;
-	}
-
-	.book-card h3 a {
-		border-bottom: 1px solid currentColor;
-	}
-
-	.book-card h3 a:hover,
-	.book-card h3 a:focus-visible {
-		background: var(--alt-sky);
-	}
-
-	.book-card__byline {
-		margin-top: 0.8rem;
-	}
-
-	.book-card__note {
-		margin-top: 1.5rem;
-		line-height: 1.65;
-	}
-
-	.contact-layout {
-		display: grid;
-		gap: 2rem;
-	}
-
-	.contact-copy {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		justify-content: space-between;
-	}
-
-	.contact-copy p {
-		max-width: 32rem;
-		font-size: clamp(1.125rem, 2vw, 1.5rem);
-		line-height: 1.5;
-	}
-
-	.contact-section .alt-button:not(.alt-button--ghost) {
-		background: var(--alt-paper);
-		color: var(--alt-ink);
-	}
-
-	.contact-section .alt-button:not(.alt-button--ghost):hover {
-		background: var(--alt-sky);
-	}
-
-	:global(html.reveal-ready) [data-reveal] {
-		opacity: 0;
-		transform: translateY(2rem);
-		transition:
-			opacity 600ms cubic-bezier(0.2, 0, 0.2, 1),
-			transform 600ms cubic-bezier(0.2, 0, 0.2, 1);
-	}
-
-	:global(html.reveal-ready) [data-reveal].is-visible {
-		opacity: 1;
-		transform: none;
-	}
-
-	@media (min-width: 44rem) {
-		.section-heading--split {
-			grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.7fr);
-			align-items: end;
-		}
-
-		.fact-grid,
-		.project-grid,
-		.book-list {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
-		.writing-panel__body,
-		.contact-layout {
-			grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
-		}
-
-		.stamp-panel {
-			grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 1.1fr);
-		}
-	}
-
-	@media (min-width: 64rem) {
-		.profile-layout {
-			grid-template-columns: minmax(18rem, 0.78fr) minmax(0, 1.22fr);
-		}
-
-		.project-grid {
+	@media (min-width: 52rem) {
+		.stamp-teaser {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
-
-		.book-list {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.collection-tile,
-		.project-card,
-		:global(html.reveal-ready) [data-reveal] {
-			transition: none;
-		}
+	/* Books */
+	.books {
+		display: grid;
+		gap: 1.5rem;
+	}
 
-		.collection-tile:hover,
-		.collection-tile:focus-visible,
-		.project-card:hover,
-		:global(html.reveal-ready) [data-reveal] {
-			opacity: 1;
-			transform: none;
+	.books__title {
+		font-size: var(--step-1);
+	}
+
+	/* Contact */
+	.contact__inner {
+		display: grid;
+		gap: 1.5rem 3rem;
+	}
+
+	.contact__title {
+		font-size: var(--step-4);
+		font-weight: 360;
+		letter-spacing: -0.03em;
+	}
+
+	.contact__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin-top: 1.5rem;
+	}
+
+	@media (min-width: 52rem) {
+		.contact__inner {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			align-items: start;
 		}
 	}
 </style>
-
-<script>
-	const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-	if (!motionPreference.matches) {
-		document.documentElement.classList.add("reveal-ready");
-		const reveals = document.querySelectorAll<HTMLElement>("[data-reveal]");
-		const revealObserver = new IntersectionObserver(
-			(entries, observer) => {
-				for (const entry of entries) {
-					if (!entry.isIntersecting) continue;
-					(entry.target as HTMLElement).classList.add("is-visible");
-					observer.unobserve(entry.target);
-				}
-			},
-			{ rootMargin: "0px 0px -10%", threshold: 0.08 },
-		);
-
-		for (const reveal of reveals) revealObserver.observe(reveal);
-	}
-</script>

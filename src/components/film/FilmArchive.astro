@@ -1,0 +1,1076 @@
+---
+import Rebate from "@/components/film/Rebate.astro";
+import { getFilmFrames, getFilmPlaces, getFilmYears } from "@/lib/film";
+import { filmImage } from "@/lib/film-images";
+import { basemapSize, projectLonLat } from "@/lib/geo";
+
+const frames = await getFilmFrames();
+const places = getFilmPlaces(frames);
+const filmYears = getFilmYears(frames);
+const map = basemapSize();
+const maxCount = Math.max(...places.map(({ count }) => count), 1);
+const unplaced = frames.filter((frame) => !frame.place).length;
+
+const items = await Promise.all(
+	frames.map(async (frame) => ({
+		frame,
+		full: await filmImage(frame, [1200, 2000, 2800], 88),
+		thumb: await filmImage(frame, [360, 540, 720, 1080], 80),
+	})),
+);
+
+const scannerFamily = (name: string | null) => {
+	if (!name) return null;
+	if (name.startsWith("Noritsu")) return "Noritsu";
+	if (name.startsWith("Fujifilm")) return "Fujifilm Frontier";
+	return name;
+};
+const scanners = [
+	...new Set(frames.map((frame) => scannerFamily(frame.analysis.scan.scanner))),
+].filter(Boolean);
+
+const manifest = items.map(({ frame, full }) => ({
+	alt: frame.alt,
+	date: frame.dateLabel,
+	edited: frame.analysis.scan.edited,
+	frame: frame.frame,
+	full,
+	histogram: frame.analysis.histogram,
+	id: frame.id,
+	palette: frame.analysis.palette,
+	place: frame.place
+		? `${frame.place.name}${frame.place.precision === "city" ? `, ${frame.place.country}` : ""}`
+		: null,
+	scanner: frame.analysis.scan.scanner,
+	size: [frame.analysis.width, frame.analysis.height],
+	title: frame.title,
+}));
+const payload = JSON.stringify(manifest).replaceAll("<", "\\u003c");
+
+const markerRadius = (count: number) => 3.5 + 2.4 * Math.sqrt(count);
+const firstYear = filmYears[0]?.year;
+const lastYear = filmYears.at(-1)?.year;
+---
+
+<div class="film-archive" data-film-archive>
+	<dl class="film-stats">
+		<div><dt>Frames</dt><dd class="num">{frames.length}</dd></div>
+		<div><dt>Places</dt><dd class="num">{places.length}</dd></div>
+		<div><dt>Years</dt><dd class="num">{firstYear}–{lastYear}</dd></div>
+		<div><dt>Scanned on</dt><dd>{scanners.join(" and ")}</dd></div>
+	</dl>
+
+	<figure
+		aria-labelledby="fmap-title"
+		class="instrument fmap"
+		data-section="Figure 2"
+		id="figure-2"
+	>
+		<header class="fmap__head">
+			<p>
+				<span class="figure-label">Figure 2</span>
+				<span id="fmap-title">Where the frames were shot</span>
+			</p>
+		</header>
+		<div class="fmap__body">
+			<div class="fmap__map" style={`aspect-ratio: ${map.width.toFixed(3)} / ${map.height}`}>
+				<div aria-hidden="true" class="fmap__land"></div>
+				{
+					places.map(({ count, place }) => {
+						const [x, y] = projectLonLat(place.lon, place.lat);
+						const r = markerRadius(count);
+						return (
+							<button
+								aria-label={`${place.name}: ${count} ${count === 1 ? "frame" : "frames"}. Show only these.`}
+								aria-pressed="false"
+								class="fmap__marker"
+								data-film-place={place.id}
+								style={`left: ${((x / map.width) * 100).toFixed(2)}%; top: ${((y / map.height) * 100).toFixed(2)}%; --r: ${r.toFixed(1)}px`}
+								title={`${place.name}, ${count}`}
+								type="button"
+							/>
+						);
+					})
+				}
+			</div>
+			<ol aria-label="Frames by place" class="fmap__list" role="list">
+				{
+					places.map(({ count, place }) => (
+						<li>
+							<button
+								aria-pressed="false"
+								class="fmap__row"
+								data-film-place={place.id}
+								type="button"
+							>
+								<span class="fmap__name">{place.name}</span>
+								<span aria-hidden="true" class="fmap__bar">
+									<i style={`width: ${((count / maxCount) * 100).toFixed(1)}%`} />
+								</span>
+								<span class="fmap__count num">{count}</span>
+							</button>
+						</li>
+					))
+				}
+			</ol>
+		</div>
+		<figcaption class="fmap__foot">
+			Dot size shows the number of frames. Select a place to filter the archive. Land outline from
+			Natural Earth.{unplaced > 0 && ` ${unplaced} frames have no recorded place.`}
+		</figcaption>
+	</figure>
+
+	<div aria-label="Filter frames" class="film-filters" role="group">
+		<div class="film-filters__years">
+			<span class="film-filters__label">Year</span>
+			<button aria-pressed="true" class="chip" data-film-year="" type="button">All</button>
+			{
+				filmYears.map(({ count, year }) => (
+					<button aria-pressed="false" class="chip" data-film-year={year} type="button">
+						{year} <span class="chip__count num">{count}</span>
+					</button>
+				))
+			}
+		</div>
+		<p aria-live="polite" class="film-filters__status">
+			<span data-film-status>Showing all {frames.length} frames</span>
+			<button class="film-filters__clear" data-film-clear hidden type="button">Clear filters</button
+			>
+		</p>
+	</div>
+
+	<ol class="sheet" data-film-sheet role="list">
+		{
+			items.map(({ frame, thumb }) => (
+				<li
+					class="sheet__item"
+					data-frame={frame.frame}
+					data-place={frame.place?.id ?? ""}
+					data-year={frame.year ?? ""}
+					id={`frame-${frame.frame}`}
+					style={`--ar: ${frame.aspect}`}
+				>
+					<figure>
+						<button
+							aria-haspopup="dialog"
+							aria-label={`View frame ${frame.frame}: ${frame.title}${frame.dateLabel ? `, ${frame.dateLabel}` : ""}`}
+							class="sheet__open"
+							data-film-open={frame.frame}
+							type="button"
+						>
+							<img
+								alt={frame.alt}
+								decoding="async"
+								height={thumb.height}
+								loading="lazy"
+								sizes="(min-width: 64rem) 28vw, (min-width: 40rem) 45vw, calc(100vw - 2rem)"
+								src={thumb.src}
+								srcset={thumb.srcset}
+								width={thumb.width}
+							/>
+						</button>
+						<Rebate date={frame.dateLabel} frame={frame.frame} title={frame.title} />
+					</figure>
+				</li>
+			))
+		}
+	</ol>
+	<p class="sheet__empty muted" data-film-empty hidden>
+		No frames match these filters. <button class="film-filters__clear" data-film-clear type="button"
+			>Clear filters</button
+		>
+	</p>
+</div>
+
+<dialog aria-labelledby="viewer-title" class="viewer" data-film-viewer>
+	<div class="viewer__layout">
+		<div class="viewer__stage">
+			<img alt="" class="viewer__image" data-viewer-image />
+			<button
+				aria-label="Previous frame"
+				class="viewer__step viewer__step--prev"
+				data-viewer-prev
+				type="button"
+			>
+				<svg aria-hidden="true" viewBox="0 0 16 16"
+					><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg
+				>
+			</button>
+			<button
+				aria-label="Next frame"
+				class="viewer__step viewer__step--next"
+				data-viewer-next
+				type="button"
+			>
+				<svg aria-hidden="true" viewBox="0 0 16 16"
+					><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg
+				>
+			</button>
+		</div>
+		<aside class="viewer__panel">
+			<div class="viewer__top">
+				<p class="meta num" data-viewer-position></p>
+				<button class="viewer__close" data-viewer-close type="button"
+					>Close <kbd class="kbd">Esc</kbd></button
+				>
+			</div>
+			<h2 class="viewer__title" data-viewer-title id="viewer-title"></h2>
+			<dl class="spec viewer__spec">
+				<dt>Place</dt><dd data-viewer-place></dd>
+				<dt>Date</dt><dd class="num" data-viewer-date></dd>
+				<dt>Scan</dt><dd data-viewer-scan></dd>
+				<dt>Size</dt><dd class="num" data-viewer-size></dd>
+			</dl>
+			<div class="viewer__block">
+				<p class="viewer__label">Palette</p>
+				<ol class="viewer__palette" data-viewer-palette role="list"></ol>
+			</div>
+			<div class="viewer__block">
+				<p class="viewer__label">Histogram</p>
+				<svg
+					aria-hidden="true"
+					class="viewer__histogram"
+					data-viewer-histogram
+					preserveAspectRatio="none"
+					viewBox="0 0 310 80"
+				>
+					<path class="viewer__hist-l" data-hist="l"></path>
+					<path class="viewer__hist-r" data-hist="r"></path>
+					<path class="viewer__hist-g" data-hist="g"></path>
+					<path class="viewer__hist-b" data-hist="b"></path>
+				</svg>
+				<ul class="viewer__hist-key" role="list">
+					<li><i class="viewer__hist-l"></i>Luminance</li>
+					<li><i class="viewer__hist-r"></i>Red</li>
+					<li><i class="viewer__hist-g"></i>Green</li>
+					<li><i class="viewer__hist-b"></i>Blue</li>
+				</ul>
+			</div>
+			<p class="meta viewer__keys">
+				<kbd class="kbd">←</kbd>
+				<kbd class="kbd">→</kbd> step through frames
+			</p>
+		</aside>
+	</div>
+</dialog>
+
+<script data-film-manifest is:inline set:html={payload} type="application/json" />
+
+<style>
+	.film-stats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem 2.5rem;
+		margin-bottom: clamp(2rem, 5vw, 3rem);
+	}
+
+	.film-stats dt {
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.film-stats dd {
+		margin: 0.15rem 0 0;
+		font-size: var(--step-1);
+	}
+
+	/* ---------- Figure 2: places ---------- */
+	.fmap {
+		scroll-margin-top: calc(var(--header-h) + 1.5rem);
+	}
+
+	.fmap__head {
+		padding: 0.8rem var(--fpad);
+		border-bottom: 1px solid var(--rule);
+		font-size: 0.9375rem;
+	}
+
+	.fmap {
+		--fpad: clamp(0.875rem, 2vw, 1.25rem);
+	}
+
+	.fmap__head .figure-label {
+		margin-right: 0.5rem;
+	}
+
+	.fmap__body {
+		display: grid;
+		gap: 1.5rem 2rem;
+		padding: var(--fpad);
+	}
+
+	.fmap__map {
+		position: relative;
+		width: 100%;
+	}
+
+	.fmap__land {
+		position: absolute;
+		inset: 0;
+		background: var(--rule-strong);
+		-webkit-mask: url("/film/basemap.svg") center / 100% 100% no-repeat;
+		mask: url("/film/basemap.svg") center / 100% 100% no-repeat;
+	}
+
+	.fmap__marker {
+		position: absolute;
+		width: calc(var(--r) * 2);
+		height: calc(var(--r) * 2);
+		padding: 0;
+		border: 2px solid var(--surface);
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--signal) 82%, transparent);
+		transform: translate(-50%, -50%);
+		transition:
+			background-color 120ms var(--ease),
+			box-shadow 120ms var(--ease);
+	}
+
+	.fmap__marker:hover,
+	.fmap__marker.is-hovered {
+		box-shadow: 0 0 0 2px var(--ink);
+	}
+
+	.fmap__marker[aria-pressed="true"] {
+		background: var(--signal);
+		box-shadow: 0 0 0 2px var(--ink);
+	}
+
+	.fmap__has-filter .fmap__marker[aria-pressed="false"] {
+		background: color-mix(in srgb, var(--ink-3) 55%, transparent);
+	}
+
+	.fmap__list {
+		display: grid;
+		align-content: start;
+		gap: 1px;
+		margin: 0;
+	}
+
+	.fmap__row {
+		display: grid;
+		width: 100%;
+		grid-template-columns: 7rem minmax(0, 1fr) 1.75rem;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.3rem 0.4rem;
+		border: 0;
+		border-radius: var(--radius);
+		background: transparent;
+		font-size: 0.875rem;
+		text-align: left;
+	}
+
+	.fmap__row:hover,
+	.fmap__row.is-hovered {
+		background: var(--surface-2);
+	}
+
+	.fmap__row[aria-pressed="true"] {
+		background: var(--signal-wash);
+		box-shadow: inset 2px 0 0 var(--signal);
+	}
+
+	.fmap__bar {
+		height: 0.5rem;
+	}
+
+	.fmap__bar i {
+		display: block;
+		height: 100%;
+		border-radius: 0 2px 2px 0;
+		background: var(--signal);
+	}
+
+	.fmap__count {
+		color: var(--ink-2);
+		text-align: right;
+	}
+
+	.fmap__foot {
+		padding: 0.75rem var(--fpad);
+		border-top: 1px solid var(--rule);
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	@media (min-width: 60rem) {
+		.fmap__body {
+			grid-template-columns: minmax(0, 1fr) 17rem;
+			align-items: center;
+		}
+	}
+
+	/* ---------- filters ---------- */
+	.film-filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem 2rem;
+		margin-block: clamp(2.5rem, 6vw, 4rem) 1.25rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.film-filters__years {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.film-filters__label {
+		margin-right: 0.4rem;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.3rem 0.7rem;
+		border: 1px solid var(--rule-strong);
+		border-radius: 999px;
+		background: var(--surface);
+		font-size: 0.875rem;
+	}
+
+	.chip:hover {
+		border-color: var(--ink-3);
+	}
+
+	.chip[aria-pressed="true"] {
+		border-color: var(--signal);
+		background: var(--signal-wash);
+	}
+
+	.chip__count {
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.film-filters__status {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		color: var(--ink-2);
+		font-size: 0.875rem;
+	}
+
+	.film-filters__clear {
+		padding: 0;
+		border: 0;
+		background: none;
+		color: var(--signal-ink);
+		font-size: 0.875rem;
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	.film-filters__clear[hidden] {
+		display: none;
+	}
+
+	/* ---------- contact sheet: justified rows, each frame's width follows its aspect ratio ---------- */
+	.sheet {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.sheet::after {
+		flex-grow: 1e6;
+		content: "";
+	}
+
+	.sheet__item {
+		flex: calc(var(--ar) * 100) 1 calc(var(--ar) * 13rem);
+		min-width: 0;
+	}
+
+	.sheet__item[hidden] {
+		display: none;
+	}
+
+	.sheet__item figure {
+		margin: 0;
+		background: var(--rebate);
+	}
+
+	.sheet__open {
+		display: block;
+		width: 100%;
+		padding: 0;
+		border: 0;
+		background: var(--rebate);
+		cursor: zoom-in;
+	}
+
+	.sheet__open img {
+		width: 100%;
+		height: auto;
+		aspect-ratio: var(--ar);
+		object-fit: cover;
+		transition: opacity 160ms var(--ease);
+	}
+
+	.sheet__open:hover img {
+		opacity: 0.9;
+	}
+
+	.sheet__open:focus-visible {
+		outline-offset: -2px;
+	}
+
+	.sheet__empty {
+		padding: 3rem 0;
+	}
+
+	@media (max-width: 40rem) {
+		.sheet__item {
+			flex-basis: 100%;
+		}
+	}
+
+	/* ---------- viewer ---------- */
+	.viewer {
+		width: 100vw;
+		max-width: none;
+		height: 100dvh;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: #05090f;
+		color: #e8eef6;
+		color-scheme: dark;
+		--surface: #0c1828;
+		--surface-2: #11213a;
+		--ink: #e8eef6;
+		--ink-2: #a9b8ca;
+		--ink-3: #8494aa;
+		--rule: #1b2a3f;
+		--rule-strong: #2d4058;
+	}
+
+	.viewer::backdrop {
+		background: #05090f;
+	}
+
+	.viewer__layout {
+		display: grid;
+		height: 100%;
+		grid-template-rows: minmax(0, 1fr) auto;
+	}
+
+	.viewer__stage {
+		position: relative;
+		display: flex;
+		min-height: 0;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		padding: clamp(0.75rem, 3vw, 2.5rem);
+	}
+
+	.viewer__image {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+		transition: filter 280ms var(--ease);
+	}
+
+	.viewer__image.is-loading {
+		filter: blur(10px);
+	}
+
+	.viewer__step {
+		position: absolute;
+		top: 50%;
+		display: grid;
+		width: 2.75rem;
+		height: 2.75rem;
+		place-items: center;
+		border: 1px solid rgb(232 238 246 / 0.25);
+		border-radius: 50%;
+		background: rgb(5 9 15 / 0.6);
+		color: inherit;
+		transform: translateY(-50%);
+	}
+
+	.viewer__step:hover {
+		border-color: rgb(232 238 246 / 0.7);
+	}
+
+	.viewer__step svg {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.viewer__step--prev {
+		left: 1rem;
+	}
+
+	.viewer__step--next {
+		right: 1rem;
+	}
+
+	.viewer__panel {
+		display: grid;
+		align-content: start;
+		gap: 1.25rem;
+		overflow-y: auto;
+		max-height: 45dvh;
+		padding: 1.25rem;
+		border-top: 1px solid var(--rule);
+		background: var(--surface);
+	}
+
+	.viewer__top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.viewer__close {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.35rem 0.6rem;
+		border: 1px solid var(--rule-strong);
+		border-radius: var(--radius);
+		background: transparent;
+		font-size: 0.875rem;
+	}
+
+	.viewer__close:hover {
+		border-color: var(--ink-3);
+	}
+
+	.viewer__title {
+		font-size: var(--step-2);
+		font-weight: 400;
+		letter-spacing: -0.02em;
+	}
+
+	.viewer__spec {
+		--spec-lh: 1.45rem;
+		grid-template-columns: 5rem minmax(0, 1fr);
+		font-size: 0.9375rem;
+	}
+
+	.viewer__label {
+		margin-bottom: 0.6rem;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.viewer__palette {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 2px;
+	}
+
+	.viewer__palette :global(li) {
+		display: grid;
+		gap: 0.35rem;
+		font-size: 0.6875rem;
+	}
+
+	.viewer__palette :global(i) {
+		height: 2.25rem;
+		border-radius: 2px;
+		background: var(--swatch);
+	}
+
+	.viewer__palette :global(span) {
+		color: var(--ink-2);
+		font-family: var(--font-mono);
+	}
+
+	.viewer__palette :global(small) {
+		color: var(--ink-3);
+		font-size: inherit;
+	}
+
+	.viewer__histogram {
+		width: 100%;
+		height: 5rem;
+		border-bottom: 1px solid var(--rule-strong);
+	}
+
+	.viewer__histogram path {
+		fill: none;
+		stroke-width: 1.25;
+		vector-effect: non-scaling-stroke;
+	}
+
+	path.viewer__hist-l {
+		fill: rgb(232 238 246 / 0.16);
+		stroke: none;
+	}
+
+	.viewer__hist-r {
+		stroke: #ff6b6b;
+		--key: #ff6b6b;
+	}
+
+	.viewer__hist-g {
+		stroke: #4cd187;
+		--key: #4cd187;
+	}
+
+	.viewer__hist-b {
+		stroke: #6aa6ff;
+		--key: #6aa6ff;
+	}
+
+	.viewer__hist-l {
+		--key: rgb(232 238 246 / 0.4);
+	}
+
+	.viewer__hist-key {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem 1rem;
+		margin-top: 0.5rem;
+		color: var(--ink-3);
+		font-size: var(--step--2);
+	}
+
+	.viewer__hist-key li {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.viewer__hist-key i {
+		width: 0.75rem;
+		height: 2px;
+		background: var(--key);
+	}
+
+	.viewer__hist-key .viewer__hist-l {
+		height: 0.5rem;
+	}
+
+	.viewer__keys {
+		display: none;
+	}
+
+	@media (min-width: 60rem) {
+		.viewer__layout {
+			grid-template-columns: minmax(0, 1fr) 21rem;
+			grid-template-rows: minmax(0, 1fr);
+		}
+
+		.viewer__panel {
+			max-height: none;
+			padding: 1.5rem;
+			border-top: 0;
+			border-left: 1px solid var(--rule);
+		}
+
+		.viewer__keys {
+			display: block;
+			margin-top: auto;
+		}
+	}
+</style>
+
+<script>
+	interface FrameData {
+		alt: string;
+		date: string;
+		edited: boolean;
+		frame: number;
+		full: { height: number; src: string; srcset: string; width: number };
+		histogram: { b: number[]; g: number[]; l: number[]; r: number[] };
+		id: string;
+		palette: { hex: string; share: number }[];
+		place: string | null;
+		scanner: string | null;
+		size: [number, number];
+		title: string;
+	}
+
+	const archive = document.querySelector<HTMLElement>("[data-film-archive]");
+	const viewer = document.querySelector<HTMLDialogElement>("[data-film-viewer]");
+	const manifestElement = document.querySelector<HTMLScriptElement>("[data-film-manifest]");
+
+	if (archive && viewer && manifestElement?.textContent) {
+		const frames = JSON.parse(manifestElement.textContent) as FrameData[];
+		const byFrame = new Map(frames.map((frame) => [frame.frame, frame]));
+		const items = Array.from(archive.querySelectorAll<HTMLElement>(".sheet__item"));
+		const placeButtons = Array.from(
+			archive.querySelectorAll<HTMLButtonElement>("[data-film-place]"),
+		);
+		const yearButtons = Array.from(archive.querySelectorAll<HTMLButtonElement>("[data-film-year]"));
+		const status = archive.querySelector<HTMLElement>("[data-film-status]");
+		const clearButtons = Array.from(
+			archive.querySelectorAll<HTMLButtonElement>("[data-film-clear]"),
+		);
+		const empty = archive.querySelector<HTMLElement>("[data-film-empty]");
+		const map = archive.querySelector<HTMLElement>(".fmap");
+		const placeNames = new Map(
+			Array.from(archive.querySelectorAll<HTMLElement>(".fmap__row")).map((row) => [
+				row.dataset.filmPlace ?? "",
+				row.querySelector(".fmap__name")?.textContent ?? "",
+			]),
+		);
+
+		const filters = { place: "", year: "" };
+
+		/* ---------- filtering ---------- */
+		const visibleFrames = () =>
+			items.filter((item) => !item.hidden).map((item) => Number(item.dataset.frame));
+
+		const applyFilters = (writeUrl = true) => {
+			let shown = 0;
+			for (const item of items) {
+				const match =
+					(!filters.place || item.dataset.place === filters.place) &&
+					(!filters.year || item.dataset.year === filters.year);
+				item.hidden = !match;
+				if (match) shown += 1;
+			}
+			for (const button of placeButtons) {
+				button.setAttribute("aria-pressed", String(button.dataset.filmPlace === filters.place));
+			}
+			for (const button of yearButtons) {
+				button.setAttribute(
+					"aria-pressed",
+					String((button.dataset.filmYear ?? "") === filters.year),
+				);
+			}
+			map?.classList.toggle("fmap__has-filter", Boolean(filters.place));
+			const active = Boolean(filters.place || filters.year);
+			for (const button of clearButtons) button.hidden = !active;
+			if (empty) empty.hidden = shown > 0;
+			if (status) {
+				const where = filters.place ? ` from ${placeNames.get(filters.place)}` : "";
+				const when = filters.year ? ` in ${filters.year}` : "";
+				status.textContent = active
+					? `Showing ${shown} of ${items.length} frames${where}${when}`
+					: `Showing all ${items.length} frames`;
+			}
+			if (writeUrl) {
+				const params = new URLSearchParams();
+				if (filters.place) params.set("place", filters.place);
+				if (filters.year) params.set("year", filters.year);
+				const query = params.toString();
+				history.replaceState(
+					null,
+					"",
+					`${location.pathname}${query ? `?${query}` : ""}${location.hash}`,
+				);
+			}
+		};
+
+		for (const button of placeButtons) {
+			const id = button.dataset.filmPlace ?? "";
+			button.addEventListener("click", () => {
+				filters.place = filters.place === id ? "" : id;
+				applyFilters();
+			});
+			const twins = placeButtons.filter((other) => other.dataset.filmPlace === id);
+			button.addEventListener("pointerenter", () => {
+				for (const twin of twins) twin.classList.add("is-hovered");
+			});
+			button.addEventListener("pointerleave", () => {
+				for (const twin of twins) twin.classList.remove("is-hovered");
+			});
+		}
+
+		for (const button of yearButtons) {
+			button.addEventListener("click", () => {
+				filters.year = button.dataset.filmYear ?? "";
+				applyFilters();
+			});
+		}
+
+		for (const button of clearButtons) {
+			button.addEventListener("click", () => {
+				filters.place = "";
+				filters.year = "";
+				applyFilters();
+			});
+		}
+
+		/* ---------- viewer ---------- */
+		const image = viewer.querySelector<HTMLImageElement>("[data-viewer-image]");
+		const field = (name: string) => viewer.querySelector<HTMLElement>(`[data-viewer-${name}]`);
+		const palette = viewer.querySelector<HTMLOListElement>("[data-viewer-palette]");
+		const histogram = viewer.querySelector<SVGSVGElement>("[data-viewer-histogram]");
+		let current = 0;
+		let opener: HTMLElement | null = null;
+		let loadToken = 0;
+
+		const histogramPath = (bins: number[], closed: boolean) => {
+			const width = 310;
+			const height = 80;
+			const step = width / Math.max(1, bins.length - 1);
+			const points = bins.map(
+				(value, index) =>
+					`${(index * step).toFixed(1)} ${(height - value * (height - 2)).toFixed(1)}`,
+			);
+			return closed
+				? `M0 ${height}L${points.join("L")}L${width} ${height}Z`
+				: `M${points.join("L")}`;
+		};
+
+		const show = (frameNumber: number) => {
+			const frame = byFrame.get(frameNumber);
+			if (!frame || !image) return;
+			current = frameNumber;
+			const token = ++loadToken;
+			const thumb = archive.querySelector<HTMLImageElement>(`#frame-${frameNumber} img`);
+			const preview = thumb?.currentSrc || thumb?.src || frame.full.src;
+			image.alt = frame.alt;
+			image.width = frame.full.width;
+			image.height = frame.full.height;
+			image.removeAttribute("srcset");
+			image.src = preview;
+			image.classList.add("is-loading");
+			const full = new Image();
+			full.sizes = "(min-width: 60rem) calc(100vw - 21rem), 100vw";
+			full.srcset = frame.full.srcset;
+			full.src = frame.full.src;
+			const reveal = () => {
+				if (token !== loadToken) return;
+				image.srcset = frame.full.srcset;
+				image.sizes = full.sizes;
+				image.src = frame.full.src;
+				image.classList.remove("is-loading");
+			};
+			full.decode().then(reveal, reveal);
+
+			const order = visibleFrames();
+			const position = order.indexOf(frameNumber);
+			const positionField = field("position");
+			if (positionField) {
+				const filtered = order.length < frames.length;
+				positionField.textContent =
+					filtered && position >= 0
+						? `Frame ${frame.frame}, ${position + 1} of ${order.length} shown`
+						: `Frame ${frame.frame} of ${frames.length}`;
+			}
+			const set = (name: string, text: string) => {
+				const element = field(name);
+				if (element) element.textContent = text;
+			};
+			set("title", frame.title);
+			set("place", frame.place ?? "Not recorded");
+			set("date", frame.date || "Not recorded");
+			set(
+				"scan",
+				`${frame.scanner ?? "Unknown scanner"}${frame.edited ? ", adjusted after scanning" : ""}`,
+			);
+			set(
+				"size",
+				`${frame.size[0].toLocaleString("en-GB")} × ${frame.size[1].toLocaleString("en-GB")} px`,
+			);
+
+			if (palette) {
+				palette.replaceChildren(
+					...frame.palette.map((swatch) => {
+						const li = document.createElement("li");
+						const chip = document.createElement("i");
+						chip.style.setProperty("--swatch", swatch.hex);
+						const hex = document.createElement("span");
+						hex.textContent = swatch.hex;
+						const share = document.createElement("small");
+						share.textContent = `${Math.round(swatch.share * 100)}%`;
+						li.append(chip, hex, share);
+						return li;
+					}),
+				);
+			}
+			if (histogram) {
+				for (const channel of ["l", "r", "g", "b"] as const) {
+					histogram
+						.querySelector(`[data-hist="${channel}"]`)
+						?.setAttribute("d", histogramPath(frame.histogram[channel], channel === "l"));
+				}
+			}
+			history.replaceState(null, "", `${location.pathname}${location.search}#frame-${frameNumber}`);
+		};
+
+		const open = (frameNumber: number, trigger?: HTMLElement | null) => {
+			if (!byFrame.has(frameNumber)) return;
+			opener = trigger ?? null;
+			show(frameNumber);
+			if (!viewer.open) viewer.showModal();
+			field("close")?.focus();
+		};
+
+		const step = (direction: 1 | -1) => {
+			const order = visibleFrames();
+			const list = order.length > 0 ? order : frames.map((frame) => frame.frame);
+			const index = list.indexOf(current);
+			const next = list[(index + direction + list.length) % list.length];
+			if (next) show(next);
+		};
+
+		viewer.addEventListener("close", () => {
+			loadToken += 1;
+			history.replaceState(null, "", `${location.pathname}${location.search}`);
+			// Return focus to the frame being viewed (it may differ from the one opened).
+			const target =
+				archive.querySelector<HTMLElement>(`[data-film-open="${current}"]`) ??
+				(opener?.isConnected ? opener : null);
+			target?.focus();
+			opener = null;
+		});
+
+		viewer.addEventListener("keydown", (event) => {
+			if (event.key === "ArrowRight") {
+				event.preventDefault();
+				step(1);
+			} else if (event.key === "ArrowLeft") {
+				event.preventDefault();
+				step(-1);
+			}
+		});
+
+		viewer.addEventListener("click", (event) => {
+			if (event.target === viewer || event.target === viewer.querySelector(".viewer__stage"))
+				viewer.close();
+		});
+
+		field("close")?.addEventListener("click", () => viewer.close());
+		field("prev")?.addEventListener("click", () => step(-1));
+		field("next")?.addEventListener("click", () => step(1));
+
+		for (const button of archive.querySelectorAll<HTMLButtonElement>("[data-film-open]")) {
+			button.addEventListener("click", () => open(Number(button.dataset.filmOpen), button));
+		}
+
+		/* ---------- start from the URL ---------- */
+		const params = new URLSearchParams(location.search);
+		filters.place = placeButtons.some((button) => button.dataset.filmPlace === params.get("place"))
+			? (params.get("place") ?? "")
+			: "";
+		filters.year = yearButtons.some((button) => button.dataset.filmYear === params.get("year"))
+			? (params.get("year") ?? "")
+			: "";
+		applyFilters(false);
+
+		const openFromHash = () => {
+			if (location.hash === "#random") {
+				const pick = frames[Math.floor(Math.random() * frames.length)];
+				if (pick) open(pick.frame);
+				return;
+			}
+			const match = /^#frame-(\d+)$/.exec(location.hash);
+			if (match) open(Number(match[1]));
+		};
+		openFromHash();
+		window.addEventListener("hashchange", openFromHash);
+	}
+</script>

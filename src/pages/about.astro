@@ -1,151 +1,166 @@
 ---
-import { Icon } from "astro-icon/components";
-import PageLayout from "@/layouts/Base.astro";
-import { siteFeatures } from "@/site.config";
-
-const meta = {
-	description:
-		"Anton Grahed, economist at the EBRD. Background, education, and research interests.",
-	title: "About",
-};
+import AboutFacts from "@/components/about/AboutFacts.astro";
+import LitText from "@/components/about/LitText.astro";
+import Portrait from "@/components/about/Portrait.astro";
+import PageHead from "@/components/site/PageHead.astro";
+import Site from "@/layouts/Site.astro";
+import { contact, siteFeatures } from "@/site.config";
 
 const sections = [
-	{ id: "work", num: "01", title: "Work" },
-	{ id: "education", num: "02", title: "Education" },
-	{ id: "interests", num: "03", title: "Interests" },
-	{ id: "elsewhere", num: "04", title: "Elsewhere" },
-];
-
-const facts = [
-	{ label: "Office of the Chief Economist", value: "EBRD" },
-	{ label: "BSc + MSc Economics", value: "LSE" },
+	{ id: "work", title: "Work" },
+	{ id: "education", title: "Education" },
+	{ id: "interests", title: "Interests" },
+	{ id: "elsewhere", title: "Elsewhere" },
 ];
 ---
 
-<PageLayout meta={meta}>
-	<section class="border-border border-b">
-		<div class="shell py-16 md:py-24">
-			<p class="eyebrow reveal">Anton Grahed</p>
-			<h1 class="title reveal mt-4 [animation-delay:80ms]">About</h1>
-			<p class="lead reveal text-text-secondary mt-6 max-w-[40rem] [animation-delay:160ms]">
-				Research Analyst in the Office of the Chief Economist at the European Bank for
-				Reconstruction and Development. BSc and MSc in Economics from the London School of
-				Economics.
-			</p>
-		</div>
-	</section>
+<Site
+	meta={{
+		description:
+			"Anton Grahed, Research Analyst at the EBRD. Background, education, and research interests.",
+		title: "About",
+	}}
+	section="About"
+>
+	<PageHead
+		lead="Research Analyst in the Office of the Chief Economist at the European Bank for Reconstruction and Development. BSc and MSc in Economics from the London School of Economics."
+		title="About"
+	/>
 
-	<section>
-		<div class="shell grid gap-x-8 gap-y-12 py-16 md:py-24 lg:grid-cols-12">
-			<nav aria-label="Section index" class="lg:col-span-4">
-				<ul class="lg:sticky lg:top-24">
-					{
-						sections.map((section) => (
-							<li class="border-border border-t">
-								<a
-									class="ease-productive text-text-secondary hover:text-link flex items-baseline gap-4 py-3 font-mono text-xs tracking-[0.1em] uppercase transition-colors duration-100"
-									href={`#${section.id}`}
-								>
-									<span>{section.num}</span>
-									{section.title}
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</nav>
-			<div class="max-w-[42rem] space-y-14 lg:col-span-8">
-				<div>
-					<p class="eyebrow">Abstract</p>
-					<div class="prose prose-cactus mt-4 max-w-none">
-						<p>
-							Hi! My name is Anton Grahed. I'm a Research Analyst in the Office of the Chief
-							Economist at the EBRD, and before that I did my BSc and MSc in Economics at the LSE.
-						</p>
-					</div>
+	<section class="section about-page">
+		<div class="wrap about-page__grid">
+			<aside class="about-page__side">
+				<div class="about-page__portrait">
+					<Portrait loading="eager" sizes="(min-width: 64rem) 20rem, calc(100vw - 2rem)" />
 				</div>
-				<div id="work">
-					<p class="eyebrow">01 — Work</p>
-					<div class="prose prose-cactus mt-4 max-w-none">
-						<p>
-							As a Research Analyst in the Office of the Chief Economist, I support the Bank's
-							applied research on development economics and growth, mostly through the data work
-							and visualisation behind it.
-						</p>
-					</div>
-				</div>
-				<div id="education">
-					<p class="eyebrow">02 — Education</p>
-					<div class="prose prose-cactus mt-4 max-w-none">
-						<p>
-							I did my BSc and MSc in Economics at the London School of Economics and Political
-							Science.
-						</p>
-					</div>
-				</div>
-				<div id="interests">
-					<p class="eyebrow">03 — Interests</p>
-					<div class="prose prose-cactus mt-4 max-w-none">
-						<p>
-							I have broad interests across economics, but I'm especially drawn to
-							twentieth-century economic history, the causes and conditions for growth,
-							international economics, migration, the Nordic model, and how communism shaped
-							Eastern Europe's later development.
-						</p>
-					</div>
-				</div>
-				<div id="elsewhere">
-					<p class="eyebrow">04 — Elsewhere</p>
-					<div class="prose prose-cactus mt-4 max-w-none">
+				<nav aria-label="On this page" class="about-page__toc">
+					<ol role="list">
 						{
-							siteFeatures.stamps ? (
-								<p>
-									Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
-									Olympus Mju II, and collect stamps. Both are documented on this site, under
-									<a href="/film/">Film</a> and <a href="/stamps/">Stamps</a>.
-								</p>
-							) : (
-								<p>
-									Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
-									Olympus Mju II. The photographs are documented under <a href="/film/">Film</a>.
-								</p>
-							)
+							sections.map((section) => (
+								<li>
+									<a href={`#${section.id}`}>{section.title}</a>
+								</li>
+							))
 						}
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+					</ol>
+				</nav>
+			</aside>
 
-	<section class="border-border bg-surface border-t">
-		<div class="shell py-16 md:py-24">
-			<p class="eyebrow">02 — At a glance</p>
-			<div class="bg-border mt-10 grid max-w-2xl gap-px sm:grid-cols-2">
+			<div class="prose about-page__prose">
+				<LitText
+					class="about-page__intro"
+					text="Hi! My name is Anton Grahed. I’m a Research Analyst in the Office of the Chief Economist at the EBRD, and before that I did my BSc and MSc in Economics at the LSE."
+				/>
+
+				<AboutFacts />
+
+				<h2 data-section="Work" id="work">Work</h2>
+				<p>
+					As a Research Analyst in the Office of the Chief Economist, I support the Bank’s applied
+					research on development economics and growth, mostly through the data work and
+					visualisation behind it. My open-source tools for working with economic data are under
+					<a href="/projects/">Projects</a>.
+				</p>
+
+				<h2 data-section="Education" id="education">Education</h2>
+				<p>
+					I did my BSc and MSc in Economics at the London School of Economics and Political Science.
+				</p>
+
+				<h2 data-section="Interests" id="interests">Interests</h2>
+				<p>
+					I have broad interests across economics, but I’m especially drawn to twentieth-century
+					economic history, the causes and conditions for growth, international economics,
+					migration, the Nordic model, and how communism shaped Eastern Europe’s later development.
+				</p>
+
+				<h2 data-section="Elsewhere" id="elsewhere">Elsewhere</h2>
 				{
-					facts.map((fact) => (
-						<div class="bg-global-bg flex min-h-36 flex-col justify-between p-6">
-							<p class="text-[2rem] leading-tight font-light">{fact.value}</p>
-							<p class="eyebrow mt-6">{fact.label}</p>
-						</div>
-					))
+					siteFeatures.stamps ? (
+						<p>
+							Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
+							Olympus Mju II, and collect stamps. Both are documented on this site, under{" "}
+							<a href="/film/">Film</a>
+							and <a href="/stamps/">Stamps</a>.
+						</p>
+					) : (
+						<p>
+							Outside work I shoot 35mm film, mostly on a Nikon F5, Nikon FA, Nikon FM2N and an
+							Olympus Mju II. The photographs are in the <a href="/film/">film archive</a>.
+						</p>
+					)
 				}
+				<p>
+					You can reach me at <a href={`mailto:${contact.email}`}>{contact.email}</a> or find my code
+					on
+					<a href={contact.github} rel="noreferrer">GitHub</a>.
+				</p>
 			</div>
 		</div>
 	</section>
+</Site>
 
-	<section class="border-border border-t">
-		<div class="shell py-16 md:py-24">
-			<p class="eyebrow">03 — Contact</p>
-			<h2 class="heading-3 mt-4">Get in touch.</h2>
-			<div class="mt-10 flex flex-wrap gap-px">
-				<a class="btn-primary min-w-44" href="mailto:graheda@ebrd.com">
-					Email me
-					<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
-				</a>
-				<a class="btn-ghost" href="https://github.com/angrahed" rel="noreferrer" target="_blank">
-					GitHub&nbsp;↗
-				</a>
-			</div>
-		</div>
-	</section>
-</PageLayout>
+<style>
+	.about-page {
+		padding-top: clamp(2.5rem, 6vw, 4rem);
+	}
+
+	.about-page__grid {
+		display: grid;
+		gap: 2.5rem clamp(2rem, 6vw, 6rem);
+	}
+
+	.about-page__portrait {
+		max-width: 20rem;
+		margin: 0;
+	}
+
+	.about-page__toc {
+		display: none;
+	}
+
+	.about-page__prose :global(.about-page__intro) {
+		color: var(--ink);
+		font-size: var(--step-1);
+		line-height: 1.55;
+	}
+
+	.about-page__prose :global(.about-facts) {
+		margin-block: 2rem 0.5rem;
+	}
+
+	.about-page__prose h2:first-of-type {
+		margin-top: 2.5rem;
+	}
+
+	@media (min-width: 56rem) {
+		.about-page__grid {
+			grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
+		}
+
+		.about-page__side {
+			position: sticky;
+			top: calc(var(--header-h) + 2rem);
+			align-self: start;
+		}
+
+		.about-page__toc {
+			display: block;
+			margin-top: 2rem;
+			border-top: 1px solid var(--rule);
+		}
+
+		.about-page__toc a {
+			display: block;
+			padding: 0.55rem 0;
+			border-bottom: 1px solid var(--rule);
+			color: var(--ink-2);
+			font-size: 0.9375rem;
+			text-decoration: none;
+		}
+
+		.about-page__toc a:hover {
+			color: var(--ink);
+		}
+	}
+</style>

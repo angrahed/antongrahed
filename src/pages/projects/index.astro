@@ -1,0 +1,53 @@
+---
+import ProjectCard from "@/components/projects/ProjectCard.astro";
+import PageHead from "@/components/site/PageHead.astro";
+import Site from "@/layouts/Site.astro";
+import { formatDay } from "@/lib/build-info";
+import { githubRetrieved, projects } from "@/lib/projects";
+---
+
+<Site
+	meta={{
+		description: "Open-source research tools by Anton Grahed, mostly built around economic data.",
+		title: "Projects",
+	}}
+	section="Projects"
+>
+	<PageHead
+		lead="Research tools and data explorations, mostly built around economic data. Each one is open source on GitHub."
+		title="Projects"
+	/>
+	<section class="section projects-page">
+		<div class="wrap">
+			<div class="project-grid">
+				{projects.map((project) => <ProjectCard headingLevel="h2" project={project} />)}
+			</div>
+			<p class="meta projects-page__note">
+				Repository figures are read from the GitHub API, last on {formatDay(githubRetrieved)}.
+			</p>
+		</div>
+	</section>
+</Site>
+
+<style>
+	.projects-page {
+		padding-top: clamp(2.5rem, 6vw, 4rem);
+	}
+
+	.project-grid {
+		display: grid;
+		gap: 1px;
+		border: 1px solid var(--rule);
+		background: var(--rule);
+	}
+
+	.projects-page__note {
+		margin-top: 1rem;
+	}
+
+	@media (min-width: 52rem) {
+		.project-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+</style>

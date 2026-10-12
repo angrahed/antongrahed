@@ -1,41 +1,25 @@
 ---
+import PageHead from "@/components/site/PageHead.astro";
 import { getAllPosts, getUniqueTagsWithCount } from "@/data/post";
-import PageLayout from "@/layouts/Base.astro";
+import Site from "@/layouts/Site.astro";
 import { siteFeatures } from "@/site.config";
 
 if (!siteFeatures.posts) return Astro.redirect("/");
 
-const allPosts = await getAllPosts();
-const allTags = getUniqueTagsWithCount(allPosts);
-
-const meta = {
-	description: "A list of all the topics I've written about in my posts",
-	title: "All Tags",
-};
+const allTags = getUniqueTagsWithCount(await getAllPosts());
 ---
 
-<PageLayout meta={meta}>
-	<section class="border-border border-b">
-		<div class="shell py-16 md:py-24">
-			<p class="eyebrow reveal">Writing</p>
-			<h1 class="title reveal mt-4 [animation-delay:80ms]">Tags</h1>
-		</div>
-	</section>
-	<section>
-		<div class="shell py-16 md:py-24">
-			<ul class="max-w-[42rem]">
+<Site meta={{ description: "Every topic I've written about.", title: "Tags" }} section="Writing">
+	<PageHead crumbs={[{ href: "/posts/", label: "Writing" }]} title="Tags" />
+	<section class="section">
+		<div class="wrap">
+			<ul class="tag-list" role="list">
 				{
-					allTags.map(([tag, val]) => (
-						<li class="border-border flex items-baseline gap-x-3 border-t py-3">
-							<a
-								class="cactus-link font-mono text-sm"
-								href={`/tags/${tag}/`}
-								title={`View posts with the tag: ${tag}`}
-							>
-								&#35;{tag}
-							</a>
-							<span class="text-text-secondary font-mono text-xs tracking-[0.1em] uppercase">
-								{val} Post{val > 1 && "s"}
+					allTags.map(([tag, count]) => (
+						<li>
+							<a href={`/tags/${tag}/`}>{tag}</a>
+							<span class="meta num">
+								{count} {count === 1 ? "post" : "posts"}
 							</span>
 						</li>
 					))
@@ -43,4 +27,19 @@ const meta = {
 			</ul>
 		</div>
 	</section>
-</PageLayout>
+</Site>
+
+<style>
+	.tag-list {
+		max-width: 40rem;
+	}
+
+	.tag-list li {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-block: 0.75rem;
+		border-top: 1px solid var(--rule);
+	}
+</style>

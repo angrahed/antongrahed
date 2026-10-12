@@ -36,27 +36,22 @@ const ogOptions: SatoriOptions = {
 };
 
 const markup = (title: string, pubDate: string) =>
-	html`<div tw="flex flex-col w-full h-full bg-[#161616] text-[#f4f4f4]">
-		<div tw="flex flex-col flex-1 w-full px-16 justify-center">
-			<p
-				tw="text-xl mb-8 text-[#8d8d8d] uppercase"
-				style="font-family: 'IBM Plex Mono'; letter-spacing: 0.1em;"
-			>
-				antongrahed.com
-			</p>
-			<h1 tw="text-6xl text-white" style="font-weight: 300; line-height: 1.2;">${title}</h1>
-		</div>
-		<div tw="flex items-center justify-between w-full px-16 pb-12">
+	html`<div tw="flex flex-col w-full h-full bg-[#f4f7fb] text-[#0b1b2e]">
+		<div tw="flex items-center justify-between w-full px-16 pt-14">
 			<div tw="flex items-center">
 				<div
-					tw="flex items-center justify-center w-16 h-16 bg-[#0f62fe] text-white text-3xl"
+					tw="flex items-center justify-center w-10 h-10 bg-[#0f62fe] text-white text-base"
 					style="font-weight: 600;"
 				>
 					AG
 				</div>
-				<p tw="ml-4 text-xl" style="font-weight: 600;">${siteConfig.title}</p>
+				<p tw="ml-4 text-2xl" style="font-weight: 600;">${siteConfig.title}</p>
 			</div>
-			<p tw="text-xl text-[#8d8d8d]" style="font-family: 'IBM Plex Mono';">${pubDate}</p>
+			<p tw="text-xl text-[#5f7088]">antongrahed.com</p>
+		</div>
+		<div tw="flex flex-col flex-1 w-full px-16 justify-center">
+			<h1 tw="text-6xl" style="font-weight: 300; line-height: 1.15;">${title}</h1>
+			<p tw="mt-8 text-2xl text-[#44566c]" style="font-family: 'IBM Plex Mono';">${pubDate}</p>
 		</div>
 		<div tw="flex w-full h-2 bg-[#0f62fe]"></div>
 	</div>`;

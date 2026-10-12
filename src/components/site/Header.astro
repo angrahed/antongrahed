@@ -1,0 +1,427 @@
+---
+import { menuLinks } from "@/site.config";
+
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isCurrent = (href: string) => {
+	const target = href.replace(/\/+$/, "") || "/";
+	if (target.includes("#")) return false;
+	return path === target || path.startsWith(`${target}/`);
+};
+---
+
+<header class="site-header" data-site-header>
+	<div class="wrap site-header__inner">
+		<a aria-label="Anton Grahed, home" class="brand" data-brand href="/">
+			<!-- The name folds to its initials once the page scrolls; hover unfolds it. -->
+			<span aria-hidden="true" class="brand__word"
+				><span class="brand__cap">A</span><span class="brand__fold"><span>nton</span></span><span
+					class="brand__gap"></span><span class="brand__cap">G</span><span class="brand__fold"
+					><span>rahed</span></span
+				></span
+			>
+		</a>
+
+		<nav aria-label="Primary" class="site-nav" data-site-nav>
+			<ul role="list">
+				{
+					menuLinks.map((link) => (
+						<li>
+							<a aria-current={isCurrent(link.path) ? "page" : undefined} href={link.path}>
+								{link.title}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+			<span aria-hidden="true" class="site-nav__indicator" data-nav-indicator></span>
+		</nav>
+
+		<div class="site-header__tools">
+			<button
+				aria-haspopup="dialog"
+				aria-keyshortcuts="Meta+K Control+K"
+				class="search-trigger"
+				data-palette-open
+				type="button"
+			>
+				<svg aria-hidden="true" fill="none" viewBox="0 0 16 16">
+					<circle cx="7" cy="7" r="4.75" stroke="currentColor" stroke-width="1.5"></circle>
+					<path d="m10.5 10.5 3.5 3.5" stroke="currentColor" stroke-width="1.5"></path>
+				</svg>
+				<span class="search-trigger__label">Search</span>
+				<kbd class="kbd search-trigger__kbd" data-mod-key>⌘K</kbd>
+			</button>
+			<button
+				aria-label="Switch to dark theme"
+				class="icon-button"
+				data-theme-toggle
+				title="Switch theme (T)"
+				type="button"
+			>
+				<svg aria-hidden="true" class="icon-button__moon" fill="none" viewBox="0 0 16 16">
+					<path
+						d="M13.25 9.6A5.75 5.75 0 0 1 6.4 2.75a5.75 5.75 0 1 0 6.85 6.85Z"
+						stroke="currentColor"
+						stroke-linejoin="round"
+						stroke-width="1.5"></path>
+				</svg>
+				<svg aria-hidden="true" class="icon-button__sun" fill="none" viewBox="0 0 16 16">
+					<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"></circle>
+					<path
+						d="M8 1v1.75M8 13.25V15M1 8h1.75M13.25 8H15M3.05 3.05l1.24 1.24M11.71 11.71l1.24 1.24M3.05 12.95l1.24-1.24M11.71 4.29l1.24-1.24"
+						stroke="currentColor"
+						stroke-width="1.5"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		height: var(--header-h);
+		border-bottom: 1px solid transparent;
+		background: color-mix(in srgb, var(--paper) 0%, transparent);
+		view-transition-name: site-header;
+		transition:
+			background-color 240ms var(--ease),
+			border-color 240ms var(--ease),
+			backdrop-filter 240ms var(--ease);
+	}
+
+	/* Once the page moves under it, the header turns to frosted glass with a hairline. */
+	.site-header.is-scrolled,
+	.site-header:not([data-enhanced]) {
+		border-bottom-color: var(--rule);
+		background: color-mix(in srgb, var(--paper) 82%, transparent);
+		backdrop-filter: saturate(1.5) blur(16px);
+		-webkit-backdrop-filter: saturate(1.5) blur(16px);
+	}
+
+	.site-header__inner {
+		display: flex;
+		height: 100%;
+		align-items: center;
+		gap: clamp(1rem, 3vw, 2.5rem);
+	}
+
+	/* ---------- brand: the name, folding to its initials ---------- */
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		height: var(--header-h);
+		margin-right: auto;
+		text-decoration: none;
+	}
+
+	.brand__word {
+		display: inline-flex;
+		align-items: baseline;
+		font-size: 1.25rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.brand__cap {
+		color: var(--ink);
+		transition: color 450ms var(--ease);
+	}
+
+	/* Each fold is a one-column grid whose track collapses from 1fr to 0fr. */
+	.brand__fold {
+		display: inline-grid;
+		grid-template-columns: 1fr;
+		transition: grid-template-columns 700ms cubic-bezier(0.65, 0, 0.25, 1);
+	}
+
+	.brand__fold > span {
+		overflow: hidden;
+		font-weight: 400;
+		transition:
+			opacity 450ms var(--ease),
+			transform 700ms cubic-bezier(0.65, 0, 0.25, 1);
+	}
+
+	.brand__gap {
+		display: inline-block;
+		width: 0.28em;
+		transition: width 700ms cubic-bezier(0.65, 0, 0.25, 1);
+	}
+
+	.site-header.is-folded .brand:not(:hover, :focus-visible) .brand__fold {
+		grid-template-columns: 0fr;
+	}
+
+	.site-header.is-folded .brand:not(:hover, :focus-visible) .brand__fold > span {
+		opacity: 0;
+		transform: translateX(-0.4em);
+	}
+
+	.site-header.is-folded .brand:not(:hover, :focus-visible) .brand__gap {
+		width: 0.04em;
+	}
+
+	.site-header.is-folded .brand:not(:hover, :focus-visible) .brand__cap {
+		color: var(--signal);
+	}
+
+	/* ---------- navigation with a sliding indicator ---------- */
+	.site-nav {
+		position: relative;
+	}
+
+	.site-nav ul {
+		display: flex;
+		gap: clamp(0.25rem, 1.5vw, 1rem);
+	}
+
+	.site-nav a {
+		position: relative;
+		display: inline-flex;
+		height: var(--header-h);
+		align-items: center;
+		padding-inline: 0.5rem;
+		color: var(--ink-2);
+		font-size: 0.9375rem;
+		text-decoration: none;
+		transition: color 160ms var(--ease);
+	}
+
+	.site-nav a:hover,
+	.site-nav a[aria-current="page"] {
+		color: var(--ink);
+	}
+
+	/* Without the script, the current page keeps a plain underline. */
+	.site-nav:not(.is-enhanced) a[aria-current="page"]::after {
+		position: absolute;
+		right: 0.5rem;
+		bottom: -1px;
+		left: 0.5rem;
+		height: 2px;
+		background: var(--signal);
+		content: "";
+	}
+
+	.site-nav__indicator {
+		position: absolute;
+		bottom: -1px;
+		left: 0;
+		width: var(--w, 0);
+		height: 2px;
+		border-radius: 2px;
+		background: var(--signal);
+		opacity: 0;
+		transform: translateX(var(--x, 0));
+		pointer-events: none;
+	}
+
+	.site-nav.is-ready .site-nav__indicator {
+		transition:
+			transform 420ms cubic-bezier(0.3, 0, 0, 1),
+			width 420ms cubic-bezier(0.3, 0, 0, 1),
+			opacity 200ms var(--ease);
+	}
+
+	/* ---------- tools ---------- */
+	.site-header__tools {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.search-trigger {
+		display: inline-flex;
+		height: 2.25rem;
+		align-items: center;
+		gap: 0.5rem;
+		min-width: 11rem;
+		padding: 0 0.4rem 0 0.7rem;
+		border: 1px solid var(--rule-strong);
+		border-radius: var(--radius);
+		background: var(--surface);
+		color: var(--ink-3);
+		font-size: 0.875rem;
+		transition: border-color 120ms var(--ease);
+	}
+
+	.search-trigger:hover {
+		border-color: var(--ink-3);
+		color: var(--ink-2);
+	}
+
+	.search-trigger svg {
+		width: 0.95rem;
+		height: 0.95rem;
+	}
+
+	.search-trigger__kbd {
+		margin-left: auto;
+	}
+
+	.icon-button {
+		position: relative;
+		display: grid;
+		width: 2.25rem;
+		height: 2.25rem;
+		place-items: center;
+		overflow: hidden;
+		border: 1px solid transparent;
+		border-radius: var(--radius);
+		background: transparent;
+		color: var(--ink-2);
+	}
+
+	.icon-button:hover {
+		border-color: var(--rule-strong);
+		color: var(--ink);
+	}
+
+	/* Both icons share one cell and swap with a quarter turn: show the theme you would switch to. */
+	.icon-button svg {
+		grid-area: 1 / 1;
+		width: 1rem;
+		height: 1rem;
+		transition:
+			transform 500ms cubic-bezier(0.3, 0, 0, 1),
+			opacity 300ms var(--ease);
+	}
+
+	.icon-button__sun {
+		opacity: 0;
+		transform: rotate(-90deg) scale(0.4);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme="light"])) .icon-button__sun {
+			opacity: 1;
+			transform: none;
+		}
+
+		:global(:root:not([data-theme="light"])) .icon-button__moon {
+			opacity: 0;
+			transform: rotate(90deg) scale(0.4);
+		}
+	}
+
+	:global(:root[data-theme="dark"]) .icon-button__sun {
+		opacity: 1;
+		transform: none;
+	}
+
+	:global(:root[data-theme="dark"]) .icon-button__moon {
+		opacity: 0;
+		transform: rotate(90deg) scale(0.4);
+	}
+
+	@media (max-width: 52rem) {
+		.search-trigger {
+			min-width: 0;
+			width: 2.25rem;
+			justify-content: center;
+			padding: 0;
+		}
+
+		.search-trigger__label,
+		.search-trigger__kbd {
+			display: none;
+		}
+	}
+
+	/* No room for the full name beside the links: show the initials. */
+	@media (max-width: 34rem) {
+		.brand .brand__fold {
+			grid-template-columns: 0fr !important;
+		}
+
+		.brand .brand__fold > span {
+			opacity: 0 !important;
+		}
+
+		.brand .brand__gap {
+			width: 0.04em !important;
+		}
+
+		.brand .brand__cap {
+			color: var(--signal);
+		}
+
+		.site-header__inner {
+			gap: 0.5rem;
+		}
+
+		.site-nav a {
+			padding-inline: 0.4rem;
+		}
+	}
+</style>
+
+<script>
+	import { initTheme } from "@/lib/theme";
+
+	initTheme();
+
+	const isApple = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
+	if (!isApple) {
+		for (const key of document.querySelectorAll<HTMLElement>("[data-mod-key]")) {
+			key.textContent = "Ctrl K";
+		}
+	}
+
+	/* Header turns to glass once content scrolls beneath it. */
+	const header = document.querySelector<HTMLElement>("[data-site-header]");
+	if (header) {
+		header.dataset.enhanced = "";
+		let frame = 0;
+		const sync = () => {
+			frame = 0;
+			header.classList.toggle("is-scrolled", window.scrollY > 4);
+			header.classList.toggle("is-folded", window.scrollY > 64);
+		};
+		sync();
+		window.addEventListener(
+			"scroll",
+			() => {
+				if (!frame) frame = window.requestAnimationFrame(sync);
+			},
+			{ passive: true },
+		);
+	}
+
+	/* A single indicator slides to whichever link is hovered, then back to the current page. */
+	const nav = document.querySelector<HTMLElement>("[data-site-nav]");
+	const indicator = nav?.querySelector<HTMLElement>("[data-nav-indicator]");
+	if (nav && indicator) {
+		const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>("a"));
+		const current = links.find((link) => link.getAttribute("aria-current") === "page") ?? null;
+		const moveTo = (link: HTMLAnchorElement | null) => {
+			if (!link) {
+				indicator.style.opacity = "0";
+				return;
+			}
+			const inset = 8;
+			indicator.style.setProperty("--x", `${link.offsetLeft + inset}px`);
+			indicator.style.setProperty("--w", `${Math.max(0, link.offsetWidth - 2 * inset)}px`);
+			indicator.style.opacity = "1";
+		};
+		nav.classList.add("is-enhanced");
+		moveTo(current);
+		// Enable the slide only after the first placement, so it does not sweep in on load.
+		window.requestAnimationFrame(() => nav.classList.add("is-ready"));
+		for (const link of links) {
+			link.addEventListener("pointerenter", () => moveTo(link));
+			link.addEventListener("focus", () => moveTo(link));
+		}
+		nav.addEventListener("pointerleave", () => moveTo(current));
+		nav.addEventListener("focusout", (event) => {
+			if (!nav.contains(event.relatedTarget as Node | null)) moveTo(current);
+		});
+		window.addEventListener("resize", () => moveTo(current));
+		document.fonts?.ready.then(() => moveTo(current));
+	}
+</script>

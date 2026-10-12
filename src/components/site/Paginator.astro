@@ -1,0 +1,47 @@
+---
+import type { PaginationLink } from "@/types";
+
+interface Props {
+	nextUrl?: PaginationLink;
+	prevUrl?: PaginationLink;
+}
+
+const { nextUrl, prevUrl } = Astro.props;
+---
+
+{
+	(prevUrl || nextUrl) && (
+		<nav aria-label="Pagination" class="paginator">
+			{prevUrl && (
+				<a class="paginator__prev" href={prevUrl.url}>
+					{prevUrl.srLabel && <span class="visually-hidden">{prevUrl.srLabel}</span>}
+					{prevUrl.text ?? "Previous page"}
+				</a>
+			)}
+			{nextUrl && (
+				<a class="paginator__next" href={nextUrl.url}>
+					{nextUrl.srLabel && <span class="visually-hidden">{nextUrl.srLabel}</span>}
+					{nextUrl.text ?? "Next page"}
+				</a>
+			)}
+		</nav>
+	)
+}
+
+<style>
+	.paginator {
+		display: flex;
+		gap: 1rem;
+		margin-top: 2rem;
+		padding-top: 1rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.paginator a {
+		color: var(--signal-ink);
+	}
+
+	.paginator__next {
+		margin-left: auto;
+	}
+</style>

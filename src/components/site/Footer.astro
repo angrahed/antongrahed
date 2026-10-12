@@ -1,0 +1,142 @@
+---
+import transition from "@/data/generated/transition.json";
+import { buildInfo, formatDay } from "@/lib/build-info";
+import { contact, menuLinks } from "@/site.config";
+
+const year = buildInfo.builtAt.getUTCFullYear();
+---
+
+<footer class="site-footer">
+	<div class="wrap site-footer__grid">
+		<div class="site-footer__intro">
+			<p class="site-footer__name">Anton Grahed</p>
+			<p class="muted">Research Analyst, Office of the Chief Economist, EBRD.</p>
+			<p class="meta site-footer__disclaimer">
+				This is a personal website. Its views, opinions and recommendations are my own and do not
+				represent the European Bank for Reconstruction and Development (EBRD).
+			</p>
+		</div>
+
+		<nav aria-label="Footer" class="site-footer__col">
+			<p class="site-footer__heading">Site</p>
+			<ul role="list">
+				<li><a href="/">Home</a></li>
+				{
+					menuLinks.map((link) => (
+						<li>
+							<a href={link.path}>{link.title}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<div class="site-footer__col">
+			<p class="site-footer__heading">Contact</p>
+			<ul role="list">
+				<li><a href={`mailto:${contact.email}`}>Email</a></li>
+				<li><a href={contact.github} rel="noreferrer">GitHub</a></li>
+			</ul>
+		</div>
+
+		<div class="site-footer__col site-footer__colophon">
+			<p class="site-footer__heading">Colophon</p>
+			<p class="meta">
+				Set in IBM Plex. Figures use the World Bank's World Development Indicators, updated {
+					formatDay(transition.source.lastUpdated)
+				}. Built with Astro{
+					buildInfo.sha && (
+						<>
+							{" "}
+							from commit <span class="mono">{buildInfo.sha}</span>
+						</>
+					)
+				} on {formatDay(buildInfo.builtAt)}.
+			</p>
+		</div>
+	</div>
+
+	<div class="wrap site-footer__base meta">
+		<p>© {year} Anton Grahed</p>
+		<a href="#top">Back to top</a>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		border-top: 1px solid var(--rule);
+		background: var(--surface);
+	}
+
+	.site-footer__grid {
+		display: grid;
+		gap: 2.5rem 2rem;
+		padding-block: clamp(3rem, 7vw, 5rem);
+	}
+
+	.site-footer__name {
+		font-size: var(--step-2);
+		font-weight: 400;
+		letter-spacing: -0.02em;
+	}
+
+	.site-footer__intro > * + * {
+		margin-top: 0.5rem;
+	}
+
+	.site-footer__disclaimer {
+		max-width: 26rem;
+		margin-top: 1rem !important;
+	}
+
+	.site-footer__heading {
+		margin-bottom: 0.75rem;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.site-footer__col ul {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.site-footer__col a {
+		text-decoration: none;
+	}
+
+	.site-footer__col a:hover {
+		color: var(--signal-ink);
+	}
+
+	.site-footer__base {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-block: 1.25rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.site-footer__base a {
+		text-decoration: none;
+	}
+
+	@media (min-width: 40rem) {
+		.site-footer__grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.site-footer__intro {
+			grid-column: 1 / -1;
+		}
+	}
+
+	@media (min-width: 64rem) {
+		.site-footer__grid {
+			grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.6fr);
+		}
+
+		.site-footer__intro {
+			grid-column: auto;
+		}
+	}
+</style>

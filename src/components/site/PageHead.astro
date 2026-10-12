@@ -1,0 +1,66 @@
+---
+interface Props {
+	crumbs?: { href: string; label: string }[];
+	lead?: string;
+	title: string;
+}
+
+const { crumbs = [], lead, title } = Astro.props;
+---
+
+<header class="page-head">
+	<div class="wrap">
+		{
+			crumbs.length > 0 && (
+				<nav aria-label="Breadcrumb" class="page-head__crumbs">
+					<ol role="list">
+						{crumbs.map((crumb) => (
+							<li>
+								<a href={crumb.href}>{crumb.label}</a>
+							</li>
+						))}
+					</ol>
+				</nav>
+			)
+		}
+		<h1 class="display page-head__title">{title}</h1>
+		{lead && <p class="lead page-head__lead">{lead}</p>}
+		<slot />
+	</div>
+</header>
+
+<style>
+	.page-head {
+		padding-block: clamp(3rem, 8vw, 5.5rem) clamp(2.5rem, 6vw, 4rem);
+	}
+
+	.page-head__crumbs ol {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 1.25rem;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.page-head__crumbs li::after {
+		margin-left: 0.5rem;
+		content: "/";
+	}
+
+	.page-head__crumbs a {
+		text-decoration: none;
+	}
+
+	.page-head__crumbs a:hover {
+		color: var(--ink);
+	}
+
+	.page-head__title {
+		max-width: 16ch;
+	}
+
+	.page-head__lead {
+		max-width: 40rem;
+		margin-top: 1.25rem;
+	}
+</style>

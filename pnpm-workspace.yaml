@@ -1,6 +1,6 @@
 allowBuilds:
   '@biomejs/biome': true
-  '@tailwindcss/oxide': true
+  '@tailwindcss/oxide': set this to true or false
   esbuild: true
   sharp: true
 

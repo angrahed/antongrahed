@@ -1,0 +1,111 @@
+---
+import { Image } from "astro:assets";
+import portrait from "@/assets/anton2.jpg";
+import Rebate from "@/components/film/Rebate.astro";
+
+interface Props {
+	loading?: "eager" | "lazy";
+	sizes: string;
+}
+
+const { loading = "lazy", sizes } = Astro.props;
+---
+
+<figure class="portrait" data-portrait>
+	<div class="portrait__frame">
+		<Image
+			alt="Portrait of Anton Grahed"
+			decoding="async"
+			loading={loading}
+			quality={85}
+			sizes={sizes}
+			src={portrait}
+			widths={[360, 540, 720]}
+		/>
+	</div>
+	<Rebate date="35mm" frame="AG" title="Portrait" />
+</figure>
+
+<style>
+	.portrait {
+		margin: 0;
+		background: var(--rebate);
+	}
+
+	.portrait__frame {
+		overflow: hidden;
+	}
+
+	.portrait :global(img) {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		object-position: 50% 30%;
+	}
+
+	/*
+	 * Develop: like a print in the developer tray, the portrait emerges from white
+	 * paper as it scrolls into view, faint and warm at first, then full contrast.
+	 * Only armed by the script, so it never stays blank without JavaScript or
+	 * with reduced motion.
+	 */
+	.portrait__frame {
+		position: relative;
+	}
+
+	.portrait__frame::after {
+		position: absolute;
+		inset: 0;
+		background: #f7f6f2;
+		content: "";
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.portrait.is-armed .portrait__frame::after {
+		opacity: 0.9;
+		transition: opacity 2400ms cubic-bezier(0.35, 0, 0.2, 1);
+	}
+
+	.portrait.is-armed :global(img) {
+		filter: contrast(0.55) saturate(0) sepia(0.3) blur(1.2px);
+		transform: scale(1.035);
+		transition:
+			filter 2800ms cubic-bezier(0.35, 0, 0.15, 1),
+			transform 3000ms cubic-bezier(0.2, 0, 0, 1);
+	}
+
+	.portrait.is-armed.is-developed .portrait__frame::after {
+		opacity: 0;
+	}
+
+	.portrait.is-armed.is-developed :global(img) {
+		filter: none;
+		transform: none;
+	}
+</style>
+
+<script>
+	const portraits = document.querySelectorAll<HTMLElement>("[data-portrait]");
+	const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	if (!reduce && "IntersectionObserver" in window) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					entry.target.classList.add("is-developed");
+					observer.unobserve(entry.target);
+				}
+			},
+			{ threshold: 0.45 },
+		);
+		for (const portrait of portraits) {
+			// Already on screen at load: print it straight away rather than flash a negative.
+			const box = portrait.getBoundingClientRect();
+			if (box.top < window.innerHeight * 0.85 && box.bottom > 0) continue;
+			portrait.classList.add("is-armed");
+			observer.observe(portrait);
+		}
+	}
+</script>

@@ -1,0 +1,99 @@
+---
+import "@fontsource-variable/ibm-plex-sans/wdth.css";
+import "@fontsource-variable/ibm-plex-sans/wdth-italic.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@/styles/site.css";
+import Analytics from "@vercel/analytics/astro";
+
+import CommandPalette from "@/components/site/CommandPalette.astro";
+import Footer from "@/components/site/Footer.astro";
+import Header from "@/components/site/Header.astro";
+import StatusBar from "@/components/site/StatusBar.astro";
+import { siteConfig, siteFeatures } from "@/site.config";
+
+interface Props {
+	meta?: {
+		articleDate?: string | undefined;
+		canonicalPath?: string;
+		description?: string;
+		ogImage?: string | undefined;
+		title?: string;
+	};
+	/** Label shown in the status bar when no tagged section is in view. */
+	section?: string;
+}
+
+const { meta = {}, section } = Astro.props;
+const title = meta.title ? `${meta.title} · ${siteConfig.title}` : siteConfig.title;
+const description = meta.description ?? siteConfig.description;
+const canonicalURL = new URL(meta.canonicalPath ?? Astro.url.pathname, Astro.site ?? Astro.url);
+const socialImageURL = new URL(meta.ogImage ?? "/social-card.png", Astro.site ?? Astro.url);
+---
+
+<!doctype html>
+<html lang={siteConfig.lang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
+		<title>{title}</title>
+		<meta content={description} name="description" />
+		<meta content={siteConfig.author} name="author" />
+		<link href={canonicalURL} rel="canonical" />
+		<meta content="#f4f7fb" media="(prefers-color-scheme: light)" name="theme-color" />
+		<meta content="#07111f" media="(prefers-color-scheme: dark)" name="theme-color" />
+		<script is:inline>
+			(() => {
+				try {
+					const stored = localStorage.getItem("theme");
+					if (stored === "light" || stored === "dark") {
+						document.documentElement.dataset.theme = stored;
+					}
+				} catch {
+					/* Storage can be unavailable; the OS preference still applies. */
+				}
+			})();
+		</script>
+		<link href="/favicon.ico" rel="icon" sizes="32x32" />
+		<link href="/icon.svg" rel="icon" type="image/svg+xml" />
+		<link href="/icons/apple-touch-icon.png" rel="apple-touch-icon" />
+		<link href="/manifest.webmanifest" rel="manifest" />
+		<link href="/sitemap-index.xml" rel="sitemap" />
+		{
+			siteFeatures.posts && (
+				<link href="/rss.xml" rel="alternate" title="Writing" type="application/rss+xml" />
+			)
+		}
+		<meta content={meta.articleDate ? "article" : "website"} property="og:type" />
+		<meta content={title} property="og:title" />
+		<meta content={description} property="og:description" />
+		<meta content={canonicalURL} property="og:url" />
+		<meta content={siteConfig.title} property="og:site_name" />
+		<meta content={siteConfig.ogLocale} property="og:locale" />
+		<meta content={socialImageURL} property="og:image" />
+		<meta content="1200" property="og:image:width" />
+		<meta content="630" property="og:image:height" />
+		{meta.articleDate && <meta content={meta.articleDate} property="article:published_time" />}
+		<meta content="summary_large_image" name="twitter:card" />
+		<meta content={title} name="twitter:title" />
+		<meta content={description} name="twitter:description" />
+		<meta content={socialImageURL} name="twitter:image" />
+		<meta content={Astro.generator} name="generator" />
+	</head>
+	<body id="top">
+		<a class="skip-link" href="#main">Skip to content</a>
+		<Header />
+		<main data-pagefind-body id="main">
+			<slot />
+		</main>
+		<Footer />
+		<StatusBar section={section ?? meta.title ?? "Home"} />
+		<CommandPalette />
+		<Analytics />
+		<script is:inline type="speculationrules">
+			{
+				"prefetch": [{ "where": { "href_matches": "/*" }, "eagerness": "moderate" }]
+			}
+		</script>
+	</body>
+</html>

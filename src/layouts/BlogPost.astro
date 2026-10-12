@@ -1,87 +1,192 @@
 ---
+import { Image } from "astro:assets";
 import { type CollectionEntry, render } from "astro:content";
-
-import Masthead from "@/components/blog/Masthead.astro";
-import TOC from "@/components/blog/TOC.astro";
-import WebMentions from "@/components/blog/webmentions/index.astro";
-
-import BaseLayout from "./Base.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import "@/styles/markdown.css";
+import Site from "@/layouts/Site.astro";
+import { generateToc, type TocItem } from "@/utils/generateToc";
 
 interface Props {
 	post: CollectionEntry<"post">;
 }
 
 const { post } = Astro.props;
-const { ogImage, title, description, updatedDate, publishDate } = post.data;
+const { coverImage, description, draft, ogImage, publishDate, tags, title, updatedDate } =
+	post.data;
 const socialImage = ogImage ?? `/og-image/${post.id}.png`;
 const articleDate = updatedDate?.toISOString() ?? publishDate.toISOString();
 const { headings, remarkPluginFrontmatter } = await render(post);
 const readingTime: string = remarkPluginFrontmatter.readingTime;
+const toc = generateToc(headings);
+const longDate: Intl.DateTimeFormatOptions = { month: "long" };
 ---
 
-<BaseLayout
-	meta={{
-		articleDate,
-		description,
-		ogImage: socialImage,
-		title,
-	}}
->
-	<article class="break-words" data-pagefind-body>
-		<div class="border-border border-b" id="blog-hero">
-			<div class="shell py-16 md:py-24">
-				<Masthead content={post} readingTime={readingTime} />
-			</div>
-		</div>
-		<div class="shell grid gap-x-8 gap-y-10 py-16 md:py-24 lg:grid-cols-12">
-			{!!headings.length && <TOC headings={headings} />}
-			<div
-				class:list={[
-					"prose min-w-0 max-w-[42rem] lg:col-span-8",
-					!!headings.length && "lg:col-start-5",
-				]}
-			>
+<Site meta={{ articleDate, description, ogImage: socialImage, title }} section="Writing">
+	<article class="post">
+		<header class="post__head wrap">
+			<nav aria-label="Breadcrumb" class="post__crumbs meta"><a href="/posts/">Writing</a></nav>
+			<h1 class="display post__title">{title}</h1>
+			<p class="post__meta meta">
+				{draft && <span class="post__draft">Draft</span>}
+				<FormattedDate date={publishDate} dateTimeOptions={longDate} />
+				<span>{readingTime}</span>
+				{
+					updatedDate && (
+						<span>
+							Updated <FormattedDate date={updatedDate} dateTimeOptions={longDate} />
+						</span>
+					)
+				}
+			</p>
+			{
+				tags.length > 0 && (
+					<ul aria-label="Tags" class="post__tags" role="list">
+						{tags.map((tag) => (
+							<li>
+								<a data-pagefind-filter={`tag:${tag}`} href={`/tags/${tag}/`}>
+									{tag}
+								</a>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</header>
+
+		<div class="wrap post__grid">
+			{
+				toc.length > 0 && (
+					<nav aria-label="Contents" class="post__toc">
+						<p class="meta">Contents</p>
+						<ol role="list">
+							{toc.map((item: TocItem) => (
+								<li>
+									<a href={`#${item.slug}`}>{item.text}</a>
+									{item.children.length > 0 && (
+										<ol role="list">
+											{item.children.map((child) => (
+												<li>
+													<a href={`#${child.slug}`}>{child.text}</a>
+												</li>
+											))}
+										</ol>
+									)}
+								</li>
+							))}
+						</ol>
+					</nav>
+				)
+			}
+			<div class="prose post__body">
+				{
+					coverImage && (
+						<Image
+							alt={coverImage.alt}
+							class="post__cover"
+							priority
+							src={coverImage.src}
+							width={1200}
+						/>
+					)
+				}
 				<slot />
-				<WebMentions />
 			</div>
 		</div>
 	</article>
-	<button
-		class="border-border bg-global-bg hover:bg-surface ease-productive fixed end-4 bottom-8 z-90 flex h-12 w-12 translate-y-28 cursor-pointer items-center justify-center border opacity-0 transition-all duration-300 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8"
-		data-show="false"
-		id="to-top-btn"
-	>
-		<span class="sr-only">Back to top</span>
-		<svg
-			aria-hidden="true"
-			class="h-5 w-5"
-			fill="none"
-			focusable="false"
-			stroke="currentColor"
-			stroke-width="1.5"
-			viewBox="0 0 24 24"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path d="M4.5 15.75l7.5-7.5 7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
-		</svg>
-	</button>
-</BaseLayout>
+</Site>
 
-<script>
-	const scrollBtn = document.getElementById("to-top-btn") as HTMLButtonElement;
-	const targetHeader = document.getElementById("blog-hero") as HTMLDivElement;
-
-	function callback(entries: IntersectionObserverEntry[]) {
-		entries.forEach((entry) => {
-			// only show the scroll to top button when the heading is out of view
-			scrollBtn.dataset.show = (!entry.isIntersecting).toString();
-		});
+<style>
+	.post__head {
+		padding-block: clamp(3rem, 8vw, 5rem) clamp(2rem, 5vw, 3rem);
+		border-bottom: 1px solid var(--rule);
 	}
 
-	scrollBtn.addEventListener("click", () => {
-		document.documentElement.scrollTo({ behavior: "smooth", top: 0 });
-	});
+	.post__crumbs a {
+		text-decoration: none;
+	}
 
-	const observer = new IntersectionObserver(callback);
-	observer.observe(targetHeader);
-</script>
+	.post__title {
+		max-width: 20ch;
+		margin-top: 1rem;
+		font-size: var(--step-4);
+	}
+
+	.post__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem 1.25rem;
+		margin-top: 1.25rem;
+	}
+
+	.post__draft {
+		color: var(--series-2);
+	}
+
+	.post__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin-top: 1rem;
+	}
+
+	.post__tags a {
+		display: inline-block;
+		padding: 0.15rem 0.55rem;
+		border: 1px solid var(--rule-strong);
+		border-radius: 999px;
+		font-size: var(--step--1);
+		text-decoration: none;
+	}
+
+	.post__tags a:hover {
+		border-color: var(--signal);
+	}
+
+	.post__grid {
+		display: grid;
+		gap: 2rem 4rem;
+		padding-block: clamp(2.5rem, 6vw, 4rem) clamp(4rem, 9vw, 6rem);
+	}
+
+	.post__toc ol {
+		display: grid;
+		gap: 0.35rem;
+		margin-top: 0.5rem;
+		font-size: 0.9375rem;
+	}
+
+	.post__toc ol ol {
+		margin: 0.35rem 0 0 0.9rem;
+		font-size: var(--step--1);
+	}
+
+	.post__toc a {
+		color: var(--ink-2);
+		text-decoration: none;
+	}
+
+	.post__toc a:hover {
+		color: var(--ink);
+	}
+
+	.post__cover {
+		width: 100%;
+		height: auto;
+	}
+
+	@media (min-width: 64rem) {
+		.post__grid {
+			grid-template-columns: 14rem minmax(0, 1fr);
+		}
+
+		.post__toc {
+			position: sticky;
+			top: calc(var(--header-h) + 2rem);
+			align-self: start;
+		}
+
+		.post__body:only-child {
+			grid-column: 2;
+		}
+	}
+</style>

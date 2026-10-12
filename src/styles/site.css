@@ -1,0 +1,661 @@
+/*
+ * Site design system: "research instrument".
+ * One token set, two themes via light-dark(). The theme follows the OS unless
+ * <html data-theme> pins it (set by the toggle, persisted in localStorage).
+ */
+
+@layer reset, tokens, base, layout, components, utilities;
+
+@layer tokens {
+	:root {
+		color-scheme: light dark;
+
+		/* Surfaces and ink */
+		--paper: light-dark(#f4f7fb, #07111f);
+		--surface: light-dark(#ffffff, #0c1828);
+		--surface-2: light-dark(#eaf0f7, #11213a);
+		--ink: light-dark(#0b1b2e, #e8eef6);
+		--ink-2: light-dark(#44566c, #a9b8ca);
+		--ink-3: light-dark(#5f7088, #8494aa);
+		--rule: light-dark(#dbe2eb, #1b2a3f);
+		--rule-strong: light-dark(#aebccd, #2d4058);
+
+		/* Signal blue: links and accents. Filled controls keep Blue 60 in both themes
+		   because white on the lighter dark-theme blue falls below 4.5:1. */
+		--signal: light-dark(#0f62fe, #4589ff);
+		--signal-ink: light-dark(#0043ce, #78a9ff);
+		--signal-fill: #0f62fe;
+		--signal-fill-hover: #0050e6;
+		--signal-wash: light-dark(rgb(15 98 254 / 0.08), rgb(69 137 255 / 0.12));
+
+		/* Data: categorical slots validated all-pairs for both surfaces (dataviz validator) */
+		--series-1: light-dark(#0f62fe, #4589ff);
+		--series-2: light-dark(#eb6834, #d95926);
+		--series-3: light-dark(#1baf7a, #199e70);
+		--series-4: light-dark(#eda100, #c98500);
+		--context-line: light-dark(rgb(11 27 46 / 0.17), rgb(232 238 246 / 0.15));
+		--median-line: light-dark(#0b1b2e, #e8eef6);
+		--grid-line: light-dark(#e6ebf2, #16253a);
+		--axis-line: light-dark(#b4c1d1, #2d4058);
+
+		/* Film rebate (edge print) */
+		--rebate: #15110d;
+		--rebate-ink: #e8a33d;
+
+		/* Type */
+		--font-sans:
+			"IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+			sans-serif;
+		--font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+		--step--2: 0.75rem;
+		--step--1: 0.8125rem;
+		--step-0: 1.0625rem;
+		--step-1: 1.25rem;
+		--step-2: 1.5625rem;
+		--step-3: clamp(1.75rem, 2.4vw, 2rem);
+		--step-4: clamp(2rem, 3.6vw, 2.75rem);
+		--step-display: clamp(2.5rem, 4.9vw, 4.5rem);
+
+		/* Space and layout */
+		--gutter: clamp(1rem, 4vw, 3rem);
+		--measure: 40rem;
+		--wrap: 84rem;
+		--header-h: 3.5rem;
+		--statusbar-h: 0rem;
+		--radius: 2px;
+		--ease: cubic-bezier(0.2, 0, 0, 1);
+	}
+
+	:root[data-theme="light"] {
+		color-scheme: light;
+	}
+
+	:root[data-theme="dark"] {
+		color-scheme: dark;
+	}
+
+	@media (min-width: 64rem) {
+		:root {
+			--statusbar-h: 1.75rem;
+		}
+	}
+}
+
+@layer reset {
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	* {
+		margin: 0;
+	}
+
+	ul[role="list"],
+	ol[role="list"] {
+		padding: 0;
+		list-style: none;
+	}
+
+	img,
+	picture,
+	svg,
+	video {
+		display: block;
+		max-width: 100%;
+	}
+
+	input,
+	button,
+	textarea,
+	select {
+		font: inherit;
+		color: inherit;
+	}
+
+	button {
+		cursor: pointer;
+	}
+
+	p,
+	h1,
+	h2,
+	h3,
+	h4 {
+		overflow-wrap: break-word;
+	}
+}
+
+@layer base {
+	html {
+		background: var(--paper);
+		color: var(--ink);
+		font-family: var(--font-sans);
+		font-size: 100%;
+		-webkit-text-size-adjust: none;
+		text-size-adjust: none;
+		scroll-padding-top: calc(var(--header-h) + 1rem);
+		/* Keep focused and scrolled-to elements clear of the fixed status bar. */
+		scroll-padding-bottom: calc(var(--statusbar-h) + 0.5rem);
+	}
+
+	body {
+		min-height: 100svh;
+		display: flex;
+		flex-direction: column;
+		padding-bottom: var(--statusbar-h);
+		background: var(--paper);
+		font-size: var(--step-0);
+		font-weight: 400;
+		line-height: 1.6;
+		font-optical-sizing: auto;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+	}
+
+	main {
+		flex: 1;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		font-weight: 400;
+		line-height: 1.15;
+		letter-spacing: -0.015em;
+		text-wrap: balance;
+	}
+
+	p {
+		text-wrap: pretty;
+	}
+
+	a {
+		color: inherit;
+		text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.22em;
+		transition: text-decoration-color 120ms var(--ease);
+	}
+
+	a:hover {
+		text-decoration-color: currentColor;
+	}
+
+	code,
+	kbd,
+	samp,
+	pre {
+		font-family: var(--font-mono);
+		font-size: 0.875em;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--signal);
+		outline-offset: 2px;
+	}
+
+	::selection {
+		background: var(--signal-fill);
+		color: #fff;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		html {
+			scroll-behavior: smooth;
+		}
+	}
+}
+
+@layer layout {
+	.wrap {
+		width: min(100% - 2 * var(--gutter), var(--wrap));
+		margin-inline: auto;
+	}
+
+	.section {
+		padding-block: clamp(4rem, 9vw, 7rem);
+		border-top: 1px solid var(--rule);
+	}
+
+	/* Heading row used at the top of every section: title left, context right. */
+	.section-head {
+		display: grid;
+		gap: 1rem 2rem;
+		align-items: end;
+		margin-bottom: clamp(2rem, 5vw, 3.5rem);
+	}
+
+	.section-head h2 {
+		font-size: var(--step-4);
+		font-weight: 360;
+		letter-spacing: -0.03em;
+	}
+
+	.section-head p {
+		max-width: 34rem;
+		color: var(--ink-2);
+	}
+
+	@media (min-width: 52rem) {
+		.section-head {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+	}
+
+	.stack > * + * {
+		margin-top: var(--stack-gap, 1rem);
+	}
+}
+
+@layer components {
+	/* Text */
+	.display {
+		font-size: var(--step-display);
+		font-weight: 330;
+		line-height: 1;
+		letter-spacing: -0.042em;
+	}
+
+	.lead {
+		font-size: var(--step-1);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+
+	.muted {
+		color: var(--ink-2);
+	}
+
+	.meta {
+		font-size: var(--step--1);
+		line-height: 1.45;
+		color: var(--ink-3);
+	}
+
+	.num {
+		font-variant-numeric: tabular-nums;
+	}
+
+	.mono {
+		font-family: var(--font-mono);
+		font-size: 0.875em;
+	}
+
+	.text-link {
+		color: var(--signal-ink);
+		text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+	}
+
+	/* Buttons */
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: 2.75rem;
+		padding: 0.5rem 1.1rem;
+		border: 1px solid var(--ink);
+		border-radius: var(--radius);
+		background: transparent;
+		color: var(--ink);
+		font-size: 0.9375rem;
+		font-weight: 500;
+		line-height: 1.2;
+		text-decoration: none;
+		transition:
+			background-color 120ms var(--ease),
+			border-color 120ms var(--ease),
+			color 120ms var(--ease);
+	}
+
+	.button:hover {
+		background: var(--surface-2);
+	}
+
+	.button--primary {
+		border-color: var(--signal-fill);
+		background: var(--signal-fill);
+		color: #fff;
+	}
+
+	.button--primary:hover {
+		border-color: var(--signal-fill-hover);
+		background: var(--signal-fill-hover);
+	}
+
+	.button svg {
+		width: 1rem;
+		height: 1rem;
+		flex: none;
+	}
+
+	/* Keyboard key */
+	.kbd {
+		display: inline-flex;
+		min-width: 1.4em;
+		align-items: center;
+		justify-content: center;
+		padding: 0.05em 0.35em;
+		border: 1px solid var(--rule-strong);
+		border-bottom-width: 2px;
+		border-radius: 3px;
+		background: var(--surface);
+		color: var(--ink-2);
+		font-family: var(--font-mono);
+		font-size: 0.75em;
+		line-height: 1.4;
+	}
+
+	/* Definition list used as a spec sheet */
+	.spec {
+		display: grid;
+		--spec-lh: 1.7rem;
+		grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr);
+		border-top: 1px solid var(--rule);
+	}
+
+	/* Labels and values share one line height so their baselines line up. */
+	.spec > dt,
+	.spec > dd {
+		padding-block: 0.8rem;
+		border-bottom: 1px solid var(--rule);
+		line-height: var(--spec-lh);
+	}
+
+	.spec > dt {
+		padding-right: 1rem;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.spec > dd {
+		margin: 0;
+	}
+
+	@media (max-width: 30rem) {
+		.spec {
+			grid-template-columns: 1fr;
+		}
+
+		.spec > dt {
+			padding-bottom: 0;
+			border-bottom: 0;
+		}
+
+		.spec > dd {
+			padding-top: 0.15rem;
+		}
+	}
+
+	/*
+	 * Figure frame: the one structural flourish. Hairline box with registration
+	 * marks at the corners, used only around data figures.
+	 */
+	.instrument {
+		--mark: 0.6rem;
+		--mark-gap: 0.35rem;
+		position: relative;
+		border: 1px solid var(--rule-strong);
+		background: var(--surface);
+	}
+
+	/* Crop marks sit on the extensions of the frame's edges, just outside it. */
+	.instrument::before {
+		--c: var(--ink-3);
+		--o: calc(var(--mark) + var(--mark-gap));
+		position: absolute;
+		inset: calc(-1 * var(--o) - 1px);
+		pointer-events: none;
+		content: "";
+		background:
+			linear-gradient(var(--c), var(--c)) left 0 top var(--o) / var(--mark) 1px,
+			linear-gradient(var(--c), var(--c)) left var(--o) top 0 / 1px var(--mark),
+			linear-gradient(var(--c), var(--c)) right 0 top var(--o) / var(--mark) 1px,
+			linear-gradient(var(--c), var(--c)) right var(--o) top 0 / 1px var(--mark),
+			linear-gradient(var(--c), var(--c)) left 0 bottom var(--o) / var(--mark) 1px,
+			linear-gradient(var(--c), var(--c)) left var(--o) bottom 0 / 1px var(--mark),
+			linear-gradient(var(--c), var(--c)) right 0 bottom var(--o) / var(--mark) 1px,
+			linear-gradient(var(--c), var(--c)) right var(--o) bottom 0 / 1px var(--mark);
+		background-repeat: no-repeat;
+	}
+
+	.figure-label {
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Language colours: fixed per language, drawn as a stacked bar with 2px surface gaps. */
+	.langbar {
+		display: flex;
+		height: 0.5rem;
+		gap: 2px;
+		overflow: hidden;
+		border-radius: 1px;
+	}
+
+	.langbar > i,
+	.lang-key {
+		background: var(--lang, var(--ink-3));
+	}
+
+	.langbar > i {
+		min-width: 2px;
+	}
+
+	[data-lang-slot="1"] {
+		--lang: var(--series-1);
+	}
+
+	[data-lang-slot="2"] {
+		--lang: var(--series-2);
+	}
+
+	[data-lang-slot="3"] {
+		--lang: var(--series-3);
+	}
+
+	[data-lang-slot="4"] {
+		--lang: var(--series-4);
+	}
+
+	.langs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem 1rem;
+		margin-top: 0.6rem;
+		padding: 0;
+		list-style: none;
+		color: var(--ink-2);
+		font-size: var(--step--1);
+	}
+
+	.langs li {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.lang-key {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 1px;
+	}
+
+	/* Prose (about page, project READMEs, posts) */
+	.prose {
+		max-width: var(--measure);
+		line-height: 1.7;
+	}
+
+	.prose > * + * {
+		margin-top: 1.1em;
+	}
+
+	.prose :where(h2, h3, h4) {
+		margin-top: 2.2em;
+		font-weight: 500;
+		letter-spacing: -0.01em;
+	}
+
+	.prose h2 {
+		font-size: var(--step-2);
+		font-weight: 400;
+	}
+
+	.prose h3 {
+		font-size: var(--step-1);
+	}
+
+	.prose h4 {
+		font-size: var(--step-0);
+	}
+
+	.prose :where(h2, h3, h4) + * {
+		margin-top: 0.6em;
+	}
+
+	.prose a {
+		color: var(--signal-ink);
+	}
+
+	/* Headings are wrapped in self-links by rehype-autolink-headings. */
+	.prose :is(h2, h3, h4) > a,
+	.prose :is(h2, h3, h4) a.not-prose {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.prose :where(ul, ol) {
+		padding-left: 1.25em;
+	}
+
+	.prose li + li {
+		margin-top: 0.35em;
+	}
+
+	.prose li::marker {
+		color: var(--ink-3);
+	}
+
+	.prose :where(code):not(pre code) {
+		padding: 0.1em 0.3em;
+		border-radius: var(--radius);
+		background: var(--surface-2);
+		font-size: 0.85em;
+	}
+
+	.prose pre {
+		overflow-x: auto;
+		padding: 1rem 1.1rem;
+		border: 1px solid var(--rule);
+		background: var(--surface);
+		font-size: 0.8125rem;
+		line-height: 1.65;
+		tab-size: 4;
+	}
+
+	.prose blockquote {
+		padding-left: 1rem;
+		border-left: 2px solid var(--rule-strong);
+		color: var(--ink-2);
+	}
+
+	/* Wide tables (README comparisons, data) scroll inside the column on small screens. */
+	.prose table {
+		display: block;
+		max-width: 100%;
+		overflow-x: auto;
+		border-collapse: collapse;
+		font-size: var(--step--1);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.prose :where(th, td) {
+		padding: 0.5rem 0.75rem 0.5rem 0;
+		border-bottom: 1px solid var(--rule);
+		text-align: left;
+		vertical-align: top;
+	}
+
+	.prose th {
+		color: var(--ink-3);
+		font-weight: 500;
+	}
+
+	.prose img {
+		height: auto;
+	}
+
+	.prose hr {
+		height: 1px;
+		border: 0;
+		background: var(--rule);
+	}
+}
+
+@layer utilities {
+	.visually-hidden {
+		position: absolute !important;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.skip-link {
+		position: fixed;
+		top: 0.5rem;
+		left: 0.5rem;
+		z-index: 200;
+		padding: 0.6rem 0.9rem;
+		border-radius: var(--radius);
+		background: var(--signal-fill);
+		color: #fff;
+		font-weight: 500;
+		text-decoration: none;
+		transform: translateY(-200%);
+	}
+
+	.skip-link:focus {
+		transform: none;
+	}
+}
+
+/* Cross-document view transitions: a quiet crossfade between pages. */
+@view-transition {
+	/* biome-ignore lint/correctness/noUnknownProperty: CSS View Transitions Level 2 descriptor */
+	navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	@view-transition {
+		/* biome-ignore lint/correctness/noUnknownProperty: CSS View Transitions Level 2 descriptor */
+		navigation: none;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+@media print {
+	.site-header,
+	.statusbar,
+	.site-footer nav {
+		display: none !important;
+	}
+
+	body {
+		padding-bottom: 0;
+	}
+}

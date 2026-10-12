@@ -1,0 +1,136 @@
+---
+import { interests } from "@/data/about";
+
+const sentence = `${interests.slice(0, -1).join(", ")} and ${interests.at(-1)}`;
+---
+
+<p class="rotator" data-rotator>
+	<span class="rotator__lead">Especially drawn to</span>
+	<span aria-hidden="true" class="rotator__window">
+		{
+			interests.map((interest, index) => (
+				<span
+					class="rotator__item"
+					data-active={index === 0 ? "" : undefined}
+					set:text={`${interest}.`}
+				/>
+			))
+		}
+	</span>
+	<span class="rotator__static">{sentence}.</span>
+</p>
+
+<style>
+	.rotator {
+		display: grid;
+		gap: 0.25rem;
+	}
+
+	.rotator__lead {
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.rotator__window,
+	.rotator__static {
+		color: var(--ink);
+		font-size: var(--step-2);
+		font-weight: 330;
+		line-height: 1.3;
+		letter-spacing: -0.012em;
+	}
+
+	/* Without the script (or with reduced motion) the full list reads as a sentence. */
+	.rotator__window {
+		display: none;
+	}
+
+	.rotator.is-live .rotator__window {
+		display: grid;
+	}
+
+	.rotator.is-live .rotator__static {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	/* Every item shares one grid cell, so the line is as tall as the longest interest. */
+	.rotator__item {
+		grid-area: 1 / 1;
+		opacity: 0;
+		transform: translateY(0.55em);
+		filter: blur(3px);
+		transition:
+			opacity 520ms var(--ease),
+			transform 620ms var(--ease),
+			filter 520ms var(--ease);
+	}
+
+	.rotator__item[data-active] {
+		opacity: 1;
+		transform: none;
+		filter: none;
+	}
+
+	.rotator__item[data-leaving] {
+		opacity: 0;
+		transform: translateY(-0.55em);
+		filter: blur(3px);
+	}
+</style>
+
+<script>
+	const rotators = document.querySelectorAll<HTMLElement>("[data-rotator]");
+	const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	const INTERVAL = 2600;
+
+	for (const rotator of reduce ? [] : rotators) {
+		const items = Array.from(rotator.querySelectorAll<HTMLElement>(".rotator__item"));
+		if (items.length < 2) continue;
+		rotator.classList.add("is-live");
+		let index = 0;
+		let timer = 0;
+		let visible = false;
+		let held = false;
+
+		const advance = () => {
+			const current = items[index];
+			index = (index + 1) % items.length;
+			const next = items[index];
+			if (!current || !next) return;
+			current.removeAttribute("data-active");
+			current.setAttribute("data-leaving", "");
+			next.removeAttribute("data-leaving");
+			next.setAttribute("data-active", "");
+			window.setTimeout(() => current.removeAttribute("data-leaving"), 650);
+		};
+
+		const sync = () => {
+			const run = visible && !held && document.visibilityState === "visible";
+			if (run && !timer) timer = window.setInterval(advance, INTERVAL);
+			if (!run && timer) {
+				window.clearInterval(timer);
+				timer = 0;
+			}
+		};
+
+		// Hold on hover so a phrase can be read in full.
+		rotator.addEventListener("pointerenter", () => {
+			held = true;
+			sync();
+		});
+		rotator.addEventListener("pointerleave", () => {
+			held = false;
+			sync();
+		});
+		document.addEventListener("visibilitychange", sync);
+		new IntersectionObserver((entries) => {
+			visible = entries.some((entry) => entry.isIntersecting);
+			sync();
+		}).observe(rotator);
+	}
+</script>

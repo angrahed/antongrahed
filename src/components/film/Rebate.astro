@@ -1,0 +1,51 @@
+---
+/** Caption set like the edge print on a negative: frame number, subject, date. */
+interface Props {
+	date: string;
+	frame: number | string;
+	title: string;
+}
+
+const { date, frame, title } = Astro.props;
+---
+
+<figcaption class="rebate">
+	<span class="rebate__frame num" data-rebate-frame>{String(frame).padStart(2, "0")}</span>
+	<span aria-hidden="true" class="rebate__arrow">▸</span>
+	<span class="rebate__title" data-rebate-title>{title}</span>
+	<span class="rebate__date num" data-rebate-date>{date}</span>
+</figcaption>
+
+<style>
+	.rebate {
+		display: flex;
+		min-width: 0;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.45rem 0.7rem;
+		background: var(--rebate);
+		color: var(--rebate-ink);
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.08em;
+		line-height: 1.2;
+		text-transform: uppercase;
+	}
+
+	.rebate__arrow {
+		font-size: 0.55rem;
+		opacity: 0.8;
+	}
+
+	.rebate__title {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.rebate__date {
+		margin-left: auto;
+		opacity: 0.85;
+	}
+</style>

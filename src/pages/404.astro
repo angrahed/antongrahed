@@ -1,41 +1,55 @@
 ---
-import { Icon } from "astro-icon/components";
-import PageLayout from "@/layouts/Base.astro";
-
-const meta = {
-	description: "Page not found.",
-	title: "404 — Page not found",
-};
+import Site from "@/layouts/Site.astro";
 ---
 
-<PageLayout meta={meta}>
-	<section class="flex min-h-[70vh] flex-col justify-center">
-		<div class="shell py-16 md:py-24">
-			<p class="eyebrow reveal">Error 404</p>
-			<div class="reveal mt-8 h-1 w-24 bg-[#0f62fe] [animation-delay:80ms]"></div>
-			<h1
-				class="text-accent-2 reveal mt-4 text-[clamp(6rem,18vw,11rem)] leading-none font-light tracking-[-0.02em] [animation-delay:80ms]"
-			>
-				404<span class="text-accent">.</span>
-			</h1>
-			<p class="lead reveal text-text-secondary mt-6 max-w-[36rem] [animation-delay:160ms]">
-				This page doesn't exist, or it's filed under the wrong tab.
+<Site
+	meta={{ description: "This page could not be found.", title: "Page not found" }}
+	section="Not found"
+>
+	<section class="not-found">
+		<div class="wrap">
+			<p class="not-found__code num" aria-hidden="true">404</p>
+			<h1 class="display not-found__title">This page doesn’t exist.</h1>
+			<p class="lead not-found__lead">
+				The address may be mistyped, or the page may have moved. Search the site or start from the
+				home page.
 			</p>
-			<div class="reveal mt-12 flex flex-wrap gap-px [animation-delay:240ms]">
-				<a class="btn-primary min-w-44" href="/">
-					Go home
-					<Icon aria-hidden="true" class="h-5 w-5" focusable="false" name="mdi:arrow-right" />
-				</a>
-				<button class="btn-ghost cursor-pointer" data-search-trigger type="button">
-					Search the site
-				</button>
+			<div class="not-found__actions">
+				<a class="button button--primary" href="/">Go to the home page</a>
+				<button class="button" data-palette-open type="button">Search the site</button>
 			</div>
 		</div>
 	</section>
-</PageLayout>
+</Site>
 
-<script is:inline>
-	document.querySelector("[data-search-trigger]")?.addEventListener("click", () => {
-		document.querySelector("button[data-open-modal]")?.click();
-	});
-</script>
+<style>
+	.not-found {
+		display: flex;
+		min-height: calc(100svh - var(--header-h) - 18rem);
+		align-items: center;
+		padding-block: clamp(4rem, 10vw, 7rem);
+	}
+
+	.not-found__code {
+		color: var(--signal);
+		font-size: var(--step-1);
+		font-weight: 500;
+	}
+
+	.not-found__title {
+		max-width: 14ch;
+		margin-top: 0.75rem;
+	}
+
+	.not-found__lead {
+		max-width: 34rem;
+		margin-top: 1.25rem;
+	}
+
+	.not-found__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin-top: 2rem;
+	}
+</style>

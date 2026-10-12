@@ -1,0 +1,632 @@
+---
+import { projects } from "@/data/projects";
+import { contact, menuLinks, siteFeatures } from "@/site.config";
+
+interface PaletteCommand {
+	action?: "copy-email" | "shortcuts" | "theme-system" | "theme-toggle";
+	group: string;
+	hint?: string | undefined;
+	href?: string;
+	id: string;
+	keywords?: string;
+	label: string;
+}
+
+const commands: PaletteCommand[] = [
+	{ group: "Pages", hint: "G H", href: "/", id: "page-home", label: "Home" },
+	...menuLinks.map((link) => ({
+		group: "Pages",
+		hint: ({ About: "G A", Film: "G F", Projects: "G P" } as Record<string, string>)[link.title],
+		href: link.path,
+		id: `page-${link.title.toLowerCase()}`,
+		label: link.title,
+	})),
+	...projects.map((project) => ({
+		group: "Projects",
+		hint: project.stack.join(", "),
+		href: `/projects/${project.slug}/`,
+		id: `project-${project.slug}`,
+		keywords: project.summary,
+		label: project.title,
+	})),
+	{
+		group: "Data",
+		href: "/#figure-1",
+		id: "figure-1",
+		keywords:
+			"chart gdp growth convergence distribution income life expectancy democracy v-dem transition world bank map",
+		label: "Figure 1: thirty years of transition",
+	},
+	{
+		group: "Data",
+		hint: "CSV",
+		href: "/data/transition.csv",
+		id: "download-csv",
+		keywords: "download data world bank wdi",
+		label: "Download the Figure 1 data",
+	},
+	{
+		group: "Film",
+		href: "/film/#random",
+		id: "random-frame",
+		keywords: "photo photograph picture film",
+		label: "Open a random film frame",
+	},
+	{
+		action: "copy-email",
+		group: "Actions",
+		hint: contact.email,
+		id: "copy-email",
+		keywords: "contact mail address",
+		label: "Copy email address",
+	},
+	{
+		action: "theme-toggle",
+		group: "Actions",
+		hint: "T",
+		id: "theme-toggle",
+		keywords: "dark light mode appearance colour color",
+		label: "Switch theme",
+	},
+	{
+		action: "theme-system",
+		group: "Actions",
+		id: "theme-system",
+		keywords: "dark light mode appearance os automatic",
+		label: "Use system theme",
+	},
+	{
+		action: "shortcuts",
+		group: "Actions",
+		hint: "?",
+		id: "shortcuts",
+		keywords: "keyboard help keys",
+		label: "Show keyboard shortcuts",
+	},
+	{
+		group: "Elsewhere",
+		href: contact.github,
+		id: "github",
+		keywords: "code source repositories",
+		label: "GitHub profile",
+	},
+];
+
+const payload = JSON.stringify({
+	commands,
+	email: contact.email,
+	posts: siteFeatures.posts,
+}).replaceAll("<", "\\u003c");
+---
+
+<dialog aria-label="Command palette" class="palette" data-palette>
+	<div class="palette__frame">
+		<div class="palette__search">
+			<svg aria-hidden="true" fill="none" viewBox="0 0 16 16">
+				<circle cx="7" cy="7" r="4.75" stroke="currentColor" stroke-width="1.5"></circle>
+				<path d="m10.5 10.5 3.5 3.5" stroke="currentColor" stroke-width="1.5"></path>
+			</svg>
+			<input
+				aria-autocomplete="list"
+				aria-controls="palette-list"
+				aria-expanded="true"
+				aria-label="Search the site or run a command"
+				autocomplete="off"
+				class="palette__input"
+				data-palette-input
+				placeholder="Search the site or run a command"
+				role="combobox"
+				spellcheck="false"
+				type="text"
+			/>
+			<kbd class="kbd">Esc</kbd>
+		</div>
+
+		<ul class="palette__list" data-palette-list id="palette-list" role="listbox"></ul>
+
+		<div class="palette__shortcuts" data-palette-shortcuts hidden>
+			<p class="palette__group-title">Keyboard shortcuts</p>
+			<dl>
+				<dt><kbd class="kbd" data-mod-key>⌘K</kbd></dt>
+				<dd>Open this palette</dd>
+				<dt><kbd class="kbd">/</kbd></dt>
+				<dd>Search</dd>
+				<dt><kbd class="kbd">?</kbd></dt>
+				<dd>Show these shortcuts</dd>
+				<dt><kbd class="kbd">T</kbd></dt>
+				<dd>Switch between light and dark theme</dd>
+				<dt>
+					<kbd class="kbd">G</kbd> then <kbd class="kbd">H</kbd>
+					<kbd class="kbd">A</kbd>
+					<kbd class="kbd">P</kbd>
+					<kbd class="kbd">F</kbd>
+				</dt>
+				<dd>Go to Home, About, Projects or Film</dd>
+				<dt><kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd></dt>
+				<dd>Step through years in Figure 1, or frames in the film viewer</dd>
+				<dt><kbd class="kbd">1</kbd>–<kbd class="kbd">6</kbd></dt>
+				<dd>Switch the Figure 1 measure while the figure has focus</dd>
+			</dl>
+		</div>
+
+		<div class="palette__footer">
+			<span class="palette__keys">
+				<kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> move <kbd class="kbd">↵</kbd> open
+			</span>
+			<span aria-live="polite" class="palette__status" data-palette-status></span>
+		</div>
+	</div>
+</dialog>
+
+<script data-palette-data is:inline set:html={payload} type="application/json" />
+
+<style>
+	.palette {
+		width: min(100% - 2rem, 40rem);
+		max-width: none;
+		max-height: min(32rem, 100svh - 6rem);
+		margin: 12svh auto auto;
+		padding: 0;
+		overflow: hidden;
+		border: 1px solid var(--rule-strong);
+		border-radius: 4px;
+		background: var(--surface);
+		color: var(--ink);
+		box-shadow:
+			0 24px 64px -12px rgb(7 17 31 / 0.35),
+			0 2px 6px rgb(7 17 31 / 0.08);
+	}
+
+	.palette::backdrop {
+		background: rgb(7 17 31 / 0.35);
+		backdrop-filter: blur(2px);
+	}
+
+	.palette[open] {
+		display: block;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.palette[open] {
+			animation: palette-in 160ms var(--ease);
+		}
+
+		@keyframes palette-in {
+			from {
+				opacity: 0;
+				transform: translateY(-6px) scale(0.99);
+			}
+		}
+	}
+
+	.palette__frame {
+		display: flex;
+		max-height: inherit;
+		flex-direction: column;
+	}
+
+	.palette__search {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0 1rem;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.palette__search svg {
+		width: 1rem;
+		height: 1rem;
+		flex: none;
+		color: var(--ink-3);
+	}
+
+	.palette__input {
+		min-width: 0;
+		flex: 1;
+		height: 3.25rem;
+		border: 0;
+		background: transparent;
+		font-size: 1rem;
+		outline: none;
+	}
+
+	.palette__input::placeholder {
+		color: var(--ink-3);
+	}
+
+	.palette__list,
+	.palette__shortcuts {
+		min-height: 0;
+		flex: 1;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: 0.5rem;
+		margin: 0;
+		list-style: none;
+	}
+
+	.palette__list :global(.palette__group-title),
+	.palette__group-title {
+		padding: 0.6rem 0.6rem 0.3rem;
+		color: var(--ink-3);
+		font-size: var(--step--2);
+	}
+
+	.palette__list :global([role="option"]) {
+		display: flex;
+		min-height: 2.5rem;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.45rem 0.6rem;
+		border-radius: var(--radius);
+		cursor: pointer;
+	}
+
+	.palette__list :global([role="option"][aria-selected="true"]) {
+		background: var(--signal-wash);
+		box-shadow: inset 2px 0 0 var(--signal);
+	}
+
+	.palette__list :global(.palette__label) {
+		min-width: 0;
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.palette__list :global(.palette__excerpt) {
+		display: block;
+		overflow: hidden;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.palette__list :global(.palette__hint) {
+		flex: none;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.palette__list :global(.palette__empty) {
+		padding: 1.25rem 0.6rem;
+		color: var(--ink-2);
+	}
+
+	.palette__shortcuts dl {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: 0.6rem 1.25rem;
+		padding: 0.25rem 0.6rem 0.75rem;
+		font-size: 0.9375rem;
+	}
+
+	.palette__shortcuts dt {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.palette__shortcuts dd {
+		margin: 0;
+	}
+
+	.palette__footer {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.55rem 1rem;
+		border-top: 1px solid var(--rule);
+		color: var(--ink-3);
+		font-size: var(--step--2);
+	}
+
+	.palette__keys {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	.palette__status {
+		color: var(--ink-2);
+		text-align: right;
+	}
+</style>
+
+<script>
+	import { setTheme, toggleTheme } from "@/lib/theme";
+
+	interface Command {
+		action?: "copy-email" | "shortcuts" | "theme-system" | "theme-toggle";
+		excerpt?: string;
+		group: string;
+		hint?: string;
+		href?: string;
+		id: string;
+		keywords?: string;
+		label: string;
+	}
+
+	interface PagefindResult {
+		data: () => Promise<{ excerpt: string; meta: { title?: string }; url: string }>;
+	}
+
+	interface Pagefind {
+		debouncedSearch: (term: string) => Promise<{ results: PagefindResult[] } | null>;
+		options: (options: Record<string, unknown>) => Promise<void>;
+	}
+
+	const dialog = document.querySelector<HTMLDialogElement>("[data-palette]");
+	const input = dialog?.querySelector<HTMLInputElement>("[data-palette-input]");
+	const list = dialog?.querySelector<HTMLUListElement>("[data-palette-list]");
+	const shortcuts = dialog?.querySelector<HTMLElement>("[data-palette-shortcuts]");
+	const status = dialog?.querySelector<HTMLElement>("[data-palette-status]");
+	const dataElement = document.querySelector<HTMLScriptElement>("[data-palette-data]");
+
+	if (dialog && input && list && shortcuts && status && dataElement?.textContent) {
+		const data = JSON.parse(dataElement.textContent) as { commands: Command[]; email: string };
+		let visible: Command[] = [];
+		let selected = 0;
+		let searchToken = 0;
+		let pagefind: Pagefind | null | undefined;
+		let opener: HTMLElement | null = null;
+
+		const loadPagefind = async () => {
+			if (pagefind !== undefined) return pagefind;
+			try {
+				const path = "/pagefind/pagefind.js";
+				pagefind = (await import(/* @vite-ignore */ path)) as Pagefind;
+				await pagefind.options({ excerptLength: 14 });
+			} catch {
+				pagefind = null;
+			}
+			return pagefind;
+		};
+
+		const score = (command: Command, query: string) => {
+			if (!query) return 1;
+			const label = command.label.toLowerCase();
+			const haystack = `${label} ${command.keywords ?? ""} ${command.group}`.toLowerCase();
+			if (label.startsWith(query)) return 100;
+			const index = haystack.indexOf(query);
+			if (index >= 0) return 60 - Math.min(index, 40);
+			// Subsequence match across the label: "wbd" finds "WBData.jl".
+			let position = 0;
+			for (const char of query) {
+				position = label.indexOf(char, position);
+				if (position < 0) return 0;
+				position += 1;
+			}
+			return 10;
+		};
+
+		const render = () => {
+			list.replaceChildren();
+			if (visible.length === 0) {
+				const empty = document.createElement("li");
+				empty.className = "palette__empty";
+				empty.setAttribute("role", "presentation");
+				empty.textContent = "No matches. Try a page name, a project, or a word from the site.";
+				list.append(empty);
+				input.removeAttribute("aria-activedescendant");
+				return;
+			}
+			let group = "";
+			visible.forEach((command, index) => {
+				if (command.group !== group) {
+					group = command.group;
+					const title = document.createElement("li");
+					title.className = "palette__group-title";
+					title.setAttribute("role", "presentation");
+					title.textContent = group;
+					list.append(title);
+				}
+				const option = document.createElement("li");
+				option.id = `palette-option-${index}`;
+				option.setAttribute("role", "option");
+				option.setAttribute("aria-selected", String(index === selected));
+				const label = document.createElement("span");
+				label.className = "palette__label";
+				label.textContent = command.label;
+				if (command.excerpt) {
+					const excerpt = document.createElement("span");
+					excerpt.className = "palette__excerpt";
+					excerpt.textContent = command.excerpt;
+					label.append(excerpt);
+				}
+				option.append(label);
+				if (command.hint) {
+					const hint = document.createElement("span");
+					hint.className = "palette__hint";
+					hint.textContent = command.hint;
+					option.append(hint);
+				}
+				option.addEventListener("pointermove", () => {
+					if (selected !== index) select(index);
+				});
+				option.addEventListener("click", () => run(command));
+				list.append(option);
+			});
+			input.setAttribute("aria-activedescendant", `palette-option-${selected}`);
+		};
+
+		const select = (index: number) => {
+			selected = (index + visible.length) % visible.length;
+			for (const option of list.querySelectorAll<HTMLElement>('[role="option"]')) {
+				option.setAttribute("aria-selected", String(option.id === `palette-option-${selected}`));
+			}
+			input.setAttribute("aria-activedescendant", `palette-option-${selected}`);
+			list.querySelector(`#palette-option-${selected}`)?.scrollIntoView({ block: "nearest" });
+		};
+
+		const update = async () => {
+			const query = input.value.trim().toLowerCase();
+			const matches = data.commands
+				.map((command) => ({ command, value: score(command, query) }))
+				.filter(({ value }) => value > 0)
+				.sort((a, b) => (query ? b.value - a.value : 0))
+				.map(({ command }) => command);
+			visible = query ? matches.slice(0, 7) : matches;
+			selected = 0;
+			render();
+
+			if (query.length < 2) return;
+			const token = ++searchToken;
+			const engine = await loadPagefind();
+			if (!engine) {
+				status.textContent = "Full-text search runs on the published site.";
+				return;
+			}
+			const search = await engine.debouncedSearch(query);
+			if (!search || token !== searchToken) return;
+			const pages = await Promise.all(search.results.slice(0, 6).map((result) => result.data()));
+			if (token !== searchToken) return;
+			const results: Command[] = pages.map((page, index) => ({
+				excerpt: page.excerpt.replace(/<[^>]+>/g, ""),
+				group: "Search results",
+				href: page.url,
+				id: `search-${index}`,
+				label: page.meta.title ?? page.url,
+			}));
+			visible = [...visible, ...results];
+			render();
+		};
+
+		const showShortcuts = (show: boolean) => {
+			shortcuts.hidden = !show;
+			list.hidden = show;
+		};
+
+		const open = (mode: "commands" | "shortcuts" = "commands") => {
+			if (!dialog.open) {
+				opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+				dialog.showModal();
+			}
+			status.textContent = "";
+			input.value = "";
+			showShortcuts(mode === "shortcuts");
+			void update();
+			input.focus();
+			void loadPagefind();
+		};
+
+		const close = () => {
+			if (dialog.open) dialog.close();
+		};
+
+		dialog.addEventListener("close", () => {
+			if (opener?.isConnected) opener.focus();
+			opener = null;
+		});
+
+		const run = async (command: Command) => {
+			if (command.href) {
+				close();
+				const external = /^https?:\/\//.test(command.href);
+				if (external) window.open(command.href, "_blank", "noopener");
+				else window.location.href = command.href;
+				return;
+			}
+			switch (command.action) {
+				case "copy-email":
+					try {
+						await navigator.clipboard.writeText(data.email);
+						status.textContent = `Copied ${data.email}`;
+					} catch {
+						status.textContent = data.email;
+					}
+					return;
+				case "theme-toggle":
+					toggleTheme();
+					close();
+					return;
+				case "theme-system":
+					setTheme(null);
+					close();
+					return;
+				case "shortcuts":
+					showShortcuts(true);
+					return;
+			}
+		};
+
+		input.addEventListener("input", () => {
+			showShortcuts(false);
+			status.textContent = "";
+			void update();
+		});
+
+		input.addEventListener("keydown", (event) => {
+			if (event.key === "ArrowDown") {
+				event.preventDefault();
+				select(selected + 1);
+			} else if (event.key === "ArrowUp") {
+				event.preventDefault();
+				select(selected - 1);
+			} else if (event.key === "Enter") {
+				event.preventDefault();
+				const command = visible[selected];
+				if (command && list.hidden === false) void run(command);
+			}
+		});
+
+		dialog.addEventListener("click", (event) => {
+			if (event.target === dialog) close();
+		});
+
+		for (const trigger of document.querySelectorAll<HTMLElement>("[data-palette-open]")) {
+			trigger.addEventListener("click", () => open());
+		}
+
+		// Global keyboard shortcuts.
+		const isEditable = (target: EventTarget | null) =>
+			target instanceof HTMLElement &&
+			(target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+		let pendingGo = 0;
+		const destinations: Record<string, string> = {
+			a: "/about/",
+			f: "/film/",
+			h: "/",
+			p: "/projects/",
+		};
+
+		document.addEventListener("keydown", (event) => {
+			if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+				event.preventDefault();
+				if (dialog.open) close();
+				else open();
+				return;
+			}
+			if (dialog.open || event.metaKey || event.ctrlKey || event.altKey) return;
+			if (isEditable(event.target) || event.defaultPrevented) return;
+			if (document.querySelector("dialog[open], [data-film-viewer]:not([hidden])")) return;
+
+			const key = event.key.toLowerCase();
+			if (pendingGo && destinations[key]) {
+				event.preventDefault();
+				window.clearTimeout(pendingGo);
+				pendingGo = 0;
+				window.location.href = destinations[key] ?? "/";
+				return;
+			}
+			if (key === "/") {
+				event.preventDefault();
+				open();
+			} else if (event.key === "?") {
+				event.preventDefault();
+				open("shortcuts");
+			} else if (key === "t") {
+				toggleTheme();
+			} else if (key === "g") {
+				window.clearTimeout(pendingGo);
+				pendingGo = window.setTimeout(() => {
+					pendingGo = 0;
+				}, 1200);
+			}
+		});
+	}
+</script>

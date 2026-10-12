@@ -1,0 +1,62 @@
+---
+/**
+ * A paragraph whose words brighten in reading order as it scrolls through the
+ * viewport. Without JavaScript, or with reduced motion, it is simply full ink.
+ */
+interface Props {
+	class?: string;
+	text: string;
+}
+
+const { class: className, text } = Astro.props;
+const words = text.trim().split(/\s+/);
+---
+
+<p class:list={["lit", className]} data-lit style={`--n: ${words.length}`}>
+	{words.map((word, index) => <span style={`--i: ${index}`}>{`${word} `}</span>)}
+</p>
+
+<style>
+	.lit {
+		--p: 1;
+		--lit-dim: color-mix(in srgb, var(--ink) 22%, var(--paper));
+	}
+
+	/* Each word is lit once progress passes its position; a six-word ramp keeps the edge soft. */
+	.lit span {
+		--t: clamp(0, calc((var(--p) * (var(--n) + 6) - var(--i)) / 6), 1);
+		color: color-mix(in srgb, currentColor calc(var(--t) * 100%), var(--lit-dim));
+		transition: color 120ms linear;
+	}
+</style>
+
+<script>
+	const paragraphs = Array.from(document.querySelectorAll<HTMLElement>("[data-lit]"));
+	const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+	if (paragraphs.length > 0 && !reduce) {
+		let frame = 0;
+		const update = () => {
+			frame = 0;
+			const height = window.innerHeight;
+			for (const paragraph of paragraphs) {
+				const box = paragraph.getBoundingClientRect();
+				// 0 when the paragraph's top enters the lower tenth of the screen, 1 by the time
+				// its top reaches the upper third: it lights while you read it.
+				const start = height * 0.9;
+				const end = height * 0.3;
+				const progress = Math.min(1, Math.max(0, (start - box.top) / (start - end)));
+				paragraph.style.setProperty("--p", progress.toFixed(3));
+			}
+		};
+		update();
+		window.addEventListener(
+			"scroll",
+			() => {
+				if (!frame) frame = window.requestAnimationFrame(update);
+			},
+			{ passive: true },
+		);
+		window.addEventListener("resize", update);
+	}
+</script>

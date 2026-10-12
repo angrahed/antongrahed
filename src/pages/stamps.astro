@@ -1,57 +1,20 @@
 ---
-import AlternativeStampGallery from "@/components/alternative/AlternativeStampGallery.astro";
-import AlternativeLayout from "@/layouts/Alternative.astro";
+import PageHead from "@/components/site/PageHead.astro";
+import StampGallery from "@/components/stamps/StampGallery.astro";
+import Site from "@/layouts/Site.astro";
 import { siteFeatures } from "@/site.config";
 
 if (!siteFeatures.stamps) return Astro.redirect("/");
 ---
 
-<AlternativeLayout
+<Site
 	meta={{
 		canonicalPath: "/stamps/",
-		description: "Anton Grahed's postage stamp collection and philatelic archive.",
+		description: "Anton Grahed's postage stamp collection.",
 		title: "Stamps",
 	}}
+	section="Stamps"
 >
-	<section class="alt-section stamp-hero">
-		<div class="alt-shell stamp-hero__inner">
-			<p class="alt-label alt-label--azure">Philately · AG—04</p>
-			<h1>Selected Stamps</h1>
-			<p class="alt-lead">A collection of my favourite stamps! Will be updated regularly.</p>
-		</div>
-	</section>
-
-	<AlternativeStampGallery />
-</AlternativeLayout>
-
-<style>
-	.stamp-hero {
-		min-height: min(42rem, calc(100svh - 3rem));
-		overflow: hidden;
-		background: var(--alt-paper);
-	}
-
-	.stamp-hero__inner {
-		position: relative;
-		z-index: 1;
-		display: flex;
-		min-height: inherit;
-		flex-direction: column;
-		justify-content: flex-end;
-		padding-block: clamp(6rem, 14vw, 11rem) clamp(3rem, 7vw, 6rem);
-	}
-
-	.stamp-hero h1 {
-		max-width: 10ch;
-		margin-top: 1.25rem;
-		font-size: clamp(4rem, 12vw, 10rem);
-		font-weight: 300;
-		letter-spacing: -0.07em;
-		line-height: 0.82;
-	}
-
-	.stamp-hero .alt-lead {
-		margin-top: clamp(1.75rem, 4vw, 3rem);
-	}
-
-</style>
+	<PageHead lead="A collection of my favourite stamps. I add to it regularly." title="Stamps" />
+	<StampGallery />
+</Site>

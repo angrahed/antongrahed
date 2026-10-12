@@ -1,0 +1,280 @@
+---
+import type { GetStaticPaths } from "astro";
+import { Code } from "astro-expressive-code/components";
+import PageHead from "@/components/site/PageHead.astro";
+import type { Project } from "@/data/projects";
+import Site from "@/layouts/Site.astro";
+import { formatDay } from "@/lib/build-info";
+import { githubRetrieved, languageBar, percentLabel, projects, repoFor } from "@/lib/projects";
+
+export const getStaticPaths = (() =>
+	projects.map((project, index) => ({
+		params: { slug: project.slug },
+		props: {
+			next: projects[(index + 1) % projects.length],
+			project,
+		},
+	}))) satisfies GetStaticPaths;
+
+interface Props {
+	next: Project;
+	project: Project;
+}
+
+const { next, project } = Astro.props;
+const repo = repoFor(project);
+const languages = languageBar(repo);
+const version = repo?.latestRelease?.tag ?? repo?.latestTag ?? null;
+---
+
+<Site meta={{ description: project.summary, title: project.title }} section={project.title}>
+	<PageHead
+		crumbs={[{ href: "/projects/", label: "Projects" }]}
+		lead={project.summary}
+		title={project.title}
+	>
+		<div class="project-actions">
+			{
+				repo && (
+					<a class="button button--primary" href={repo.url} rel="noreferrer">
+						View on GitHub
+					</a>
+				)
+			}
+		</div>
+	</PageHead>
+
+	<section class="section project-page">
+		<div class="wrap project-page__grid">
+			<aside class="project-page__facts" aria-label="Repository facts">
+				{
+					languages.length > 0 && (
+						<div class="project-page__languages">
+							<p class="project-page__label">Languages</p>
+							<div aria-hidden="true" class="langbar">
+								{languages.map((language) => (
+									<i data-lang-slot={language.slot} style={`flex: ${language.share} 1 0`} />
+								))}
+							</div>
+							<ul class="langs">
+								{languages.map((language) => (
+									<li>
+										<i aria-hidden="true" class="lang-key" data-lang-slot={language.slot} />
+										{language.name} <span class="num">{percentLabel(language.share)}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					)
+				}
+				{
+					repo && (
+						<dl class="spec">
+							<dt>Repository</dt>
+							<dd>
+								<a class="text-link" href={repo.url} rel="noreferrer">
+									{repo.fullName}
+								</a>
+							</dd>
+							{version && (
+								<>
+									<dt>Version</dt>
+									<dd class="mono">{version}</dd>
+								</>
+							)}
+							<dt>Commits</dt>
+							<dd class="num">{repo.totalCommits}</dd>
+							{repo.lastCommit && (
+								<>
+									<dt>Last commit</dt>
+									<dd>
+										<a class="text-link" href={repo.lastCommit.url} rel="noreferrer">
+											<span class="mono">{repo.lastCommit.sha}</span>
+										</a>{" "}
+										on {formatDay(repo.lastCommit.date)}
+										<span class="project-page__message">{repo.lastCommit.message}</span>
+									</dd>
+								</>
+							)}
+							<dt>Created</dt>
+							<dd>{formatDay(repo.createdAt)}</dd>
+							{repo.license && (
+								<>
+									<dt>Licence</dt>
+									<dd>{repo.license}</dd>
+								</>
+							)}
+						</dl>
+					)
+				}
+				<p class="meta">Read from the GitHub API on {formatDay(githubRetrieved)}.</p>
+			</aside>
+
+			<div class="project-page__main">
+				{
+					project.snippets.length > 0 && (
+						<div class="project-page__snippets">
+							{project.snippets.map((snippet) => (
+								<div class="snippet">
+									<p class="project-page__label">{snippet.label}</p>
+									<Code code={snippet.code} lang={snippet.lang} />
+								</div>
+							))}
+						</div>
+					)
+				}
+
+				{
+					repo?.readmeHtml && (
+						<article class="readme" aria-labelledby="readme-title">
+							<div class="readme__head">
+								<h2 id="readme-title">README</h2>
+								<a class="meta" href={`${repo.url}#readme`} rel="noreferrer">
+									Source on GitHub
+								</a>
+							</div>
+							<div class="prose readme__body" set:html={repo.readmeHtml} />
+						</article>
+					)
+				}
+
+				<nav aria-label="Next project" class="project-next">
+					<span class="meta">Next project</span>
+					<a href={`/projects/${next.slug}/`}>{next.title}</a>
+				</nav>
+			</div>
+		</div>
+	</section>
+</Site>
+
+<style>
+	.project-actions {
+		display: flex;
+		gap: 0.6rem;
+		margin-top: 1.75rem;
+	}
+
+	.project-page {
+		padding-top: clamp(2.5rem, 6vw, 4rem);
+	}
+
+	.project-page__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 3rem clamp(2rem, 6vw, 5rem);
+	}
+
+	.project-page__facts {
+		display: grid;
+		align-content: start;
+		gap: 1.75rem;
+	}
+
+	.project-page__label {
+		margin-bottom: 0.6rem;
+		color: var(--ink-3);
+		font-size: var(--step--1);
+	}
+
+	.project-page__message {
+		display: block;
+		color: var(--ink-2);
+		font-size: var(--step--1);
+	}
+
+	.project-page__main {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		min-width: 0;
+		align-content: start;
+		gap: 2.5rem;
+	}
+
+	.project-page__snippets {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+
+	.readme__head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.readme__head h2 {
+		font-size: var(--step-2);
+		font-weight: 400;
+	}
+
+	.readme__body {
+		max-width: 46rem;
+	}
+
+	/* GitHub's README markup: code blocks and their syntax classes. */
+	.readme__body :global(.highlight pre),
+	.readme__body :global(pre) {
+		margin: 0;
+	}
+
+	.readme__body :global(.highlight) {
+		margin-top: 1.1em;
+	}
+
+	.readme__body :global(.pl-c) {
+		color: var(--ink-3);
+	}
+
+	.readme__body :global(:is(.pl-k, .pl-kos)) {
+		color: light-dark(#a3215b, #f19bc0);
+	}
+
+	.readme__body :global(:is(.pl-s, .pl-pds, .pl-sr)) {
+		color: light-dark(#0a6640, #6fdc9f);
+	}
+
+	.readme__body :global(:is(.pl-c1, .pl-smi, .pl-v)) {
+		color: light-dark(#0043ce, #78a9ff);
+	}
+
+	.readme__body :global(.pl-en) {
+		color: light-dark(#7a3e00, #f5b26b);
+	}
+
+	.readme__body :global(img) {
+		max-width: 100%;
+	}
+
+	.project-next {
+		display: grid;
+		gap: 0.25rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.project-next a {
+		font-size: var(--step-2);
+		letter-spacing: -0.02em;
+		text-decoration: none;
+	}
+
+	.project-next a:hover {
+		color: var(--signal-ink);
+	}
+
+	@media (min-width: 60rem) {
+		.project-page__grid {
+			grid-template-columns: minmax(16rem, 20rem) minmax(0, 1fr);
+		}
+
+		.project-page__facts {
+			position: sticky;
+			top: calc(var(--header-h) + 2rem);
+			align-self: start;
+		}
+	}
+</style>

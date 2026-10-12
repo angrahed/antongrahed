@@ -3,10 +3,8 @@ import fs from "node:fs";
 import { rehypeHeadingIds } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import tailwind from "@tailwindcss/vite";
-import { defineConfig, envField } from "astro/config";
+import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
-import icon from "astro-icon";
 import robotsTxt from "astro-robots-txt";
 import webmanifest from "astro-webmanifest";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -17,7 +15,7 @@ import remarkDirective from "remark-directive"; /* Handle ::: directives as node
 import { remarkAdmonitions } from "./src/plugins/remark-admonitions"; /* Add admonitions */
 import { remarkGithubCard } from "./src/plugins/remark-github-card";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
-import { expressiveCodeOptions, siteConfig, siteFeatures } from "./src/site.config";
+import { siteConfig, siteFeatures } from "./src/site.config";
 
 const isHiddenFeaturePath = (page: string) => {
 	const pathname = new URL(page).pathname;
@@ -29,19 +27,16 @@ const isHiddenFeaturePath = (page: string) => {
 				pathname === "/tags" ||
 				pathname.startsWith("/tags/") ||
 				pathname === "/rss.xml" ||
-				pathname.startsWith("/og-image/")))
+				pathname.startsWith("/og-image/"))) ||
+		/\.(csv|svg|png|xml)$/.test(pathname)
 	);
 };
 
 // https://astro.build/config
 export default defineConfig({
 	site: siteConfig.url,
-	image: {
-		domains: ["webmention.io"],
-	},
 	integrations: [
-		expressiveCode(expressiveCodeOptions),
-		icon(),
+		expressiveCode(),
 		sitemap({ filter: (page) => !isHiddenFeaturePath(page) }),
 		mdx(),
 		robotsTxt(),
@@ -54,7 +49,7 @@ export default defineConfig({
 			icon: "public/icon.svg", // the source for generating favicon & icons
 			icons: [
 				{
-					src: "icons/apple-touch-icon.png", // used in src/components/BaseHead.astro L:26
+					src: "icons/apple-touch-icon.png", // linked from src/layouts/Site.astro
 					sizes: "180x180",
 					type: "image/png",
 				},
@@ -70,7 +65,7 @@ export default defineConfig({
 				},
 			],
 			start_url: "/",
-			background_color: "#161616",
+			background_color: "#f4f7fb",
 			theme_color: "#0f62fe",
 			display: "standalone",
 			config: {
@@ -104,14 +99,7 @@ export default defineConfig({
 		optimizeDeps: {
 			exclude: ["@resvg/resvg-js"],
 		},
-		plugins: [tailwind(), rawFonts([".ttf", ".woff"])],
-	},
-	env: {
-		schema: {
-			WEBMENTION_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
-			WEBMENTION_URL: envField.string({ context: "client", access: "public", optional: true }),
-			WEBMENTION_PINGBACK: envField.string({ context: "client", access: "public", optional: true }),
-		},
+		plugins: [rawFonts([".ttf", ".woff"])],
 	},
 });
 

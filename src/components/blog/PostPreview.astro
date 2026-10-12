@@ -1,24 +1,65 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import FormattedDate from "@/components/FormattedDate.astro";
-import type { HTMLTag, Polymorphic } from "astro/types";
 
-type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
+interface Props {
+	headingLevel?: "h2" | "h3";
 	post: CollectionEntry<"post">;
-	withDesc?: boolean;
-};
+}
 
-const { as: Tag = "div", post, withDesc = false } = Astro.props;
+const { headingLevel: Heading = "h2", post } = Astro.props;
 ---
 
-<FormattedDate
-	class="text-text-secondary min-w-30 pt-0.5 font-mono text-xs tracking-[0.1em] uppercase"
-	date={post.data.publishDate}
-/>
-<Tag>
-	{post.data.draft && <span class="text-error font-mono text-xs uppercase">(Draft) </span>}
-	<a class="cactus-link" href={`/posts/${post.id}/`}>
-		{post.data.title}
-	</a>
-</Tag>
-{withDesc && <q class="text-text-secondary line-clamp-3 text-sm">{post.data.description}</q>}
+<article class="post-preview">
+	<FormattedDate class="post-preview__date meta num" date={post.data.publishDate} />
+	<div>
+		<Heading class="post-preview__title">
+			{post.data.draft && <span class="post-preview__draft">Draft</span>}
+			<a href={`/posts/${post.id}/`}>{post.data.title}</a>
+		</Heading>
+		<p class="post-preview__description muted">{post.data.description}</p>
+	</div>
+</article>
+
+<style>
+	.post-preview {
+		display: grid;
+		gap: 0.35rem 2rem;
+		padding-block: 1.25rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.post-preview__title {
+		font-size: var(--step-1);
+		font-weight: 450;
+	}
+
+	.post-preview__title a {
+		text-decoration: none;
+	}
+
+	.post-preview__title a:hover {
+		color: var(--signal-ink);
+	}
+
+	.post-preview__draft {
+		margin-right: 0.5rem;
+		color: var(--series-2);
+		font-size: var(--step--1);
+	}
+
+	.post-preview__description {
+		max-width: 40rem;
+		margin-top: 0.3rem;
+	}
+
+	@media (min-width: 40rem) {
+		.post-preview {
+			grid-template-columns: 8rem minmax(0, 1fr);
+		}
+
+		.post-preview__date {
+			padding-top: 0.3rem;
+		}
+	}
+</style>
