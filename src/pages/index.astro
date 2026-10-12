@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets";
 import AboutFacts from "@/components/about/AboutFacts.astro";
-import InterestRotator from "@/components/about/InterestRotator.astro";
 import LitText from "@/components/about/LitText.astro";
 import Portrait from "@/components/about/Portrait.astro";
 import FilmStrip from "@/components/film/FilmStrip.astro";
@@ -31,8 +30,8 @@ const places = getFilmPlaces(frames);
 				<h1 class="display hero__title">Working on the economics of transition.</h1>
 				<div class="hero__aside">
 					<p class="lead">
-						Hi, I’m Anton Grahed. I research economic growth, development, and the economic legacy
-						of communism at the European Bank for Reconstruction and Development.
+						Hi, I’m Anton Grahed. I work on growth, development and the economic legacy of communism
+						at the European Bank for Reconstruction and Development.
 					</p>
 					<div class="hero__actions">
 						<a class="button button--primary" href="/about/">About me</a>
@@ -50,8 +49,8 @@ const places = getFilmPlaces(frames);
 			<div class="section-head">
 				<h2 id="explore-title">Explore the data</h2>
 				<p>
-					The figure behind the story: switch measures, move through the years, compare up to three
-					economies and download everything as a CSV.
+					The data behind the charts above. Pick a measure and a year, compare up to three economies
+					or download the CSV.
 				</p>
 			</div>
 			<TransitionFigure />
@@ -67,9 +66,8 @@ const places = getFilmPlaces(frames);
 				<h2 class="about__title" id="about-title">About</h2>
 				<LitText
 					class="about__lead"
-					text="I’m a Research Analyst in the Office of the Chief Economist at the EBRD. I support the Bank’s applied research on development economics and growth, mostly through the data work and visualisation behind it."
+					text="I’m a Research Analyst in the Office of the Chief Economist at the EBRD. I work on the Bank’s research on growth and development, mostly building the datasets and charts behind it."
 				/>
-				<InterestRotator />
 				<AboutFacts />
 				<a class="text-link about__more" href="/about/">Read the full profile</a>
 			</div>
@@ -81,8 +79,7 @@ const places = getFilmPlaces(frames);
 			<div class="section-head">
 				<h2 id="projects-title">Projects</h2>
 				<p>
-					Research tools and data explorations, mostly built around economic data. Each is open
-					source on GitHub.
+					Tools I’ve written for working with economic data. All of them are open source on GitHub.
 				</p>
 			</div>
 			<div class="project-grid">
@@ -96,8 +93,9 @@ const places = getFilmPlaces(frames);
 			<div class="section-head">
 				<h2 id="film-title">Film</h2>
 				<p>
-					A rolling selection from {frames.length} frames shot on 35mm in {places.length} places, mostly
-					on a Nikon F5, Nikon FA, Nikon FM2N and an Olympus Mju II.
+					Three frames picked at random from the {frames.length} I’ve shot on 35mm in {
+						places.length
+					} places, mostly with a Nikon F5, Nikon FA, Nikon FM2N or Olympus Mju II.
 				</p>
 			</div>
 			<FilmStrip />
@@ -181,9 +179,7 @@ const places = getFilmPlaces(frames);
 		<div class="wrap contact__inner">
 			<h2 class="contact__title" id="contact-title">Get in touch</h2>
 			<div class="contact__body">
-				<p class="lead">
-					Email is the quickest way to reach me. The code for the projects is on GitHub.
-				</p>
+				<p class="lead">Email is the best way to reach me. My code is on GitHub.</p>
 				<div class="contact__actions">
 					<a class="button button--primary" href={`mailto:${contact.email}`}
 						>Email {contact.email}</a

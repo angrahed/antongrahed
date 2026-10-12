@@ -24,18 +24,18 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 
 <section aria-labelledby="story-title" class="story" data-section="Story" id="story">
 	<header class="wrap story__intro">
-		<p class="story__kicker">A story in data · 1990–{facts.lastYear}</p>
+		<p class="story__kicker">1990–{facts.lastYear}</p>
 		<h2 class="story__title" id="story-title">Thirty-five years of transition</h2>
 		<p class="lead">
-			How thirty economies left central planning, what it cost them, and where they stand now. Each
-			circle below is one economy; scroll to follow them.
+			Each circle below is one of thirty post-communist economies. Scroll down to follow them from
+			1990 to {facts.lastYear}.
 		</p>
 	</header>
 
 	<div class="wrap story__body" data-story>
 		<div aria-hidden="true" class="story__stage" data-story-stage>
 			<div class="story__bar">
-				<p class="story__chapter" data-story-chapter>Prologue</p>
+				<p class="story__chapter" data-story-chapter>Introduction</p>
 				<ol class="story__progress" data-story-progress></ol>
 			</div>
 			<p class="story__chart-title" data-story-title></p>
@@ -71,26 +71,26 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 		</div>
 
 		<div class="story__steps">
-			<article class="story__step" data-chapter="Prologue" data-scene="geo" data-story-step>
+			<article class="story__step" data-chapter="Introduction" data-scene="geo" data-story-step>
 				<div class="story__card">
-					<p class="story__eyebrow">Prologue</p>
-					<h3>Thirty economies, one experiment</h3>
+					<p class="story__eyebrow">Introduction</p>
+					<h3>The thirty economies</h3>
 					<p>
-						Between 1989 and 1992 the economies of Central and Eastern Europe, the former Soviet
-						Union and Mongolia began to dismantle central planning, almost at the same time. Thirty
-						of them are followed here, from Slovenia on the Adriatic to Mongolia on the Chinese
-						border. In 1990 they were home to {millions} million people.
+						Between 1989 and 1992, Central and Eastern Europe, the former Soviet Union and Mongolia
+						all began to move away from central planning. This page follows thirty of these
+						economies, from Slovenia to Mongolia. In 1990 they had {millions} million people between
+						them.
 					</p>
 					<p class="story__source">Source: World Bank, World Development Indicators.</p>
 				</div>
 			</article>
 
-			<article class="story__step" data-chapter="Prologue" data-scene="tiles" data-story-step>
+			<article class="story__step" data-chapter="Introduction" data-scene="tiles" data-story-step>
 				<div class="story__card">
 					<h3>One circle per economy</h3>
 					<p>
-						From here on each circle is one economy. They are arranged so that neighbours stay
-						roughly together, and coloured by region:
+						From here on, each circle is one economy, placed roughly where it is on the map and
+						coloured by region:
 					</p>
 					<ul class="story__regions" role="list">
 						{
@@ -105,48 +105,59 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 				</div>
 			</article>
 
-			<article class="story__step" data-chapter="Prologue" data-scene="people" data-story-step>
+			<article class="story__step" data-chapter="Introduction" data-scene="people" data-story-step>
 				<div class="story__card">
-					<h3>Very different sizes</h3>
+					<h3>Population in 1990</h3>
 					<p>
-						Sized by population, the circles show how unequal the starting points were: Russia alone
-						had 148 million people, Montenegro about 600,000. The charts that follow count each
-						economy once, whatever its size.
+						Here the circles are sized by population. Russia had 148 million people, Montenegro
+						about 600,000. The rest of the charts give each economy equal weight.
 					</p>
-					<p class="story__source">Population in 1990. Source: World Bank WDI.</p>
+					<p class="story__source">Source: World Bank WDI.</p>
 				</div>
 			</article>
 
 			<article
 				class="story__step"
-				data-chapter="I · The fall"
+				data-chapter="I · Output"
 				data-scene="fall"
 				data-story-step
 				id="story-fall"
 			>
 				<div class="story__card">
 					<p class="story__eyebrow">Chapter I · 1990–2000</p>
-					<h3>Output collapsed</h3>
+					<h3>Output fell almost everywhere</h3>
 					<p>
-						As planning broke down faster than markets could replace it, output fell almost
-						everywhere. By 1995 the median economy produced {fallAt1995}% less per person than in
-						1990. Each circle sits at its economy's lowest point.
+						The planned economy broke down faster than markets could replace it. By 1995 the median
+						economy was producing {fallAt1995}% less per person than in 1990. Each circle marks an
+						economy's lowest point.
 					</p>
 					<p class="story__source">
 						GDP per capita at purchasing power parity, 1990 = 100. Bosnia and Herzegovina is left
-						out (its early-1990s series is not comparable with later years), as are Kosovo,
-						Montenegro and Serbia, which have no data for 1990. Source: World Bank WDI.
+						out because its early-1990s series is not comparable with later years. Kosovo,
+						Montenegro and Serbia have no data for 1990. Source: World Bank WDI.
 					</p>
 				</div>
 			</article>
 
-			<article class="story__step" data-chapter="I · The fall" data-scene="depth" data-story-step>
+			<article class="story__step" data-chapter="I · Output" data-scene="depth" data-story-step>
 				<div class="story__card">
-					<h3>Deepest where there was war</h3>
+					<h3>The deepest falls</h3>
 					<p>
-						Georgia, Tajikistan and Moldova, all scarred by armed conflict in the early 1990s, lost
-						between 65% and 73% of their output per person. Poland, the earliest and most radical
-						reformer, lost 7%.
+						Georgia, Tajikistan and Moldova lost between 65% and 73% of their output per person. All
+						three went through armed conflict in the early 1990s. Poland, which launched its reform
+						programme in January 1990, lost 7%.
+					</p>
+					<p class="story__source">Source: World Bank WDI.</p>
+				</div>
+			</article>
+
+			<article class="story__step" data-chapter="I · Output" data-scene="recovery" data-story-step>
+				<div class="story__card">
+					<h3>Recovery took years</h3>
+					<p>
+						Poland was back at its 1990 level by 1994. The median economy got there in 2003, Georgia
+						in 2012, the Kyrgyz Republic and Tajikistan in 2022 and Moldova in 2023. Ukraine still
+						has not.
 					</p>
 					<p class="story__source">Source: World Bank WDI.</p>
 				</div>
@@ -154,48 +165,31 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 
 			<article
 				class="story__step"
-				data-chapter="I · The fall"
-				data-scene="recovery"
-				data-story-step
-			>
-				<div class="story__card">
-					<h3>A long way back</h3>
-					<p>
-						Poland was back at its 1990 level by 1994. For the median economy it took until 2003.
-						Georgia needed until 2012, the Kyrgyz Republic and Tajikistan until 2022, Moldova until
-						2023. Ukraine has not got back.
-					</p>
-					<p class="story__source">Source: World Bank WDI.</p>
-				</div>
-			</article>
-
-			<article
-				class="story__step"
-				data-chapter="II · Prices set free"
+				data-chapter="II · Inflation"
 				data-scene="prices"
 				data-story-step
 				id="story-prices"
 			>
 				<div class="story__card">
 					<p class="story__eyebrow">Chapter II · 1990–1995</p>
-					<h3>Prices set free</h3>
+					<h3>Inflation</h3>
 					<p>
-						Freeing prices released years of pent-up demand at once, and budget deficits were often
-						covered by printing money. Ukraine's consumer prices rose 4,735% in 1993: on average,
-						they doubled every nine weeks. Hungary, which had loosened controls gradually since
-						1968, peaked at 35%.
+						When price controls were lifted, years of pent-up demand and cash savings hit the shops
+						at once, and many governments printed money to cover their deficits. Ukrainian consumer
+						prices rose 4,735% in 1993, roughly doubling every nine weeks. Hungary, which had
+						already freed many prices before 1989, peaked at 35%.
 					</p>
 					<p class="story__source">
-						Peak annual average consumer price inflation, 1990–99. World Bank WDI, gaps filled from
-						the IMF World Economic Outlook. Open circles: the data begin after prices were freed, so
-						the true peak may have been higher. No comparable data for {noInflation}.
+						Peak annual average consumer price inflation, 1990–99. World Bank WDI, with gaps filled
+						from the IMF World Economic Outlook. Open circles mark series that start after prices
+						were freed, so the true peak may have been higher. No comparable data for {noInflation}.
 					</p>
 				</div>
 			</article>
 
 			<article
 				class="story__step"
-				data-chapter="III · The missing years"
+				data-chapter="III · Life expectancy"
 				data-scene="lifespan"
 				data-story-step
 				id="story-mortality"
@@ -204,30 +198,29 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 					<p class="story__eyebrow">Chapter III · 1990–2000</p>
 					<h3>A mortality crisis</h3>
 					<p>
-						Life expectancy at birth fell across much of the former Soviet Union. In Russia it
-						dropped from 68.9 years in 1990 to 64.5 in 1994. In Bosnia and Herzegovina and
-						Tajikistan, war drove it far lower.
+						Life expectancy at birth fell across much of the former Soviet Union. In Russia it went
+						from 68.9 years in 1990 to 64.5 in 1994. In Bosnia and Herzegovina and Tajikistan, where
+						there was war, it fell much further.
 					</p>
 					<p class="story__source">
-						Each circle at its lowest point by 2000. Source: World Bank WDI.
+						Each circle marks an economy's lowest point by 2000. Source: World Bank WDI.
 					</p>
 				</div>
 			</article>
 
 			<article
 				class="story__step"
-				data-chapter="III · The missing years"
+				data-chapter="III · Life expectancy"
 				data-scene="mortality"
 				data-story-step
 			>
 				<div class="story__card">
-					<h3>Concentrated in the former Soviet Union</h3>
+					<h3>Change from 1990 to 1995</h3>
 					<p>
-						Between 1990 and 1995 life expectancy fell by 4.2 years in Russia, 3.2 in Ukraine and
-						2.9 in Latvia, while it rose in Czechia, Slovakia and Poland. Research points to
-						alcohol, stress and strained health systems (Brainerd and Cutler, 2005); whether rapid
-						privatisation played a part is still debated (Stuckler, King and McKee, 2009; Earle and
-						Gehlbach, 2010).
+						Life expectancy fell by 4.2 years in Russia, 3.2 in Ukraine and 2.9 in Latvia. It rose
+						in Czechia, Slovakia and Poland. Brainerd and Cutler (2005) point to alcohol and stress.
+						Stuckler, King and McKee (2009) blame mass privatisation, a link Earle and Gehlbach
+						(2010) dispute.
 					</p>
 					<p class="story__source">Source: World Bank WDI.</p>
 				</div>
@@ -235,18 +228,18 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 
 			<article
 				class="story__step"
-				data-chapter="IV · Two roads"
+				data-chapter="IV · Democracy"
 				data-scene="roads-1995"
 				data-story-step
 				id="story-roads"
 			>
 				<div class="story__card">
 					<p class="story__eyebrow">Chapter IV · 1995–2007</p>
-					<h3>Two roads</h3>
+					<h3>Democracy and income</h3>
 					<p>
-						By the mid-1990s the region had already split. Central Europe and the Baltics combined
-						higher incomes with competitive politics; much of Central Asia combined low incomes with
-						little political competition at all.
+						By the mid-1990s the richer economies of Central Europe and the Baltics were also the
+						most democratic. Most of Central Asia was poorer and scored close to zero on V-Dem's
+						index.
 					</p>
 					<p class="story__source">
 						Horizontal: V-Dem liberal democracy index, 0 to 1. Vertical: GDP per capita at PPP, log
@@ -257,16 +250,16 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 
 			<article
 				class="story__step"
-				data-chapter="IV · Two roads"
+				data-chapter="IV · Democracy"
 				data-scene="roads-2007"
 				data-story-step
 			>
 				<div class="story__card">
-					<h3>Anchored by Europe</h3>
+					<h3>Joining the EU</h3>
 					<p>
-						Eight of them joined the European Union in 2004, Bulgaria and Romania in 2007 and
-						Croatia in 2013 (ringed once members). The prospect of membership tied reform to a
-						common set of rules and a timetable.
+						Eight of these economies joined the European Union in 2004, Bulgaria and Romania in 2007
+						and Croatia in 2013. Members are ringed. Candidates had to adopt EU law before joining,
+						which gave their reforms a deadline.
 					</p>
 					<p class="story__source">Sources: V-Dem v16; World Bank WDI.</p>
 				</div>
@@ -281,32 +274,32 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 			>
 				<div class="story__card">
 					<p class="story__eyebrow">Chapter V · 1995–{facts.lastYear}</p>
-					<h3>Catching up, unevenly</h3>
+					<h3>Catching up with the G7</h3>
 					<p>
-						Measured against the G7, Lithuania went from 28% of its income per person in 1995 to 76%
-						in {facts.lastYear}, and Poland from 33% to 73%. Ukraine stood at 25% in both years.
+						Lithuania's income per person went from 28% of the G7 average in 1995 to 76% in{" "}
+						{facts.lastYear}, and Poland's from 33% to 73%. Ukraine was at 25% in both years.
 					</p>
 					<p class="story__source">
 						GDP per capita at PPP as a percentage of the population-weighted G7 average. Open
-						circles 1995, filled {facts.lastYear}. Source: World Bank WDI.
+						circles show 1995, filled circles {facts.lastYear}. Source: World Bank WDI.
 					</p>
 				</div>
 			</article>
 
 			<article
 				class="story__step"
-				data-chapter="VI · The leaving"
+				data-chapter="VI · Population"
 				data-scene="leaving"
 				data-story-step
-				id="story-leaving"
+				id="story-population"
 			>
 				<div class="story__card">
 					<p class="story__eyebrow">Chapter VI · 1990–{POPULATION_YEAR}</p>
-					<h3>The leaving</h3>
+					<h3>Fewer people in Europe, more in Central Asia</h3>
 					<p>
-						Populations diverged as sharply as incomes. Latvia has 31% fewer people than in 1990,
-						Albania and Bosnia and Herzegovina 29% fewer, through emigration and low birth rates;
-						Ukraine's figure also reflects the war. Tajikistan and Turkmenistan have doubled.
+						Latvia has 31% fewer people than in 1990, and Albania and Bosnia and Herzegovina 29%
+						fewer, mostly because of emigration and low birth rates. Ukraine's fall also reflects
+						the war. The populations of Tajikistan and Turkmenistan have doubled.
 					</p>
 					<p class="story__source">Source: World Bank WDI.</p>
 				</div>
@@ -314,31 +307,35 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 
 			<article
 				class="story__step"
-				data-chapter="VII · Reversals"
+				data-chapter="VII · Backsliding and war"
 				data-scene="reversals"
 				data-story-step
-				id="story-reversals"
+				id="story-backsliding"
 			>
 				<div class="story__card">
 					<p class="story__eyebrow">Chapter VII · 2007–{facts.lastYear}</p>
-					<h3>Reversals</h3>
+					<h3>Democratic backsliding</h3>
 					<p>
-						Democratic gains proved reversible. Hungary's liberal democracy score fell from 0.77 in
-						2007 to 0.32. Poland's dropped after 2015 and has partly recovered since 2023. Russia's
-						has fallen to 0.06, close to Belarus and Turkmenistan at the bottom of the scale.
+						Hungary's liberal democracy score fell from 0.77 in 2007 to 0.32 in {facts.lastYear}.
+						Poland's fell after 2015 and has partly recovered since the 2023 election. Russia is at
+						0.06, close to Belarus and Turkmenistan at the bottom.
 					</p>
 					<p class="story__source">Source: V-Dem v16 via Our World in Data.</p>
 				</div>
 			</article>
 
-			<article class="story__step" data-chapter="VII · Reversals" data-scene="war" data-story-step>
+			<article
+				class="story__step"
+				data-chapter="VII · Backsliding and war"
+				data-scene="war"
+				data-story-step
+			>
 				<div class="story__card">
-					<h3>War</h3>
+					<h3>War in Ukraine</h3>
 					<p>
-						Russia's full-scale invasion in 2022 cut Ukraine's output per person by 23% in a year.
-						In
-						{facts.lastYear} it was still {ukraineGap}% below its 1990 level, the only economy here
-						with comparable data that has not got back to where it started.
+						Russia's full-scale invasion in 2022 cut Ukraine's output per person by 23% in one year.
+						In {facts.lastYear} it was still {ukraineGap}% below its 1990 level. Of the economies
+						with comparable data, Ukraine is the only one that has not recovered.
 					</p>
 					<p class="story__source">
 						GDP per capita at PPP, 1990 = 100, log scale. Source: World Bank WDI.
@@ -348,18 +345,18 @@ const noInflation = listOf(NO_EARLY_INFLATION.map(nameFor));
 
 			<article
 				class="story__step"
-				data-chapter="Epilogue"
+				data-chapter={String(facts.lastYear)}
 				data-scene="now"
 				data-story-step
 				id="story-now"
 			>
 				<div class="story__card">
-					<p class="story__eyebrow">Epilogue · {facts.lastYear}</p>
-					<h3>Where they stand</h3>
+					<p class="story__eyebrow">{facts.lastYear}</p>
+					<h3>Where things stand</h3>
 					<p>
-						Thirty-five years on, the same starting point has led to very different places. Czechia
-						produces 77% as much per person as the G7, Tajikistan 8%. Estonia scores 0.84 on V-Dem's
-						index, Belarus 0.04. The figure below has the data behind every chapter.
+						Czechia now produces 77% as much per person as the G7 average, Tajikistan 8%. Estonia
+						scores 0.84 on V-Dem's democracy index, Belarus 0.04. The interactive figure below has
+						the data behind every chart.
 					</p>
 					<a class="text-link" href="#figure-1">Explore the data</a>
 				</div>

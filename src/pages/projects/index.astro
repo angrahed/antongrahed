@@ -8,13 +8,13 @@ import { githubRetrieved, projects } from "@/lib/projects";
 
 <Site
 	meta={{
-		description: "Open-source research tools by Anton Grahed, mostly built around economic data.",
+		description: "Open-source tools by Anton Grahed for working with economic data.",
 		title: "Projects",
 	}}
 	section="Projects"
 >
 	<PageHead
-		lead="Research tools and data explorations, mostly built around economic data. Each one is open source on GitHub."
+		lead="Tools I’ve written for working with economic data. All of them are open source on GitHub."
 		title="Projects"
 	/>
 	<section class="section projects-page">
@@ -23,7 +23,7 @@ import { githubRetrieved, projects } from "@/lib/projects";
 				{projects.map((project) => <ProjectCard headingLevel="h2" project={project} />)}
 			</div>
 			<p class="meta projects-page__note">
-				Repository figures are read from the GitHub API, last on {formatDay(githubRetrieved)}.
+				Repository figures come from the GitHub API, read on {formatDay(githubRetrieved)}.
 			</p>
 		</div>
 	</section>

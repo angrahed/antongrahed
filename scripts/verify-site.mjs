@@ -424,36 +424,27 @@ await check("convergence: gap to the frontier, catch-up scatter, benchmark switc
 	await page.close();
 });
 
-await check("About: portrait develops, text lights with scroll, interests rotate", async () => {
+await check("About: portrait develops and text lights with scroll", async () => {
 	const page = await open("/", { motion: "no-preference" });
 	const before = await page.evaluate(() => ({
 		armed: document.querySelector("[data-portrait]")?.classList.contains("is-armed"),
 		lit: document.querySelector("[data-lit]")?.style.getPropertyValue("--p"),
-		live: document.querySelector("[data-rotator]")?.classList.contains("is-live"),
 	}));
-	assert(before.armed && before.lit === "0.000" && before.live, JSON.stringify(before));
+	assert(before.armed && before.lit === "0.000", JSON.stringify(before));
 	await page.$eval("#about", (section) => section.scrollIntoView({ behavior: "instant" }));
-	const first = await page.$eval(".rotator__item[data-active]", (item) => item.textContent);
-	await sleep(3200);
+	await sleep(1500);
 	const after = await page.evaluate(() => ({
-		active: document.querySelector(".rotator__item[data-active]")?.textContent,
 		developed: document.querySelector("[data-portrait]")?.classList.contains("is-developed"),
 		lit: Number(document.querySelector("[data-lit]")?.style.getPropertyValue("--p")),
 	}));
 	assert(after.developed && after.lit > 0.95, JSON.stringify(after));
-	assert(after.active !== first, `rotator stuck on ${first}`);
 	await page.close();
 
 	const still = await open("/");
-	const reduced = await still.evaluate(() => ({
-		armed: document.querySelector("[data-portrait]")?.classList.contains("is-armed"),
-		live: document.querySelector("[data-rotator]")?.classList.contains("is-live"),
-		sentence: getComputedStyle(document.querySelector(".rotator__static")).position,
-	}));
-	assert(
-		!reduced.armed && !reduced.live && reduced.sentence !== "absolute",
-		JSON.stringify(reduced),
+	const armed = await still.$eval("[data-portrait]", (portrait) =>
+		portrait.classList.contains("is-armed"),
 	);
+	assert(!armed, "portrait animates under reduced motion");
 	await still.close();
 });
 

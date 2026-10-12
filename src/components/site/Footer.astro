@@ -42,9 +42,9 @@ const year = buildInfo.builtAt.getUTCFullYear();
 		<div class="site-footer__col site-footer__colophon">
 			<p class="site-footer__heading">Colophon</p>
 			<p class="meta">
-				Set in IBM Plex. Figures use the World Bank's World Development Indicators, updated {
+				Set in IBM Plex. Data from the World Bank (updated {
 					formatDay(transition.source.lastUpdated)
-				}. Built with Astro{
+				}), V-Dem and the IMF. Built with Astro{
 					buildInfo.sha && (
 						<>
 							{" "}
