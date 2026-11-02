@@ -8,7 +8,7 @@ interface PaletteCommand {
 	hint?: string | undefined;
 	href?: string;
 	id: string;
-	keywords?: string | undefined;
+	keywords?: string;
 	label: string;
 }
 
@@ -19,7 +19,6 @@ const commands: PaletteCommand[] = [
 		hint: ({ About: "G A", Film: "G F", Projects: "G P" } as Record<string, string>)[link.title],
 		href: link.path,
 		id: `page-${link.title.toLowerCase()}`,
-		keywords: ({ CV: "curriculum vitae resume pdf" } as Record<string, string>)[link.title],
 		label: link.title,
 	})),
 	...projects.map((project) => ({

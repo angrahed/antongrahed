@@ -41,7 +41,6 @@ export const menuLinks: { path: string; title: string }[] = [
 	{ path: "/about/", title: "About" },
 	{ path: "/projects/", title: "Projects" },
 	{ path: "/film/", title: "Film" },
-	{ path: "/cv.pdf", title: "CV" },
 	...(siteFeatures.posts ? [{ path: "/posts/", title: "Writing" }] : []),
 	...(siteFeatures.stamps ? [{ path: "/stamps/", title: "Stamps" }] : []),
 	...(siteFeatures.books ? [{ path: "/#books", title: "Books" }] : []),
